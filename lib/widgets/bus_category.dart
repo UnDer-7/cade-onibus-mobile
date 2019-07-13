@@ -15,7 +15,7 @@ class _BusCategoryState extends State<BusCategory> {
 
     @override
     Widget build(BuildContext context) {
-        final double width = MediaQuery.of(context).size.height;
+        final double height = MediaQuery.of(context).size.height;
         return Card(
             margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             color: cardColor,
@@ -40,13 +40,27 @@ class _BusCategoryState extends State<BusCategory> {
                         ),
                     ),
                     if (_isSelect) Container(
-                        height: width/2,
+                        height: height/2,
                         child: Card(
                             margin: EdgeInsets.all(15),
                             color: Colors.white,
                             child: ListView.builder(
                                 itemCount: 10,
-                                itemBuilder: (BuildContext ctx, int i) => BusItem(),
+                                itemBuilder: (BuildContext ctx, int i) => Dismissible(
+                                    key: ValueKey('eae'),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                        alignment: Alignment.centerRight,
+                                        padding: EdgeInsets.only(right: 20),
+                                        color: Theme.of(context).errorColor,
+                                        child: Icon(
+                                            Icons.delete,
+                                            color: Colors.white,
+                                            size: 40,
+                                        ),
+                                    ),
+                                    child: BusItem(),
+                                ),
                             ),
                         ),
                     ),

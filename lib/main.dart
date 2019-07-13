@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import './routes.dart';
+
 import './tabs/main_tabs.dart';
 
 import './utils/custom_colors.dart';
@@ -16,6 +18,7 @@ class CadeVan extends StatelessWidget {
                 accentColor: CustomColors.primaryColor,
             ),
             home: MainTabs(),
+            routes: Routes.availableRoutes,
         );
     }
 }

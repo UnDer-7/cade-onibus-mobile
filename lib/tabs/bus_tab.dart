@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
+import '../routes.dart';
+
 import '../widgets/bus_category.dart';
 
 class BusTab extends StatelessWidget {
@@ -13,7 +15,7 @@ class BusTab extends StatelessWidget {
                 animatedIconTheme: IconThemeData(size: 22.0),
                 children: [
                     SpeedDialChild(
-                        onTap: () => print('Novo Ônibus'),
+                        onTap: () => Navigator.pushNamed(context, Routes.newBusScreen),
                         child: Icon(Icons.directions_bus),
                         label: 'Novo Ônibus'
                     ),

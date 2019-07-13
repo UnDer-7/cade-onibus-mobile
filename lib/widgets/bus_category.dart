@@ -25,18 +25,18 @@ class _BusCategoryState extends State<BusCategory> {
                         onTap: () => setState(() => _isSelect = !_isSelect),
                         leading: Icon(
                             Icons.home,
-                            color: CustomColors.getTextColor(cardColor),
+                            color: CustomColors.switchColor(cardColor),
                         ),
                         title: Text(
                             'Ônibus para casa',
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                                color: CustomColors.getTextColor(cardColor),
+                                color: CustomColors.switchColor(cardColor),
                             ),
                         ),
                         trailing: Icon(
                             Icons.keyboard_arrow_down,
-                            color: CustomColors.getTextColor(cardColor),
+                            color: CustomColors.switchColor(cardColor),
                         ),
                     ),
                     if (_isSelect) Container(

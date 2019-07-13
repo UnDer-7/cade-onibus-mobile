@@ -23,13 +23,13 @@ class MainTabs extends StatelessWidget {
                     tabs: <Widget>[
                         Tab(
                             icon: IconTheme(
-                                data: IconThemeData(color: Theme.of(context).accentColor),
+                                data: IconThemeData(color: Theme.of(context).primaryColor),
                                 child: Icon(Icons.directions_bus),
                             ),
                         ),
                         Tab(
                             icon: IconTheme(
-                                data: IconThemeData(color: Theme.of(context).accentColor),
+                                data: IconThemeData(color: Theme.of(context).primaryColor),
                                 child: Icon(Icons.map),
                             ),
                         ),

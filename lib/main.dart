@@ -13,7 +13,7 @@ class CadeVan extends StatelessWidget {
             title: 'Cadê Ônibus',
             theme: ThemeData(
                 primarySwatch: CustomColors.primaryColor,
-                accentColor: Colors.purple
+                accentColor: CustomColors.primaryColor,
             ),
             home: MainTabs(),
         );

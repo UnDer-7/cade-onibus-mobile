@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../models/bus.dart';
+
 class BusItem extends StatelessWidget {
+    final Bus bus;
+
+    BusItem(this.bus);
+
     @override
     Widget build(BuildContext context) =>
         Column(
@@ -10,7 +16,7 @@ class BusItem extends StatelessWidget {
                     onLongPress: () => print('long'),
                     leading: Chip(
                         label: Text(
-                            '501.4',
+                            bus.numero,
                             style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.white,
@@ -19,11 +25,11 @@ class BusItem extends StatelessWidget {
                         backgroundColor: Theme.of(context).primaryColor,
                     ),
                     title: Text(
-                        'Samambaia Norte (1 Avenida)/ Rodoviária do Plano Piloto (SHIS - EPNB - EIXO)',
+                        bus.descricao,
                         textAlign: TextAlign.center,
                     ),
                     trailing: Text(
-                        'R\$ 5,00',
+                        'R\$ ${bus.faixaTarifaria.tarifa.toStringAsFixed(2)}',
                         style: TextStyle(
                             color: Colors.red
                         ),

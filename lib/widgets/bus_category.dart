@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import './bus_item.dart';
 
+import '../models/bus.dart';
+
 import '../utils/custom_colors.dart';
 
 class BusCategory extends StatefulWidget {
@@ -59,7 +61,23 @@ class _BusCategoryState extends State<BusCategory> {
                                             size: 40,
                                         ),
                                     ),
-                                    child: BusItem(),
+                                    child: BusItem(Bus(
+                                        numero: '501.3',
+                                        descricao: 'Sobradinho II / Eixo-Norte/Sul',
+                                        ativa: null,
+                                        bacia: null,
+                                        operadoras: null,
+                                        sentido: null,
+                                        sequencial: null,
+                                        tipoLinha: null,
+                                        tiposOnibus: null,
+                                        id: null,
+                                        faixaTarifaria: FaixaTarifaria(
+                                            descricao: null,
+                                            sequencial: null,
+                                            tarifa: 5.00
+                                        )
+                                    )),
                                 ),
                             ),
                         ),

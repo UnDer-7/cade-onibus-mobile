@@ -92,6 +92,8 @@ class _NewBusScreenState extends State<NewBusScreen> {
     }
 
     void _handleDFTransRequest(String input) async {
+        if (input.isEmpty) return;
+
         _updateLoadingState = true;
         try {
             _bus = await DFTransResource.findBus(input);
@@ -123,7 +125,6 @@ class _NewBusScreenState extends State<NewBusScreen> {
     );
 
     void _textChanged(String input) {
-        if (input.isEmpty) return;
         _subject.add(input);
     }
 }

@@ -29,6 +29,7 @@ dependencies:
   rxdart: ^0.22.0
   dio: ^2.1.13
   toast: ^0.1.4
+  flutter_colorpicker: ^0.2.5
 
 dev_dependencies:
   flutter_test:

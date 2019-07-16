@@ -4,9 +4,114 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import '../routes.dart';
 
+import '../models/category.dart';
+import '../models/bus.dart';
+
 import '../widgets/bus_category.dart';
 
 class BusTab extends StatelessWidget {
+    final List<Category> _categories = [
+        Category(
+            title: 'Casa',
+            cardColor: Colors.green,
+            icon: Icons.home,
+            buses: [
+                Bus(
+                    numero: '501.3',
+                    descricao: 'Sobradinho II / Eixo-Norte/Sul',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 5.00
+                    )
+                ),
+                Bus(
+                    numero: '501.4',
+                    descricao: 'Sobradinho II-II / Eixo-Norte/Sul',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 5.00
+                    )
+                ),
+                Bus(
+                    numero: '517',
+                    descricao: 'Sobradinho II / W3-Norte/Sul',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 5.00
+                    )
+                )
+            ],
+        ),
+        Category(
+            title: 'Faculdade',
+            cardColor: Colors.purple,
+            icon: Icons.school,
+            buses: [
+                Bus(
+                    numero: '505.3',
+                    descricao: 'Sobradinho I - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+            ],
+        ),
+    ];
+
     @override
     Scaffold build(BuildContext context) =>
         Scaffold(
@@ -15,20 +120,20 @@ class BusTab extends StatelessWidget {
                 animatedIconTheme: IconThemeData(size: 22.0),
                 children: [
                     SpeedDialChild(
-                        onTap: () => Navigator.pushNamed(context, Routes.newBusScreen),
+                        onTap: () => Navigator.pushNamed(context, Routes.NEW_BUS_SCREEN),
                         child: Icon(Icons.directions_bus),
                         label: 'Novo Ônibus'
                     ),
                     SpeedDialChild(
-                        onTap: () => print('Nova Categoria'),
+                        onTap: () => Navigator.pushNamed(context, Routes.NEW_CATEGORY_SCREEN),
                         child: Icon(Icons.category),
                         label: 'Nova Categoria'
                     ),
                 ],
             ),
             body: ListView.builder(
-                itemCount: 4,
-                itemBuilder: (BuildContext ctx, int i) => BusCategory(),
+                itemCount: _categories.length,
+                itemBuilder: (BuildContext ctx, int i) => BusCategory(_categories[i]),
             ),
         );
 }

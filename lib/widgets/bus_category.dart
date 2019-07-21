@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import './bus_item.dart';
 import '../models/category.dart';
 import '../utils/custom_colors.dart';
+import '../widgets/category_card.dart';
 
 class BusCategory extends StatefulWidget {
     final Category _category;
@@ -20,7 +20,6 @@ class _BusCategoryState extends State<BusCategory> {
     Widget build(BuildContext context) {
         final _cardColor = widget._category.cardColor;
 
-        final double height = MediaQuery.of(context).size.height;
         return Card(
             margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             color: _cardColor,
@@ -58,61 +57,7 @@ class _BusCategoryState extends State<BusCategory> {
                             color: CustomColors.switchColor(_cardColor),
                         ),
                     ),
-                    if (_isSelect) Column(
-                        children: <Widget>[
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                    GestureDetector(
-                                        onTap: () => print('EDIT!'),
-                                        child: Icon(
-                                            Icons.edit,
-                                            color: CustomColors.switchColor(_cardColor),
-                                        ),
-                                    ),
-                                    Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 7),
-                                        child: Text('|'),
-                                    ),
-                                    GestureDetector(
-                                        onTap: () => print('new bus'),
-                                        child: Padding(
-                                            padding: const EdgeInsets.only(right: 13),
-                                            child: Icon(
-                                                Icons.add,
-                                                color: CustomColors.switchColor(_cardColor),
-                                            ),
-                                        ),
-                                    ),
-                                ],
-                            ),
-                            Container(
-                                height: _dynamicHeight(height),
-                                child: Card(
-                                    margin: EdgeInsets.all(15),
-                                    color: Colors.white,
-                                    child: ListView.builder(
-                                        itemCount: widget._category.buses.length,
-                                        itemBuilder: (BuildContext ctx, int i) => Dismissible(
-                                            key: ValueKey(widget._category.buses[i].numero),
-                                            direction: DismissDirection.endToStart,
-                                            background: Container(
-                                                alignment: Alignment.centerRight,
-                                                padding: EdgeInsets.only(right: 20),
-                                                color: Theme.of(context).errorColor,
-                                                child: Icon(
-                                                    Icons.delete,
-                                                    color: Colors.white,
-                                                    size: 40,
-                                                ),
-                                            ),
-                                            child: BusItem(widget._category.buses[i]),
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ],
-                    ),
+                    if (_isSelect) CategoryCard(widget._category),
                 ],
             ),
         );
@@ -145,13 +90,4 @@ class _BusCategoryState extends State<BusCategory> {
         return 30;
     }
 
-    double _dynamicHeight(double height) {
-        final buses = widget._category.buses;
-
-        if (buses.length == 1) return height/7.7;
-        if (buses.length == 2) return height/4.5;
-        if (buses.length == 3) return height/3.2;
-        if (buses.length == 4) return height/2.5;
-        return height/2.3;
-    }
 }

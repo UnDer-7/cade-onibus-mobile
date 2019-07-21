@@ -12,6 +12,10 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="cade_onibus_mobile"
         android:icon="@mipmap/ic_launcher">
+        <!--GOOGLE MAPS API-KEY-->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAh3peGhYWplXDgzaI_ixCf9IOjqOcZ1Us"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

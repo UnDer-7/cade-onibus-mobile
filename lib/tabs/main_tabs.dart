@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './bus_tab.dart';
+import './map_tab.dart';
 
 class MainTabs extends StatelessWidget {
     @override
@@ -15,7 +16,7 @@ class MainTabs extends StatelessWidget {
                 body: TabBarView(
                     children: <Widget>[
                         BusTab(),
-                        Container(color: Colors.blue),
+                        MapTab(),
                     ],
                 ),
                 bottomNavigationBar: TabBar(

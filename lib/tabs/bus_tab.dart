@@ -71,7 +71,7 @@ class BusTab extends StatelessWidget {
         ),
         Category(
             title: 'Faculdade',
-            cardColor: Colors.purple,
+            cardColor: Colors.red,
             icon: Icons.school,
             buses: [
                 Bus(
@@ -110,6 +110,88 @@ class BusTab extends StatelessWidget {
                 ),
             ],
         ),
+        Category(
+            title: 'Casa da Namorada',
+            cardColor: Colors.black,
+            icon: Icons.school,
+            buses: [
+                Bus(
+                    numero: '505.3',
+                    descricao: 'Sobradinho I - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+            ],
+        ),
+        Category(
+            title: 'Faculdade do grande marcelão',
+            cardColor: Colors.white,
+            icon: Icons.school,
+            buses: [
+                Bus(
+                    numero: '505.3',
+                    descricao: 'Sobradinho I - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+            ],
+        )
     ];
 
     @override
@@ -131,9 +213,26 @@ class BusTab extends StatelessWidget {
                     ),
                 ],
             ),
-            body: ListView.builder(
-                itemCount: _categories.length,
-                itemBuilder: (BuildContext ctx, int i) => BusCategory(_categories[i]),
+            body: Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [0.1, 0.3, 0.5, 0.7, 0.9],
+                        colors: [
+                            // Colors are easy thanks to Flutter's Colors class.
+                            Theme.of(context).primaryColor.withOpacity(0.8),
+                            Theme.of(context).primaryColor.withOpacity(0.6),
+                            Theme.of(context).primaryColor.withOpacity(0.5),
+                            Theme.of(context).primaryColor.withOpacity(0.4),
+                            Theme.of(context).primaryColor.withOpacity(0.4),
+                        ],
+                    ),
+                ),
+                child: ListView.builder(
+                    itemCount: _categories.length,
+                    itemBuilder: (BuildContext ctx, int i) => BusCategory(_categories[i]),
+                ),
             ),
         );
 }

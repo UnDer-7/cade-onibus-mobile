@@ -28,9 +28,23 @@ class _BusCategoryState extends State<BusCategory> {
                 children: <Widget>[
                     ListTile(
                         onTap: () => setState(() => _isSelect = !_isSelect),
-                        leading: Icon(
-                            widget._category.icon,
-                            color: CustomColors.switchColor(_cardColor),
+                        leading: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                                child: Text(
+                                    _icon,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: _fontSize,
+                                    ),
+                                ),
+                            ),
                         ),
                         title: Text(
                             widget._category.title,
@@ -103,5 +117,27 @@ class _BusCategoryState extends State<BusCategory> {
     IconData get _arrowIcon {
         if (_isSelect) return Icons.keyboard_arrow_up;
         return Icons.keyboard_arrow_down;
+    }
+
+    String get _icon {
+        final title = widget._category.title.split(' ');
+        StringBuffer finalTitle = StringBuffer();
+
+        if (title.length > 3) {
+            final firstLetter = title.first.substring(0, 1);
+            final lastLatter = title.last.substring(0, 1);
+            finalTitle.write(firstLetter + lastLatter);
+        } else {
+            title.forEach((item) {
+                finalTitle.write(item.substring(0, 1));
+            });
+        }
+        return finalTitle.toString();
+    }
+
+    double get _fontSize {
+        if (_icon.length == 2) return 20;
+        if (_icon.length == 3) return 18;
+        return 30;
     }
 }

@@ -58,56 +58,60 @@ class _BusCategoryState extends State<BusCategory> {
                             color: CustomColors.switchColor(_cardColor),
                         ),
                     ),
-
-//                    Container(
-//                        margin: EdgeInsets.symmetric(vertical: 7, horizontal: 5),
-//                        child: GestureDetector(
-//                            onTap: () => setState(() => _isSelect = !_isSelect),
-//                            child: Row(
-//                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                                children: <Widget>[
-//                                    Icon(
-//                                        widget._category.icon,
-//                                        color: CustomColors.switchColor(_cardColor),
-//                                    ),
-//                                    Text(
-//                                        widget._category.title,
-//                                        textAlign: TextAlign.left,
-//                                        style: TextStyle(
-//                                            color: CustomColors.switchColor(_cardColor),
-//                                        ),
-//                                    ),Icon(
-//                                        _arrowIcon,
-//                                        color: CustomColors.switchColor(_cardColor),
-//                                    )
-//                                ],
-//                            ),
-//                        ),
-//                    ),
-                    if (_isSelect) Container(
-                        height: height/2.5,
-                        child: Card(
-                            margin: EdgeInsets.all(15),
-                            color: Colors.white,
-                            child: ListView.builder(
-                                itemCount: widget._category.buses.length,
-                                itemBuilder: (BuildContext ctx, int i) => Dismissible(
-                                    key: ValueKey(widget._category.buses[i].numero),
-                                    direction: DismissDirection.endToStart,
-                                    background: Container(
-                                        alignment: Alignment.centerRight,
-                                        padding: EdgeInsets.only(right: 20),
-                                        color: Theme.of(context).errorColor,
+                    if (_isSelect) Column(
+                        children: <Widget>[
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                    GestureDetector(
+                                        onTap: () => print('EDIT!'),
                                         child: Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
-                                            size: 40,
+                                            Icons.edit,
+                                            color: CustomColors.switchColor(_cardColor),
                                         ),
                                     ),
-                                    child: BusItem(widget._category.buses[i]),
+                                    Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 7),
+                                        child: Text('|'),
+                                    ),
+                                    GestureDetector(
+                                        onTap: () => print('new bus'),
+                                        child: Padding(
+                                            padding: const EdgeInsets.only(right: 13),
+                                            child: Icon(
+                                                Icons.add,
+                                                color: CustomColors.switchColor(_cardColor),
+                                            ),
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            Container(
+                                height: _dynamicHeight(height),
+                                child: Card(
+                                    margin: EdgeInsets.all(15),
+                                    color: Colors.white,
+                                    child: ListView.builder(
+                                        itemCount: widget._category.buses.length,
+                                        itemBuilder: (BuildContext ctx, int i) => Dismissible(
+                                            key: ValueKey(widget._category.buses[i].numero),
+                                            direction: DismissDirection.endToStart,
+                                            background: Container(
+                                                alignment: Alignment.centerRight,
+                                                padding: EdgeInsets.only(right: 20),
+                                                color: Theme.of(context).errorColor,
+                                                child: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.white,
+                                                    size: 40,
+                                                ),
+                                            ),
+                                            child: BusItem(widget._category.buses[i]),
+                                        ),
+                                    ),
                                 ),
                             ),
-                        ),
+                        ],
                     ),
                 ],
             ),
@@ -139,5 +143,15 @@ class _BusCategoryState extends State<BusCategory> {
         if (_icon.length == 2) return 20;
         if (_icon.length == 3) return 18;
         return 30;
+    }
+
+    double _dynamicHeight(double height) {
+        final buses = widget._category.buses;
+
+        if (buses.length == 1) return height/7.7;
+        if (buses.length == 2) return height/4.5;
+        if (buses.length == 3) return height/3.2;
+        if (buses.length == 4) return height/2.5;
+        return height/2.3;
     }
 }

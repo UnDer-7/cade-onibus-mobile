@@ -132,23 +132,6 @@ class BusTab extends StatelessWidget {
                         tarifa: 2.50
                     )
                 ),
-                Bus(
-                    numero: '505.8',
-                    descricao: 'Grande Colorado - Quadra 3-5',
-                    ativa: null,
-                    bacia: null,
-                    operadoras: null,
-                    sentido: null,
-                    sequencial: null,
-                    tipoLinha: null,
-                    tiposOnibus: null,
-                    id: null,
-                    faixaTarifaria: FaixaTarifaria(
-                        descricao: null,
-                        sequencial: null,
-                        tarifa: 2.50
-                    )
-                ),
             ],
         ),
         Category(
@@ -190,8 +173,305 @@ class BusTab extends StatelessWidget {
                         tarifa: 2.50
                     )
                 ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+            ],
+        ),
+        Category(
+            title: 'Ta de Sanagem né?',
+            cardColor: Colors.blue,
+            icon: Icons.school,
+            buses: [
+                Bus(
+                    numero: '505.3',
+                    descricao: 'Sobradinho I - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
+                Bus(
+                    numero: '505.8',
+                    descricao: 'Grande Colorado - Quadra 3-5',
+                    ativa: null,
+                    bacia: null,
+                    operadoras: null,
+                    sentido: null,
+                    sequencial: null,
+                    tipoLinha: null,
+                    tiposOnibus: null,
+                    id: null,
+                    faixaTarifaria: FaixaTarifaria(
+                        descricao: null,
+                        sequencial: null,
+                        tarifa: 2.50
+                    )
+                ),
             ],
         )
+
     ];
 
     @override

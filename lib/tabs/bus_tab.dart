@@ -493,26 +493,9 @@ class BusTab extends StatelessWidget {
                     ),
                 ],
             ),
-            body: Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: [0.1, 0.3, 0.5, 0.7, 0.9],
-                        colors: [
-                            // Colors are easy thanks to Flutter's Colors class.
-                            Theme.of(context).primaryColor.withOpacity(0.8),
-                            Theme.of(context).primaryColor.withOpacity(0.6),
-                            Theme.of(context).primaryColor.withOpacity(0.5),
-                            Theme.of(context).primaryColor.withOpacity(0.4),
-                            Theme.of(context).primaryColor.withOpacity(0.4),
-                        ],
-                    ),
-                ),
-                child: ListView.builder(
-                    itemCount: _categories.length,
-                    itemBuilder: (BuildContext ctx, int i) => BusCategory(_categories[i]),
-                ),
+            body: ListView.builder(
+                itemCount: _categories.length,
+                itemBuilder: (BuildContext ctx, int i) => BusCategory(_categories[i]),
             ),
         );
 }

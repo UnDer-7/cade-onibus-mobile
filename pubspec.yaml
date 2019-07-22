@@ -23,6 +23,7 @@ dependencies:
     cupertino_icons: ^0.1.2
     rxdart: ^0.22.0
     dio: ^2.1.13
+    provider: ^3.0.0+1
 
     # Widgets
     toast: ^0.1.4

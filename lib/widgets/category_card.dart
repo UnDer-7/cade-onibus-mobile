@@ -32,10 +32,7 @@ class CategoryCard extends StatelessWidget {
                     child: Card(
                         margin: EdgeInsets.all(15),
                         color: Colors.white,
-                        child: ListView.builder(
-                            itemCount: _category.buses.length,
-                            itemBuilder: (BuildContext ctx, int i) => _singleBus(context, i),
-                        ),
+                        child: _cardContent(context),
                     ),
                 ),
             ],
@@ -85,9 +82,32 @@ class CategoryCard extends StatelessWidget {
         );
     }
 
+    Widget _cardContent(BuildContext context) {
+        if (_category.buses.isEmpty) {
+            return Container(
+                width: double.infinity,
+                child: Center(
+                  child: Text(
+                      'Categoria Vazia\nAdicione mais ônibus clicando no +',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                      ),
+                  ),
+                ),
+            );
+        }
+
+        return ListView.builder(
+            itemCount: _category.buses.length,
+            itemBuilder: (BuildContext ctx, int i) => _singleBus(context, i),
+        );
+    }
+
     double _dynamicHeight(double height) {
         final buses = _category.buses;
 
+        if (buses.isEmpty) return height/12;
         if (buses.length == 1) return height/7.7;
         if (buses.length == 2) return height/4.5;
         if (buses.length == 3) return height/3.2;

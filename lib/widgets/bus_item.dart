@@ -73,11 +73,10 @@ class _BusItemState extends State<BusItem> {
             Navigator.push(context, MaterialPageRoute(
                 builder: (BuildContext context) =>
                     MapPage(userLocation, location),
-            ));
-        } on DioError catch(e)  {
+            )).whenComplete(() => _isLoading = false);
+        } catch(e)  {
             print('Error -> $e');
-        } finally {
-            setState(() => _isLoading = false);
+            _isLoading = false;
         }
     }
 }

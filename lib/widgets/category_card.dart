@@ -4,8 +4,6 @@ import '../utils/custom_colors.dart';
 import '../widgets/bus_item.dart';
 import '../models/category.dart';
 
-import '../tabs/map_tab.dart';
-
 class CategoryCard extends StatelessWidget {
     final Category _category;
 
@@ -56,9 +54,7 @@ class CategoryCard extends StatelessWidget {
 
     GestureDetector _newBus(Color cardColor, BuildContext context) {
         return GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(
-                builder: (BuildContext context) => MapTab(),
-            )),
+            onTap: () => print('NEW BUS'),
             child: Padding(
                 padding: const EdgeInsets.only(right: 13),
                 child: Icon(

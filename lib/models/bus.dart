@@ -27,7 +27,7 @@ class Bus {
         @required this.bacia,
     });
 
-    Bus.fromJson(dynamic json) :
+    Bus.fromJSON(dynamic json) :
             sequencial = json['sequencial'],
             numero = json['numero'],
             descricao = json['descricao'],

@@ -9,7 +9,7 @@ import '../models/bus.dart';
 
 import '../widgets/bus_category.dart';
 
-class BusTab extends StatelessWidget {
+class HomePage extends StatelessWidget {
     final List<Category> _categories = [
         Category(
             title: 'Casa',
@@ -477,17 +477,21 @@ class BusTab extends StatelessWidget {
     @override
     Scaffold build(BuildContext context) =>
         Scaffold(
+            appBar: AppBar(
+                centerTitle: true,
+                title: Text('Cadê Ônibus'),
+            ),
             floatingActionButton: SpeedDial(
                 animatedIcon: AnimatedIcons.menu_close,
                 animatedIconTheme: IconThemeData(size: 22.0),
                 children: [
                     SpeedDialChild(
-                        onTap: () => Navigator.pushNamed(context, Routes.NEW_BUS_SCREEN),
+                        onTap: () => Navigator.pushNamed(context, Routes.NEW_BUS_PAGE),
                         child: Icon(Icons.directions_bus),
                         label: 'Novo Ônibus'
                     ),
                     SpeedDialChild(
-                        onTap: () => Navigator.pushNamed(context, Routes.NEW_CATEGORY_SCREEN),
+                        onTap: () => Navigator.pushNamed(context, Routes.NEW_CATEGORY_PAGE),
                         child: Icon(Icons.category),
                         label: 'Nova Categoria'
                     ),

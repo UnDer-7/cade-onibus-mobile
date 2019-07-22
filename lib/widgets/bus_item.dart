@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../services/location_service.dart';
+import '../pages/map_page.dart';
+import '../resources/df_trans_resource.dart';
 import '../models/bus.dart';
+import '../models/coordinates.dart';
 
 class BusItem extends StatelessWidget {
     final Bus bus;
@@ -12,7 +16,7 @@ class BusItem extends StatelessWidget {
         Column(
             children: <Widget>[
                 ListTile(
-                    onTap: () => print('tap'),
+                    onTap: () => _handleOnTap(context),
                     onLongPress: () => print('long'),
                     leading: Chip(
                         label: Text(
@@ -42,4 +46,18 @@ class BusItem extends StatelessWidget {
                 ),
             ],
         );
+
+    _handleOnTap(BuildContext context) async {
+        final location = await DFTransResource.findBusLocation(bus.numero);
+        final locationService = await LocationService.userLocation;
+
+        final Coordinates userLocation = Coordinates(
+            latitude: locationService.latitude,
+            longitude: locationService.longitude,
+        );
+
+        Navigator.push(context, MaterialPageRoute(
+            builder: (BuildContext context) => MapPage(userLocation, location),
+        ));
+    }
 }

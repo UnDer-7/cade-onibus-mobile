@@ -12,12 +12,12 @@ import '../utils/custom_colors.dart';
 
 import '../resources/df_trans_resource.dart';
 
-class NewBusScreen extends StatefulWidget {
+class NewBusPage extends StatefulWidget {
     @override
-    _NewBusScreenState createState() => _NewBusScreenState();
+    _NewBusPageState createState() => _NewBusPageState();
 }
 
-class _NewBusScreenState extends State<NewBusScreen> {
+class _NewBusPageState extends State<NewBusPage> {
     final BehaviorSubject<String> _subject = BehaviorSubject<String>();
     final TextEditingController ctl = TextEditingController();
 

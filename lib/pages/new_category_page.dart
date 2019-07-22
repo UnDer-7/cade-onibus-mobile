@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_colorpicker/block_picker.dart';
 
-class NewCategory extends StatefulWidget {
+class NewCategoryPage extends StatefulWidget {
 
     @override
-    _NewCategoryState createState() => _NewCategoryState();
+    _NewCategoryPageState createState() => _NewCategoryPageState();
 }
 
-class _NewCategoryState extends State<NewCategory> {
+class _NewCategoryPageState extends State<NewCategoryPage> {
     static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     Color _currentColor = Colors.purple;
     IconData _curreIcon = Icons.school;

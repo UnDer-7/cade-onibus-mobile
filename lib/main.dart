@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import './routes.dart';
 
-import './tabs/main_tabs.dart';
-
 import './utils/custom_colors.dart';
+
+import './pages/home_page.dart';
 
 void main() => runApp(CadeVan());
 
@@ -17,7 +17,7 @@ class CadeVan extends StatelessWidget {
                 primarySwatch: CustomColors.primaryColor,
                 accentColor: CustomColors.primaryColor,
             ),
-            home: MainTabs(),
+            home: HomePage(),
             routes: Routes.availableRoutes,
         );
     }

@@ -169,7 +169,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5)),
             onPressed: () => Navigator.push(context, MaterialPageRoute(
-                builder: (BuildContext ctx) => NewBusPage(true),
+                builder: (BuildContext ctx) => NewBusPage(isAdding: true),
             )),
             child: Text(
                 'Selecione Seus Ônibus',

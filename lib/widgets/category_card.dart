@@ -11,6 +11,7 @@ import '../utils/custom_colors.dart';
 import '../widgets/bus_item_searching.dart';
 import '../models/category.dart';
 import '../pages/new_category_page.dart';
+import '../pages/new_bus_page.dart';
 
 class CategoryCard extends StatelessWidget {
     final Category _category;
@@ -33,7 +34,7 @@ class CategoryCard extends StatelessWidget {
                             padding: EdgeInsets.symmetric(horizontal: 7),
                             child: Text('|'),
                         ),
-                        if (_category.title != 'Todos') _newBus(_cardColor, context),
+                        if (_category.title != 'Todos') _newBus(_cardColor, context, _busSelected),
                         if (_category.title == 'Todos') _todosInfoDialog(_cardColor, context),
                     ],
                 ),
@@ -53,11 +54,11 @@ class CategoryCard extends StatelessWidget {
         GestureDetector(
             onTap: () => _showTodosInfoDialog(context),
             child: Padding(
-              padding: const EdgeInsets.only(right: 13),
-              child: Icon(
-                  Icons.info,
-                  color: CustomColors.switchColor(cardColor)
-              ),
+                padding: const EdgeInsets.only(right: 13),
+                child: Icon(
+                    Icons.info,
+                    color: CustomColors.switchColor(cardColor)
+                ),
             ),
         );
 
@@ -98,9 +99,20 @@ class CategoryCard extends StatelessWidget {
         ));
     }
 
-    GestureDetector _newBus(Color cardColor, BuildContext context) {
+    GestureDetector _newBus(Color cardColor, BuildContext context, BusSelected busSelected) {
         return GestureDetector(
-            onTap: () => print('NEW BUS'),
+            onTap: () {
+                busSelected.setAllBusesSelected = _category.buses;
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext ctx) =>
+                            NewBusPage(
+                                isAdding: true,
+                                category: _category,
+                            ),
+                    ));
+            },
             child: Padding(
                 padding: const EdgeInsets.only(right: 13),
                 child: Icon(

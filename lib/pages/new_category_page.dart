@@ -25,61 +25,102 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
     Widget build(BuildContext context) {
         final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
         final BusSelected busSelected = Provider.of<BusSelected>(context, listen: false);
-        final List<Bus> busesSelected = busSelected.getAllBusSelected;
         final double _height = MediaQuery.of(context).size.height;
 
-        return Scaffold(
-            bottomNavigationBar: Container(
-                margin: EdgeInsets.symmetric(horizontal: 10),
-                child: _buildSaveButton(context, userProvider, busSelected),
-            ),
-            appBar: AppBar(
-                centerTitle: true,
-                title: Text('Nova Categoria'),
-            ),
-            body: Container(
-                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Form(
-                    key: _formKey,
-                    child: ListView(
-                        children: <Widget>[
-                            _buildNameField,
-                            SizedBox(height: 10),
-                            _buildColorPickerField,
-                            Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Divider(
-                                    color: Theme.of(context).primaryColor,
-                                    indent: 5,
-                                    endIndent: 5,
-                                ),
-                            ),
-                            SizedBox(height: 10),
-                            _buildBusSelectionButton(context),
-                            Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Text(
-                                    'Ônibus selecionados',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 20
+        return WillPopScope(
+            onWillPop: () => _buildLeavePageConfirmationDialog(busSelected, context),
+            child: Scaffold(
+                bottomNavigationBar: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    child: _buildSaveButton(context, userProvider, busSelected),
+                ),
+                appBar: AppBar(
+                    centerTitle: true,
+                    title: Text('Nova Categoria'),
+                ),
+                body: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Form(
+                        key: _formKey,
+                        child: ListView(
+                            children: <Widget>[
+                                _buildNameField,
+                                SizedBox(height: 10),
+                                _buildColorPickerField,
+                                Padding(
+                                    padding: const EdgeInsets.only(top: 10),
+                                    child: Divider(
+                                        color: Theme.of(context).primaryColor,
+                                        indent: 5,
+                                        endIndent: 5,
                                     ),
                                 ),
-                            ),
-                            Container(
-                                margin: EdgeInsets.only(top: 5),
-                                decoration: BoxDecoration(
-                                    border: Border.all(width: 3, color: Theme.of(context).primaryColor),
-                                    borderRadius: BorderRadius.circular(10)
+                                SizedBox(height: 10),
+                                _buildBusSelectionButton(context),
+                                Padding(
+                                    padding: const EdgeInsets.only(top: 10),
+                                    child: Text(
+                                        'Ônibus selecionados',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 20
+                                        ),
+                                    ),
                                 ),
-                                height: _height / 2.5,
-                                child: _buildBusSelectedBox(busSelected),
-                            ),
-                        ],
+                                Container(
+                                    margin: EdgeInsets.only(top: 5),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(width: 3, color: Theme.of(context).primaryColor),
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),
+                                    height: _height / 2.5,
+                                    child: _buildBusSelectedBox(busSelected),
+                                ),
+                            ],
+                        ),
                     ),
                 ),
             ),
         );
+    }
+
+    Future<bool> _buildLeavePageConfirmationDialog(BusSelected busSelected, BuildContext context) async {
+        final answer = await showDialog(
+            context: context,
+            builder: (BuildContext ctx) =>
+                AlertDialog(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    title: Text('Descartar Categoria'),
+                    content: Text(
+                        'Se você descartar a categoria todo processo será perdido',
+                        textAlign: TextAlign.start,
+                    ),
+                    actions: <Widget>[
+                        FlatButton(
+                            onPressed: () {
+                                busSelected.cleanBusSelected();
+                                Navigator.pop(context, true);
+                            },
+                            child: Text(
+                                'Descartar Categoria',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                ),
+                            ),
+                        ),
+                        FlatButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: Text(
+                                'Continuar Criando',
+                                style: TextStyle(
+                                    color: Colors.green,
+                                ),
+                            ),
+                        )
+                    ],
+                ),
+        );
+        return Future.value(answer);
     }
 
     RaisedButton _buildSaveButton(BuildContext context, UserProviders userProvider, BusSelected busSelected) =>

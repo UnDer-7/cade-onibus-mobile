@@ -323,7 +323,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
         _formKey.currentState.save();
 
         Category newCategory = Category(
-            id: _isEditing ? widget._categoryToEdit.id : null,
+            uuid: _isEditing ? widget._categoryToEdit.uuid : null,
             title: _categoryName,
             cardColor: _currentColor.value,
             buses: buses,

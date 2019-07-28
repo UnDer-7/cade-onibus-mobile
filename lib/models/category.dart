@@ -3,27 +3,27 @@ import 'package:flutter/material.dart';
 import './bus.dart';
 
 class Category {
-    String id;
+    String uuid;
     String title;
     int cardColor;
     List<Bus> buses;
 
     Category({
-        this.id,
+        this.uuid,
         @required this.title,
         @required this.cardColor,
         @required this.buses
     });
 
     Category.fromJSON(dynamic json) :
-        id = json['_id'],
+        uuid = json['uuid'],
         title = json['title'],
         cardColor = json['cardColor'],
         buses = _setBusesFromJSON(json['buses']);
 
     static Map<String, dynamic> toJSON(Category category) =>
         {
-            '_id': category.id,
+            'uuid': category.uuid,
             'title': category.title,
             'cardColor': category.cardColor,
             'buses': _setBusesToJSON(category.buses),
@@ -33,7 +33,7 @@ class Category {
     String toString() {
         StringBuffer buffer = StringBuffer();
         buffer.writeln('Category: {');
-        buffer.writeln('ID: $id');
+        buffer.writeln('UUID: $uuid');
         buffer.writeln('Title: $title');
         buffer.writeln('CardColor: $cardColor');
         buffer.write('Buses: ');

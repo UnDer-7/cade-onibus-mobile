@@ -1,3 +1,4 @@
+import 'package:cade_onibus_mobile/models/bus.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
@@ -19,6 +20,12 @@ class UserProviders with ChangeNotifier {
         final jsonBody = Category.toJSON(category);
 
         _user.categories = await UserResource.updateCategory(json.encode(jsonBody));
+        notifyListeners();
+    }
+
+    Future<void> deleteBus(Bus bus, String id) async {
+        final jsonBody = Bus.toJSON(bus);
+        _user.categories = await UserResource.removeBus(json.encode(jsonBody), id);
         notifyListeners();
     }
 

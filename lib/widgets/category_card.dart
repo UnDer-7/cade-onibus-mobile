@@ -1,7 +1,12 @@
+import 'package:cade_onibus_mobile/models/bus.dart';
+import 'package:cade_onibus_mobile/utils/toast_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dio/dio.dart';
 
 import '../providers/bus_selected.dart';
+import '../providers/user_provider.dart';
+
 import '../utils/custom_colors.dart';
 import '../widgets/bus_item_searching.dart';
 import '../models/category.dart';
@@ -16,6 +21,7 @@ class CategoryCard extends StatelessWidget {
         final double height = MediaQuery.of(context).size.height;
         final Color _cardColor = Color(_category.cardColor);
         final BusSelected _busSelected = Provider.of<BusSelected>(context, listen: false);
+        final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
 
         return Column(
             children: <Widget>[
@@ -36,7 +42,7 @@ class CategoryCard extends StatelessWidget {
                     child: Card(
                         margin: EdgeInsets.all(15),
                         color: Colors.white,
-                        child: _cardContent(context),
+                        child: _cardContent(context, userProvider),
                     ),
                 ),
             ],
@@ -65,8 +71,6 @@ class CategoryCard extends StatelessWidget {
         );
     }
 
-    /// todo IMPLEMENTAR
-    /// todo QUANDO DELETER DE ALGUMA CATEGORIA DELETAR DE TODOS E BUS
     dynamic _onEditingClick(BuildContext context, final BusSelected busSelected) {
         if (_category.title == 'Todos') {
             return showDialog(
@@ -107,13 +111,15 @@ class CategoryCard extends StatelessWidget {
         );
     }
 
-    Widget _singleBus(BuildContext context, int i) {
+    Widget _singleBus(BuildContext context, int i, UserProviders userProvider) {
         if (_category.title == 'Todos') {
             return BusItemSearching(_category.buses[i]);
         }
+
         return Dismissible(
             key: ValueKey(_category.buses[i].numero),
             direction: DismissDirection.endToStart,
+            onDismissed: (_) => _onDeletingBus(_category.buses[i], _category.uuid, userProvider, context),
             background: Container(
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.only(right: 20),
@@ -130,7 +136,7 @@ class CategoryCard extends StatelessWidget {
         );
     }
 
-    Widget _cardContent(BuildContext context) {
+    Widget _cardContent(BuildContext context, UserProviders userProvider) {
         if (_category.buses.isEmpty) {
             return Container(
                 width: double.infinity,
@@ -148,8 +154,17 @@ class CategoryCard extends StatelessWidget {
 
         return ListView.builder(
             itemCount: _category.buses.length,
-            itemBuilder: (BuildContext ctx, int i) => _singleBus(context, i),
+            itemBuilder: (BuildContext ctx, int i) => _singleBus(context, i, userProvider),
         );
+    }
+
+    _onDeletingBus(Bus bus, String id, UserProviders userProvider, BuildContext ctx) async {
+        try {
+            await userProvider.deleteBus(bus, id);
+        } on DioError catch(e) {
+            print('ERRO AO DELETAR ONIBUS\n$e');
+            ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
+        }
     }
 
     _showTodosInfoDialog(BuildContext context) =>

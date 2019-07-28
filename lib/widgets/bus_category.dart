@@ -18,7 +18,7 @@ class _BusCategoryState extends State<BusCategory> {
 
     @override
     Widget build(BuildContext context) {
-        final _cardColor = widget._category.cardColor;
+        final _cardColor = Color(widget._category.cardColor);
 
         return Card(
             margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -27,24 +27,7 @@ class _BusCategoryState extends State<BusCategory> {
                 children: <Widget>[
                     ListTile(
                         onTap: () => setState(() => _isSelect = !_isSelect),
-                        leading: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Center(
-                                child: Text(
-                                    _icon,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: _fontSize,
-                                    ),
-                                ),
-                            ),
-                        ),
+                        leading: _getLeading,
                         title: Text(
                             widget._category.title,
                             textAlign: TextAlign.left,
@@ -62,6 +45,26 @@ class _BusCategoryState extends State<BusCategory> {
             ),
         );
     }
+
+    Container get _getLeading =>
+        Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+            ),
+            child: Center(
+                child: Text(
+                    _icon,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: _fontSize,
+                    ),
+                ),
+            ),
+        );
 
     IconData get _arrowIcon {
         if (_isSelect) return Icons.keyboard_arrow_up;

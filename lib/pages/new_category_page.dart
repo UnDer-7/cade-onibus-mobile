@@ -1,10 +1,15 @@
+import 'package:cade_onibus_mobile/models/bus.dart';
+import 'package:cade_onibus_mobile/utils/toast_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dio/dio.dart';
 
 import 'package:flutter_colorpicker/block_picker.dart';
 
-import '../providers/categories_provider.dart';
+import '../providers/user_provider.dart';
+import '../providers/bus_selected.dart';
 import '../models/category.dart';
+import '../pages/new_bus_page.dart';
 
 class NewCategoryPage extends StatefulWidget {
     @override
@@ -17,26 +22,16 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
     String _categoryName;
 
     @override
-    Scaffold build(BuildContext context) {
-        CategoriesProviders provider = Provider.of<CategoriesProviders>(context, listen: false);
+    Widget build(BuildContext context) {
+        final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
+        final BusSelected busSelected = Provider.of<BusSelected>(context, listen: false);
+        final List<Bus> busesSelected = busSelected.getAllBusSelected;
+        final double _height = MediaQuery.of(context).size.height;
 
         return Scaffold(
             bottomNavigationBar: Container(
                 margin: EdgeInsets.symmetric(horizontal: 10),
-                child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5)),
-                    color: Theme
-                        .of(context)
-                        .primaryColor,
-                    onPressed: () => _submit(provider, context),
-                    child: Text(
-                        'Salvar',
-                        style: TextStyle(
-                            color: Colors.white,
-                        ),
-                    ),
-                ),
+                child: _buildSaveButton(context, userProvider, busSelected),
             ),
             appBar: AppBar(
                 centerTitle: true,
@@ -49,23 +44,37 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                     child: ListView(
                         children: <Widget>[
                             _buildNameField,
-                            SizedBox(height: 20),
-                            RaisedButton(
-                                color: Theme
-                                    .of(context)
-                                    .primaryColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5)),
-                                onPressed: () {},
+                            SizedBox(height: 10),
+                            _buildColorPickerField,
+                            Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Divider(
+                                    color: Theme.of(context).primaryColor,
+                                    indent: 5,
+                                    endIndent: 5,
+                                ),
+                            ),
+                            SizedBox(height: 10),
+                            _buildBusSelectionButton(context),
+                            Padding(
+                                padding: const EdgeInsets.only(top: 10),
                                 child: Text(
-                                    'Selecione Seus Ônibus',
+                                    'Ônibus selecionados',
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        fontSize: 20
                                     ),
                                 ),
                             ),
-                            SizedBox(height: 30),
-                            _buildColorPickerField,
+                            Container(
+                                margin: EdgeInsets.only(top: 5),
+                                decoration: BoxDecoration(
+                                    border: Border.all(width: 3, color: Theme.of(context).primaryColor),
+                                    borderRadius: BorderRadius.circular(10)
+                                ),
+                                height: _height / 2.5,
+                                child: _buildBusSelectedBox(busSelected),
+                            ),
                         ],
                     ),
                 ),
@@ -73,8 +82,100 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
         );
     }
 
+    RaisedButton _buildSaveButton(BuildContext context, UserProviders userProvider, BusSelected busSelected) =>
+        RaisedButton(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5)),
+            color: Theme
+                .of(context)
+                .primaryColor,
+            onPressed: () => _submit(userProvider, busSelected, context),
+            child: Text(
+                'Salvar',
+                style: TextStyle(
+                    color: Colors.white,
+                ),
+            ),
+        );
+
+    RaisedButton _buildBusSelectionButton(BuildContext context) =>
+        RaisedButton(
+            color: Theme
+                .of(context)
+                .primaryColor,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5)),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(
+                builder: (BuildContext ctx) => NewBusPage(true),
+            )),
+            child: Text(
+                'Selecione Seus Ônibus',
+                style: TextStyle(
+                    color: Colors.white,
+                ),
+            ),
+        );
+
+    ListView _buildBusSelectedBox(BusSelected busSelected) {
+        final List<Bus> busesSelected = busSelected.getAllBusSelected;
+
+        return ListView.builder(
+            itemCount: busesSelected.length,
+            itemBuilder: (BuildContext ctx, int i) =>
+                Dismissible(
+                    direction: DismissDirection.endToStart,
+                    key: Key(busesSelected[i].numero),
+                    onDismissed:
+                        (_) => busSelected.removeBusSelected = busesSelected[i],
+                    background: _buildSideRemoverContainer(context),
+                    child: ListTile(
+                        leading: _buildLeading(busesSelected[i].numero, context),
+                        title: Text(
+                            busesSelected[i].descricao,
+                            textAlign: TextAlign.center,
+                        ),
+                        trailing: Text(
+                            'R\$ ${busesSelected[i].tarifa.toStringAsFixed(2)}',
+                            style: TextStyle(
+                                color: Colors.red
+                            ),
+                        ),
+                    ),
+                ),
+        );
+    }
+
+    Container _buildSideRemoverContainer(BuildContext context) =>
+        Container(
+            alignment: Alignment.centerRight,
+            padding: EdgeInsets.only(right: 20),
+            color: Theme
+                .of(context)
+                .errorColor,
+            child: Icon(
+                Icons.delete,
+                color: Colors.white,
+                size: 40,
+            ),
+        );
+
+    Chip _buildLeading(String numero, BuildContext context) =>
+        Chip(
+            label: Text(
+                numero,
+                style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.white,
+                ),
+            ),
+            backgroundColor: Theme
+                .of(context)
+                .primaryColor,
+        );
+
     TextFormField get _buildNameField =>
         TextFormField(
+            textCapitalization: TextCapitalization.words,
             onSaved: (String input) => _categoryName = input,
             decoration: InputDecoration(
                 labelText: 'Nome da Categoria',
@@ -115,8 +216,10 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                 context: ctx,
                 builder: (BuildContext ctx) =>
                     AlertDialog(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         elevation: 5,
+                        titlePadding: const EdgeInsets.all(5),
+                        contentPadding: const EdgeInsets.all(7),
                         title: Column(
                             children: <Widget>[
                                 Text('Escolha uma das Cores'),
@@ -127,8 +230,17 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                                 ),
                             ],
                         ),
-                        titlePadding: const EdgeInsets.all(5),
-                        contentPadding: const EdgeInsets.all(5),
+                        actions: <Widget>[
+                            FlatButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: Text(
+                                    'Salvar',
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                    ),
+                                ),
+                            )
+                        ],
                         content: SingleChildScrollView(
                             child: BlockPicker(
                                 pickerColor: _currentColor,
@@ -141,17 +253,59 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
 
     void _changeCurrentColor(Color color) => setState(() => _currentColor = color);
 
-    void _submit(CategoriesProviders provider, BuildContext context) {
-        if (!_formKey.currentState.validate()) return;
+    Future<void> showConfirmationDialog(BuildContext ctx) =>
+        showDialog(
+            context: ctx,
+            builder: (BuildContext context) => AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                title: const Text('Nenhum Ônibus Seleciondo'),
+                content: const Text('Tem certeza que quer prosseguir'),
+                actions: <Widget>[
+                    FlatButton(
+                        child: const Text(
+                            'Não',
+                            style: TextStyle(
+                                color: Colors.green,
+                            ),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                    ),
+                    FlatButton(
+                        child: Text(
+                            'Sim',
+                            style: TextStyle(
+                                color: Colors.red
+                            ),
+                        ),
+                        onPressed: () => print('Salcatr'),
+                    ),
+                ],
+            ),
+        );
+
+    Future<void> _submit(UserProviders provider, BusSelected busSelected, BuildContext ctx) async {
+        final List<Bus> buses = busSelected.getAllBusSelected;
+        if (!_formKey.currentState.validate()) return Future(() {});
         _formKey.currentState.save();
+
+        if(buses.isEmpty) return showConfirmationDialog(ctx);
 
         Category newCategory = Category(
             title: _categoryName,
-            cardColor: _currentColor,
-            buses: [],
+            cardColor: _currentColor.value,
+            buses: buses,
         );
-        provider.addCategory = newCategory;
 
-        Navigator.pop(context);
+        try {
+            await provider.addCategory(newCategory);
+            busSelected.cleanBusSelected();
+            Navigator.pop(context);
+        } on DioError catch(e) {
+            if (e.response.statusCode == 400 && e.response.data == 'resource-already-exists') {
+                ToastUtil.showToast('Jâ existe uma categoria com esse titulo', ctx, color: ToastUtil.warning);
+            }
+            ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
+        }
+
     }
 }

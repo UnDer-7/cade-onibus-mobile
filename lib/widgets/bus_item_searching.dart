@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 
 import '../services/location_service.dart';
 import '../pages/map_page.dart';
@@ -7,26 +6,26 @@ import '../resources/df_trans_resource.dart';
 import '../models/bus.dart';
 import '../models/coordinates.dart';
 
-class BusItem extends StatefulWidget {
+class BusItemSearching extends StatefulWidget {
     final Bus bus;
 
-    BusItem(this.bus);
+    BusItemSearching(this.bus);
 
     @override
     _BusItemState createState() => _BusItemState();
 }
 
-class _BusItemState extends State<BusItem> {
+class _BusItemState extends State<BusItemSearching> {
     bool _isLoading = false;
 
     @override
-    Widget build(BuildContext context) =>
-        Column(
+    Widget build(BuildContext context) {
+
+        return Column(
             children: <Widget>[
                 if (_isLoading) Center(
                     child: CircularProgressIndicator(),
-                ),
-                if (!_isLoading) ListTile(
+                ), if (!_isLoading)  ListTile(
                     onTap: () => _handleOnTap(context),
                     onLongPress: () => print('long'),
                     leading: Chip(
@@ -37,14 +36,17 @@ class _BusItemState extends State<BusItem> {
                                 color: Colors.white,
                             ),
                         ),
-                        backgroundColor: Theme.of(context).primaryColor,
+                        backgroundColor: Theme
+                            .of(context)
+                            .primaryColor,
                     ),
                     title: Text(
                         widget.bus.descricao,
                         textAlign: TextAlign.center,
                     ),
                     trailing: Text(
-                        'R\$ ${widget.bus.faixaTarifaria.tarifa.toStringAsFixed(2)}',
+                        'R\$ ${widget.bus.tarifa.toStringAsFixed(
+                            2)}',
                         style: TextStyle(
                             color: Colors.red
                         ),
@@ -57,6 +59,7 @@ class _BusItemState extends State<BusItem> {
                 ),
             ],
         );
+    }
 
     _handleOnTap(BuildContext context) async {
         setState(() => _isLoading = true);

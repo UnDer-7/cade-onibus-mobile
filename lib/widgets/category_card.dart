@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../utils/custom_colors.dart';
-import '../widgets/bus_item.dart';
+import '../widgets/bus_item_searching.dart';
 import '../models/category.dart';
 
 class CategoryCard extends StatelessWidget {
@@ -12,7 +12,7 @@ class CategoryCard extends StatelessWidget {
     @override
     Column build(BuildContext context) {
         final double height = MediaQuery.of(context).size.height;
-        final Color _cardColor = _category.cardColor;
+        final Color _cardColor = Color(_category.cardColor);
 
         return Column(
             children: <Widget>[
@@ -41,7 +41,7 @@ class CategoryCard extends StatelessWidget {
 
     GestureDetector _editCard(Color cardColor) {
         return GestureDetector(
-            onTap: () => print('EDIT!'),
+            onTap: () => print('EDIT'),
             child: Icon(
                 Icons.edit,
                 color: CustomColors.switchColor(cardColor),
@@ -78,7 +78,7 @@ class CategoryCard extends StatelessWidget {
                     size: 40,
                 ),
             ),
-            child: BusItem(_category.buses[i]),
+            child: BusItemSearching(_category.buses[i]),
         );
     }
 

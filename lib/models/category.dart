@@ -4,7 +4,7 @@ import './bus.dart';
 
 class Category {
     String title;
-    Color cardColor;
+    int cardColor;
     List<Bus> buses;
 
     Category({
@@ -12,6 +12,18 @@ class Category {
         @required this.cardColor,
         @required this.buses
     });
+
+    Category.fromJSON(dynamic json) :
+        title = json['title'],
+        cardColor = json['cardColor'],
+        buses = _setBusesFromJSON(json['buses']);
+
+    static Map<String, dynamic> toJSON(Category category) =>
+        {
+            'title': category.title,
+            'cardColor': category.cardColor,
+            'buses': _setBusesToJSON(category.buses),
+        };
 
     @override
     String toString() {
@@ -24,4 +36,10 @@ class Category {
         buffer.write('}');
         return buffer.toString();
     }
+
+    static List<Bus> _setBusesFromJSON(dynamic json) =>
+        List<Bus>.from(json.map((item) => Bus.fromJSON(item)).toList());
+
+    static List<Map<String, dynamic>> _setBusesToJSON(List<Bus> buses) =>
+        buses.map((item) => Bus.toJSON(item)).toList();
 }

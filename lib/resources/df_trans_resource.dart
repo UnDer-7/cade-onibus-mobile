@@ -8,7 +8,7 @@ abstract class DFTransResource {
     static final String _resourceUrl = 'https://www.sistemas.dftrans.df.gov.br';
 
     static Future<List<Bus>> findBus(String param) {
-        return _dio.get<List<dynamic>>('$_resourceUrl/linha/find/$param')
+        return _dio.get<List<dynamic>>('$_resourceUrl/linha/find/$param/10/short')
             .then((item) => item.data.map((bus) => Bus.fromJSON(bus)).toList());
     }
 

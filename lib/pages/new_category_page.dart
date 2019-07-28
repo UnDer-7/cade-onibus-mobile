@@ -294,42 +294,10 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
 
     void _changeCurrentColor(Color color) => setState(() => _currentColor = color);
 
-    Future<void> showConfirmationDialog(BuildContext ctx) =>
-        showDialog(
-            context: ctx,
-            builder: (BuildContext context) => AlertDialog(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                title: const Text('Nenhum Ônibus Seleciondo'),
-                content: const Text('Tem certeza que quer prosseguir'),
-                actions: <Widget>[
-                    FlatButton(
-                        child: const Text(
-                            'Não',
-                            style: TextStyle(
-                                color: Colors.green,
-                            ),
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                    ),
-                    FlatButton(
-                        child: Text(
-                            'Sim',
-                            style: TextStyle(
-                                color: Colors.red
-                            ),
-                        ),
-                        onPressed: () => print('Salcatr'),
-                    ),
-                ],
-            ),
-        );
-
     Future<void> _submit(UserProviders provider, BusSelected busSelected, BuildContext ctx) async {
         final List<Bus> buses = busSelected.getAllBusSelected;
         if (!_formKey.currentState.validate()) return Future(() {});
         _formKey.currentState.save();
-
-        if(buses.isEmpty) return showConfirmationDialog(ctx);
 
         Category newCategory = Category(
             title: _categoryName,
@@ -342,10 +310,12 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
             busSelected.cleanBusSelected();
             Navigator.pop(context);
         } on DioError catch(e) {
+            print('Error -> \n $e');
             if (e.response.statusCode == 400 && e.response.data == 'resource-already-exists') {
                 ToastUtil.showToast('Jâ existe uma categoria com esse titulo', ctx, color: ToastUtil.warning);
+            }else {
+                ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
             }
-            ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
         }
 
     }

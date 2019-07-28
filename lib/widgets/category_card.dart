@@ -22,12 +22,13 @@ class CategoryCard extends StatelessWidget {
                 Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                        _editCard(_cardColor, context, _busSelected),
-                        Padding(
+                        if (_category.title != 'Todos') _editCard(_cardColor, context, _busSelected),
+                        if (_category.title != 'Todos') Padding(
                             padding: EdgeInsets.symmetric(horizontal: 7),
                             child: Text('|'),
                         ),
-                        _newBus(_cardColor, context),
+                        if (_category.title != 'Todos') _newBus(_cardColor, context),
+                        if (_category.title == 'Todos') _todosInfoDialog(_cardColor, context),
                     ],
                 ),
                 Container(
@@ -41,6 +42,18 @@ class CategoryCard extends StatelessWidget {
             ],
         );
     }
+
+    GestureDetector _todosInfoDialog(Color cardColor, BuildContext context) =>
+        GestureDetector(
+            onTap: () => _showTodosInfoDialog(context),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 13),
+              child: Icon(
+                  Icons.info,
+                  color: CustomColors.switchColor(cardColor)
+              ),
+            ),
+        );
 
     GestureDetector _editCard(Color cardColor, BuildContext context, final BusSelected busSelected) {
         return GestureDetector(
@@ -94,7 +107,10 @@ class CategoryCard extends StatelessWidget {
         );
     }
 
-    Dismissible _singleBus(BuildContext context, int i) {
+    Widget _singleBus(BuildContext context, int i) {
+        if (_category.title == 'Todos') {
+            return BusItemSearching(_category.buses[i]);
+        }
         return Dismissible(
             key: ValueKey(_category.buses[i].numero),
             direction: DismissDirection.endToStart,
@@ -135,6 +151,36 @@ class CategoryCard extends StatelessWidget {
             itemBuilder: (BuildContext ctx, int i) => _singleBus(context, i),
         );
     }
+
+    _showTodosInfoDialog(BuildContext context) =>
+        showDialog(
+            context: context,
+            builder: (BuildContext ctx) =>
+                AlertDialog(
+                    title: Text('Categoria Todos'),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    elevation: 5,
+                    content: Text(
+                        'A categoria Todos contem os ônibus de todas as categorias.\n\n'
+                            'Você não pode editar ela (adicionar ou remover ônibus), os ônibus são colocados automaticamene.\n\n'
+                            'A categoria Todos tem todos os ônibus cadastrados no site do Cadê Ônibus (cadeonibus.web.app)\n\n'
+                            'Se você remover um ônibus de alguma categora e esse ônibus não estiver cadastro em mais nem uma, ele sera excluido da categoria Todos.\n\n'
+                            'A categoria Todos não possui ônibus repetidos.',
+                        textAlign: TextAlign.start,
+                    ),
+                    actions: <Widget>[
+                        FlatButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text(
+                                'Fechar',
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                ),
+                            ),
+                        )
+                    ],
+                ),
+        );
 
     double _dynamicHeight(double height) {
         final buses = _category.buses;

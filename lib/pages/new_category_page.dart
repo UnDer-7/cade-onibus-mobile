@@ -12,15 +12,30 @@ import '../models/category.dart';
 import '../pages/new_bus_page.dart';
 
 class NewCategoryPage extends StatefulWidget {
+    final Category _categoryToEdit;
+
+    NewCategoryPage([this._categoryToEdit]);
+
     @override
     _NewCategoryPageState createState() => _NewCategoryPageState();
 }
 
 class _NewCategoryPageState extends State<NewCategoryPage> {
     static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final TextEditingController _textEditingController = TextEditingController();
+
     Color _currentColor = Colors.purple;
     String _categoryName;
 
+    @override
+    void initState() {
+        if (widget._categoryToEdit != null) {
+            final Category category = widget._categoryToEdit;
+            _textEditingController.text = category.title;
+            _currentColor = Color(category.cardColor);
+        }
+        super.initState();
+    }
     @override
     Widget build(BuildContext context) {
         final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
@@ -36,7 +51,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                 ),
                 appBar: AppBar(
                     centerTitle: true,
-                    title: Text('Nova Categoria'),
+                    title: Text(_appBarTitle),
                 ),
                 body: Container(
                     margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -82,6 +97,13 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                 ),
             ),
         );
+    }
+
+    bool get _isEditing => widget._categoryToEdit != null;
+
+    String get _appBarTitle {
+        if (_isEditing) return 'Editando Categoria';
+        return 'Nova Categoria';
     }
 
     Future<bool> _buildLeavePageConfirmationDialog(BusSelected busSelected, BuildContext context) async {
@@ -216,6 +238,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
 
     TextFormField get _buildNameField =>
         TextFormField(
+            controller: _textEditingController,
             textCapitalization: TextCapitalization.words,
             onSaved: (String input) => _categoryName = input,
             decoration: InputDecoration(
@@ -300,13 +323,18 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
         _formKey.currentState.save();
 
         Category newCategory = Category(
+            id: _isEditing ? widget._categoryToEdit.id : null,
             title: _categoryName,
             cardColor: _currentColor.value,
             buses: buses,
         );
 
         try {
-            await provider.addCategory(newCategory);
+            if (_isEditing) {
+                await provider.updateCategory(newCategory);
+            } else {
+                await provider.addCategory(newCategory);
+            }
             busSelected.cleanBusSelected();
             Navigator.pop(context);
         } on DioError catch(e) {
@@ -317,6 +345,5 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                 ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
             }
         }
-
     }
 }

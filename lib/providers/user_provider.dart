@@ -15,6 +15,13 @@ class UserProviders with ChangeNotifier {
         notifyListeners();
     }
 
+    Future<void> updateCategory(Category category) async {
+        final jsonBody = Category.toJSON(category);
+
+        _user.categories = await UserResource.updateCategory(json.encode(jsonBody));
+        notifyListeners();
+    }
+
     List<Category> get getCategory => List.unmodifiable(_user.categories);
 
     static Future<User> findUser(String email) async {

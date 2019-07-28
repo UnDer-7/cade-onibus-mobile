@@ -19,4 +19,11 @@ abstract class UserResource {
             .then((categories) => categories.map((cat) => Category.fromJSON(cat)).toList())
             .then((untyped) => List<Category>.from(untyped));
     }
+
+    static Future<List<Category>> updateCategory(String category) {
+        return _dio.put(_resourceUrl + '/category', data: category)
+            .then((res) => res.data)
+            .then((categories) => categories.map((cat) => Category.fromJSON(cat)).toList())
+            .then((untyped) => List<Category>.from(untyped));
+    }
 }

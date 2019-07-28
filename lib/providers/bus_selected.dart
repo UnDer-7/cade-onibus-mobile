@@ -12,6 +12,11 @@ class BusSelected with ChangeNotifier {
         notifyListeners();
     }
 
+    set setAllBusesSelected(List<Bus> buses) {
+        _busSelected.clear();
+        buses.forEach((bus) => _busSelected.add(bus));
+    }
+
     set removeBusSelected(Bus bus) {
         _busSelected.removeWhere((item) => item.numero == bus.numero);
         notifyListeners();

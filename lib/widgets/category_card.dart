@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/bus_selected.dart';
 import '../utils/custom_colors.dart';
 import '../widgets/bus_item_searching.dart';
 import '../models/category.dart';
+import '../pages/new_category_page.dart';
 
 class CategoryCard extends StatelessWidget {
     final Category _category;
-
     CategoryCard(this._category);
 
     @override
     Column build(BuildContext context) {
         final double height = MediaQuery.of(context).size.height;
         final Color _cardColor = Color(_category.cardColor);
+        final BusSelected _busSelected = Provider.of<BusSelected>(context, listen: false);
 
         return Column(
             children: <Widget>[
                 Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                        _editCard(_cardColor),
+                        _editCard(_cardColor, context, _busSelected),
                         Padding(
                             padding: EdgeInsets.symmetric(horizontal: 7),
                             child: Text('|'),
@@ -39,14 +42,43 @@ class CategoryCard extends StatelessWidget {
         );
     }
 
-    GestureDetector _editCard(Color cardColor) {
+    GestureDetector _editCard(Color cardColor, BuildContext context, final BusSelected busSelected) {
         return GestureDetector(
-            onTap: () => print('EDIT'),
+            onTap: () => _onEditingClick(context, busSelected),
             child: Icon(
                 Icons.edit,
                 color: CustomColors.switchColor(cardColor),
             ),
         );
+    }
+
+    /// todo IMPLEMENTAR
+    /// todo QUANDO DELETER DE ALGUMA CATEGORIA DELETAR DE TODOS E BUS
+    dynamic _onEditingClick(BuildContext context, final BusSelected busSelected) {
+        if (_category.title == 'Todos') {
+            return showDialog(
+                context: context,
+                builder: (BuildContext ctx) =>
+                    AlertDialog(
+                        title: Text('Você não pode editar essa categoria'),
+                        content: Text(
+                            'A categoria Todos é automaticamente populada com todos seu ônibus',
+                            textAlign: TextAlign.start,
+                        ),
+                        actions: <Widget>[
+                            FlatButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: Text('OK'),
+                            ),
+                        ],
+                    ),
+            );
+        }
+
+        busSelected.setAllBusesSelected = _category.buses;
+        return Navigator.push(context, MaterialPageRoute(
+            builder: (BuildContext ctx) => NewCategoryPage(_category),
+        ));
     }
 
     GestureDetector _newBus(Color cardColor, BuildContext context) {
@@ -87,13 +119,13 @@ class CategoryCard extends StatelessWidget {
             return Container(
                 width: double.infinity,
                 child: Center(
-                  child: Text(
-                      'Categoria Vazia\nAdicione mais ônibus clicando no +',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                      ),
-                  ),
+                    child: Text(
+                        'Categoria Vazia\nAdicione mais ônibus clicando no +',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                        ),
+                    ),
                 ),
             );
         }

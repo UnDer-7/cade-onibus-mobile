@@ -34,7 +34,7 @@ class CategoryCard extends StatelessWidget {
                             padding: EdgeInsets.symmetric(horizontal: 7),
                             child: Text('|'),
                         ),
-                        if (_category.title != 'Todos') _newBus(_cardColor, context, _busSelected),
+                        if (_category.title != 'Todos') _newBus(_cardColor, context, _busSelected, userProvider),
                         if (_category.title == 'Todos') _todosInfoDialog(_cardColor, context),
                     ],
                 ),
@@ -99,20 +99,9 @@ class CategoryCard extends StatelessWidget {
         ));
     }
 
-    GestureDetector _newBus(Color cardColor, BuildContext context, BusSelected busSelected) {
+    GestureDetector _newBus(Color cardColor, BuildContext context, BusSelected busSelected, UserProviders userProvider) {
         return GestureDetector(
-            onTap: () {
-                busSelected.setAllBusesSelected = _category.buses;
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext ctx) =>
-                            NewBusPage(
-                                isAdding: true,
-                                category: _category,
-                            ),
-                    ));
-            },
+            onTap: () => _onAddingBus(userProvider, busSelected, context),
             child: Padding(
                 padding: const EdgeInsets.only(right: 13),
                 child: Icon(
@@ -121,6 +110,21 @@ class CategoryCard extends StatelessWidget {
                 ),
             ),
         );
+    }
+
+    _onAddingBus(UserProviders userProviders, BusSelected busSelected, BuildContext context) {
+        busSelected.setAllBusesSelected = _category.buses;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext ctx) =>
+                    NewBusPage(
+                        isAdding: true,
+                    ),
+            )).then((_) async {
+            _category.buses = busSelected.getAllBusSelected;
+            await userProviders.updateCategory(_category);
+        });
     }
 
     Widget _singleBus(BuildContext context, int i, UserProviders userProvider) {

@@ -9,13 +9,11 @@ import '../widgets/bus_item_adding.dart';
 
 import '../providers/bus_selected.dart';
 import '../models/bus.dart';
-import '../models/category.dart';
 import '../resources/df_trans_resource.dart';
 
 class NewBusPage extends StatefulWidget {
     final bool isAdding;
-    final Category category;
-    NewBusPage({this.isAdding = false, this.category});
+    NewBusPage({this.isAdding = false});
 
     @override
     _NewBusPageState createState() => _NewBusPageState();
@@ -48,7 +46,6 @@ class _NewBusPageState extends State<NewBusPage> {
 
     @override
     Scaffold build(BuildContext context) {
-        print('CATEGORY \n${widget.category}');
         final double height = MediaQuery.of(context).size.height;
         final double _width = MediaQuery.of(context).size.width;
         final BusSelected _busSelected = Provider.of<BusSelected>(context);
@@ -67,7 +64,7 @@ class _NewBusPageState extends State<NewBusPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                         if (_isLoading) LinearProgressIndicator(),
-                        if (_busSelected.getAllBusSelected.isNotEmpty || widget.category.buses.isNotEmpty)
+                        if (_busSelected.getAllBusSelected.isNotEmpty)
                             Container(
                                 height: 50,
                                 width: _width,
@@ -92,12 +89,6 @@ class _NewBusPageState extends State<NewBusPage> {
         );
     }
 
-    int getListItemCount(BusSelected busSelected) {
-        final Category category = widget.category;
-
-        if (category != null) return category.buses.length;
-        return busSelected.getAllBusSelected.length;
-    }
     RaisedButton _buildSaveButton(BuildContext context) =>
         RaisedButton(
             shape: RoundedRectangleBorder(

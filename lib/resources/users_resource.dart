@@ -27,8 +27,15 @@ abstract class UserResource {
             .then((untyped) => List<Category>.from(untyped));
     }
 
+    static Future<List<Category>> deleteCategory(String category, String uuid) {
+        return _dio.delete(_resourceUrl + '/category/$uuid', data: category)
+            .then((res) => res.data)
+            .then((categories) => categories.map((cat) => Category.fromJSON(cat)).toList())
+            .then((untyped) => List<Category>.from(untyped));
+    }
+
     static Future<List<Category>> removeBus(String bus, String id) {
-        return _dio.delete(_resourceUrl + '/category/$id', data: bus)
+        return _dio.delete(_resourceUrl + '/category/bus/$id', data: bus)
             .then((res) => res.data)
             .then((categories) => categories.map((cat) => Category.fromJSON(cat)).toList())
             .then((untyped) => List<Category>.from(untyped));

@@ -37,7 +37,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
         super.initState();
     }
     @override
-    Widget build(BuildContext context) {
+    WillPopScope build(BuildContext context) {
         final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
         final BusSelected busSelected = Provider.of<BusSelected>(context, listen: false);
         final double _height = MediaQuery.of(context).size.height;
@@ -50,6 +50,31 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                     child: _buildSaveButton(context, userProvider, busSelected),
                 ),
                 appBar: AppBar(
+                    actions: <Widget>[
+                        PopupMenuButton(
+                            onSelected: (value) => _showDeleteCategoryDialog(context, value),
+                            itemBuilder: (BuildContext ctx) => [
+                                PopupMenuItem(
+                                    value: true,
+                                    child: Row(
+                                        children: <Widget>[
+                                            Icon(
+                                                Icons.delete,
+                                                color: Colors.red,
+                                            ),
+                                            Container(
+                                                margin: EdgeInsets.only(left: 10),
+                                              child: Text(
+                                                  'Apagar Categoria',
+                                                  textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ],
                     centerTitle: true,
                     title: Text(_appBarTitle),
                 ),
@@ -316,6 +341,44 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
         );
 
     void _changeCurrentColor(Color color) => setState(() => _currentColor = color);
+
+    Future<void> _showDeleteCategoryDialog(BuildContext context, value) async {
+        if (value != true) return Future.value(null);
+
+        final answer = await showDialog(
+            context: context,
+            builder: (BuildContext ctx) =>
+                AlertDialog(
+                    title: Text('Remover Categoria ${widget._categoryToEdit.title}'),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 5,
+                    content: Text(
+                        'Tem certeza que quer remover a categoria ${widget._categoryToEdit.title}?\nVocê não tera como recupera-la'),
+                    actions: <Widget>[
+                        FlatButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: Text(
+                                'Excluir categoria',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                ),
+                            ),
+                        ),
+                        FlatButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text(
+                                'Manter Categoria',
+                                style: TextStyle(
+                                    color: Colors.green,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+        );
+        Navigator.pop(context, answer);
+    }
 
     Future<void> _submit(UserProviders provider, BusSelected busSelected, BuildContext ctx) async {
         final List<Bus> buses = busSelected.getAllBusSelected;

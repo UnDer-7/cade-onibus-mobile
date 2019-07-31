@@ -23,6 +23,12 @@ class UserProviders with ChangeNotifier {
         notifyListeners();
     }
 
+    Future<void> deleteCategory(Category category) async {
+        final jsonBody = Category.toJSON(category);
+        _user.categories = await UserResource.deleteCategory(json.encode(jsonBody), category.uuid);
+        notifyListeners();
+    }
+
     Future<void> deleteBus(Bus bus, String id) async {
         final jsonBody = Bus.toJSON(bus);
         _user.categories = await UserResource.removeBus(json.encode(jsonBody), id);

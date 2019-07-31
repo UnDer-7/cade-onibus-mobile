@@ -29,7 +29,7 @@ class CategoryCard extends StatelessWidget {
                 Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                        if (_category.title != 'Todos') _editCard(_cardColor, context, _busSelected),
+                        if (_category.title != 'Todos') _editCard(_cardColor, context, _busSelected, userProvider),
                         if (_category.title != 'Todos') Padding(
                             padding: EdgeInsets.symmetric(horizontal: 7),
                             child: Text('|'),
@@ -62,41 +62,14 @@ class CategoryCard extends StatelessWidget {
             ),
         );
 
-    GestureDetector _editCard(Color cardColor, BuildContext context, final BusSelected busSelected) {
+    GestureDetector _editCard(Color cardColor, BuildContext context, final BusSelected busSelected, final UserProviders userProviders) {
         return GestureDetector(
-            onTap: () => _onEditingClick(context, busSelected),
+            onTap: () => _onEditingClick(context, busSelected, userProviders),
             child: Icon(
                 Icons.edit,
                 color: CustomColors.switchColor(cardColor),
             ),
         );
-    }
-
-    dynamic _onEditingClick(BuildContext context, final BusSelected busSelected) {
-        if (_category.title == 'Todos') {
-            return showDialog(
-                context: context,
-                builder: (BuildContext ctx) =>
-                    AlertDialog(
-                        title: Text('Você não pode editar essa categoria'),
-                        content: Text(
-                            'A categoria Todos é automaticamente populada com todos seu ônibus',
-                            textAlign: TextAlign.start,
-                        ),
-                        actions: <Widget>[
-                            FlatButton(
-                                onPressed: () => Navigator.pop(ctx),
-                                child: Text('OK'),
-                            ),
-                        ],
-                    ),
-            );
-        }
-
-        busSelected.setAllBusesSelected = _category.buses;
-        return Navigator.push(context, MaterialPageRoute(
-            builder: (BuildContext ctx) => NewCategoryPage(_category),
-        ));
     }
 
     GestureDetector _newBus(Color cardColor, BuildContext context, BusSelected busSelected, UserProviders userProvider) {
@@ -110,21 +83,6 @@ class CategoryCard extends StatelessWidget {
                 ),
             ),
         );
-    }
-
-    _onAddingBus(UserProviders userProviders, BusSelected busSelected, BuildContext context) {
-        busSelected.setAllBusesSelected = _category.buses;
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext ctx) =>
-                    NewBusPage(
-                        isAdding: true,
-                    ),
-            )).then((_) async {
-            _category.buses = busSelected.getAllBusSelected;
-            await userProviders.updateCategory(_category);
-        });
     }
 
     Widget _singleBus(BuildContext context, int i, UserProviders userProvider) {
@@ -174,16 +132,34 @@ class CategoryCard extends StatelessWidget {
         );
     }
 
-    _onDeletingBus(Bus bus, String id, UserProviders userProvider, BuildContext ctx) async {
-        try {
-            await userProvider.deleteBus(bus, id);
-        } on DioError catch(e) {
-            print('ERRO AO DELETAR ONIBUS\n$e');
-            ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
+    dynamic _onEditingClick(BuildContext context, final BusSelected busSelected, final UserProviders userProvider) {
+        if (_category.title == 'Todos') {
+            return showDialog(
+                context: context,
+                builder: (BuildContext ctx) =>
+                    AlertDialog(
+                        title: Text('Você não pode editar essa categoria'),
+                        content: Text(
+                            'A categoria Todos é automaticamente populada com todos seu ônibus',
+                            textAlign: TextAlign.start,
+                        ),
+                        actions: <Widget>[
+                            FlatButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: Text('OK'),
+                            ),
+                        ],
+                    ),
+            );
         }
+
+        busSelected.setAllBusesSelected = _category.buses;
+        return Navigator.push(context, MaterialPageRoute(
+            builder: (BuildContext ctx) => NewCategoryPage(_category),
+        )).then((value) => _onRemovingCategory(value, userProvider));
     }
 
-    _showTodosInfoDialog(BuildContext context) =>
+    void _showTodosInfoDialog(BuildContext context) =>
         showDialog(
             context: context,
             builder: (BuildContext ctx) =>
@@ -212,6 +188,35 @@ class CategoryCard extends StatelessWidget {
                     ],
                 ),
         );
+
+    void _onRemovingCategory(bool value, UserProviders userProvider) {
+        if (value == null || !value) return;
+        userProvider.deleteCategory(_category);
+    }
+
+    void _onAddingBus(UserProviders userProviders, BusSelected busSelected, BuildContext context) {
+        busSelected.setAllBusesSelected = _category.buses;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext ctx) =>
+                    NewBusPage(
+                        isAdding: true,
+                    ),
+            )).then((_) async {
+            _category.buses = busSelected.getAllBusSelected;
+            await userProviders.updateCategory(_category);
+        });
+    }
+
+    void _onDeletingBus(Bus bus, String id, UserProviders userProvider, BuildContext ctx) async {
+        try {
+            await userProvider.deleteBus(bus, id);
+        } on DioError catch(e) {
+            print('ERRO AO DELETAR ONIBUS\n$e');
+            ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
+        }
+    }
 
     double _dynamicHeight(double height) {
         final buses = _category.buses;

@@ -6,16 +6,16 @@ import '../resources/df_trans_resource.dart';
 import '../models/bus.dart';
 import '../models/coordinates.dart';
 
-class BusItemSearching extends StatefulWidget {
+class BusItemDetail extends StatefulWidget {
     final Bus bus;
 
-    BusItemSearching(this.bus);
+    BusItemDetail(this.bus);
 
     @override
     _BusItemState createState() => _BusItemState();
 }
 
-class _BusItemState extends State<BusItemSearching> {
+class _BusItemState extends State<BusItemDetail> {
     bool _isLoading = false;
 
     @override

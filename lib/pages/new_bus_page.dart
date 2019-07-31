@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/bus_item_searching.dart';
+import '../widgets/bus_item_detail.dart';
 import '../widgets/bus_item_adding.dart';
 
 import '../providers/bus_selected.dart';
@@ -96,7 +96,7 @@ class _NewBusPageState extends State<NewBusPage> {
             color: Theme
                 .of(context)
                 .primaryColor,
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(context, true),
             child: Text(
                 'Salvar',
                 style: TextStyle(
@@ -160,7 +160,7 @@ class _NewBusPageState extends State<NewBusPage> {
 
     Widget _getBusItem(Bus bus) {
         if (widget.isAdding) return BusItemAdding(bus);
-        return BusItemSearching(bus);
+        return BusItemDetail(bus);
     }
 
     double getBusesFoundListHeight(double height, List<Bus> buses) {

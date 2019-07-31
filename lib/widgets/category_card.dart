@@ -8,7 +8,7 @@ import '../providers/bus_selected.dart';
 import '../providers/user_provider.dart';
 
 import '../utils/custom_colors.dart';
-import '../widgets/bus_item_searching.dart';
+import '../widgets/bus_item_detail.dart';
 import '../models/category.dart';
 import '../pages/new_category_page.dart';
 import '../pages/new_bus_page.dart';
@@ -87,7 +87,7 @@ class CategoryCard extends StatelessWidget {
 
     Widget _singleBus(BuildContext context, int i, UserProviders userProvider) {
         if (_category.title == 'Todos') {
-            return BusItemSearching(_category.buses[i]);
+            return BusItemDetail(_category.buses[i]);
         }
 
         return Dismissible(
@@ -106,7 +106,7 @@ class CategoryCard extends StatelessWidget {
                     size: 40,
                 ),
             ),
-            child: BusItemSearching(_category.buses[i]),
+            child: BusItemDetail(_category.buses[i]),
         );
     }
 
@@ -203,9 +203,11 @@ class CategoryCard extends StatelessWidget {
                     NewBusPage(
                         isAdding: true,
                     ),
-            )).then((_) async {
+            )).then((res) async {
+            if (res == null || res == false) return;
             _category.buses = busSelected.getAllBusSelected;
             await userProviders.updateCategory(_category);
+            busSelected.cleanBusSelected();
         });
     }
 

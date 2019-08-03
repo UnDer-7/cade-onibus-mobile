@@ -83,6 +83,7 @@ class _CategoryCardState extends State<CategoryCard> {
                     Container(
                         height: _dynamicHeight(height),
                         child: Card(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                             margin: EdgeInsets.all(15),
                             color: Colors.white,
                             child: _cardContent(context, userProvider, _cardColor, _width),

@@ -53,6 +53,8 @@ class _BusCategoryState extends State<BusCategory> with SingleTickerProviderStat
             onDismissed: (_) => _onDeletingCategory(_userProvier, context),
             background: _buildSideRemoverContainer(context),
             child: Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                elevation: 10,
                 margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 color: _cardColor,
                 child: Column(

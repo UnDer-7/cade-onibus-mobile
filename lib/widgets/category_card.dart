@@ -53,7 +53,8 @@ class _CategoryCardState extends State<CategoryCard> {
         final Color _cardColor = Color(widget._category.cardColor);
         final BusSelected _busSelected = Provider.of<BusSelected>(context, listen: false);
         final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
-
+        final Color _findBusesButtonColor = CustomColors.switchColor(_cardColor);
+        
         return WillPopScope(
             onWillPop: () {
                 if (_isMultiSelection) {
@@ -89,11 +90,18 @@ class _CategoryCardState extends State<CategoryCard> {
                     ),
                     if (_isMultiSelection) Container(
                         width: double.infinity,
-                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        padding: EdgeInsets.only(left: 15, right: 15, bottom: 3),
                         child: RaisedButton(
+                            color: _findBusesButtonColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                             onPressed: () => print('BUSES TO FIND\n $_busesToTrack'),
                             elevation: 10,
-                            child: Text('Procurar'),
+                            child: Text(
+                                'Procurar',
+                                style: TextStyle(
+                                    color: CustomColors.switchColor(_findBusesButtonColor)
+                                ),
+                            ),
                         ),
                     )
                 ],
@@ -136,11 +144,11 @@ class _CategoryCardState extends State<CategoryCard> {
         );
     }
 
-    Widget _singleBus(BuildContext context, int i, UserProviders userProvider, double width) {
+    Widget _singleBus(BuildContext context, int i, UserProviders userProvider, double width, Color cardColor) {
         final Bus bus =  widget._category.buses[i];
 
         if (widget._category.title == 'Todos') {
-            return _buildSingleBusDetail(bus);
+            return _buildSingleBusDetail(bus, cardColor);
         }
 
         return Dismissible(
@@ -159,17 +167,19 @@ class _CategoryCardState extends State<CategoryCard> {
                     size: 40,
                 ),
             ),
-            child: _buildSingleBusDetail(bus),
+            child: _buildSingleBusDetail(bus, cardColor),
         );
     }
 
-    Row _buildSingleBusDetail(Bus bus) =>
+    Row _buildSingleBusDetail(Bus bus, Color cardColor) =>
         Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
                 if (_isMultiSelection) Flexible(
                     flex: 2,
                     child: Checkbox(
+                        activeColor: cardColor,
+                        checkColor: CustomColors.switchColor(cardColor),
                         value: _busesToTrack.any((item) => item.numero == bus.numero),
                         key: Key(bus.numero),
                         onChanged: (value) => _onSelectionBus(bus),
@@ -210,7 +220,7 @@ class _CategoryCardState extends State<CategoryCard> {
                 endIndent: 5,
             ),
             itemCount: widget._category.buses.length,
-            itemBuilder: (BuildContext ctx, int i) => _singleBus(context, i, userProvider, width),
+            itemBuilder: (BuildContext ctx, int i) => _singleBus(context, i, userProvider, width, cardColor),
         );
     }
 

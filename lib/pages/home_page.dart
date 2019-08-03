@@ -25,7 +25,7 @@ class HomePage extends StatelessWidget {
                         onTap: () =>
                             Navigator.pushNamed(context, Routes.NEW_BUS_PAGE),
                         child: Icon(Icons.directions_bus),
-                        label: 'Novo Ônibus'
+                        label: 'Rastrar Ônibus'
                     ),
                     SpeedDialChild(
                         onTap: () =>

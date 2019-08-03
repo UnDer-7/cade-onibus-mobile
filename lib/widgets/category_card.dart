@@ -3,6 +3,7 @@ import 'package:cade_onibus_mobile/utils/toast_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../providers/bus_selected.dart';
 import '../providers/user_provider.dart';
@@ -13,40 +14,90 @@ import '../models/category.dart';
 import '../pages/new_category_page.dart';
 import '../pages/new_bus_page.dart';
 
-class CategoryCard extends StatelessWidget {
+class CategoryCard extends StatefulWidget {
     final Category _category;
     CategoryCard(this._category);
 
     @override
-    Column build(BuildContext context) {
+    _CategoryCardState createState() => _CategoryCardState();
+}
+
+class _CategoryCardState extends State<CategoryCard> {
+    final BehaviorSubject<Bus> _subject = BehaviorSubject<Bus>();
+    final List<Bus> _busesToTrack = [];
+    bool _isMultiSelection;
+
+    @override
+    void initState() {
+        _isMultiSelection = false;
+        _subject.listen((Bus value) => _onMultiBusSelection(value));
+        super.initState();
+    }
+    @override
+    void deactivate() {
+        _subject.close();
+        super.deactivate();
+    }
+
+    @override
+    void dispose() {
+        _subject.close();
+        super.dispose();
+    }
+
+    @override
+    WillPopScope build(BuildContext context) {
         final double height = MediaQuery.of(context).size.height;
-        final Color _cardColor = Color(_category.cardColor);
+        final double _width = MediaQuery.of(context).size.width;
+
+        final Color _cardColor = Color(widget._category.cardColor);
         final BusSelected _busSelected = Provider.of<BusSelected>(context, listen: false);
         final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
 
-        return Column(
-            children: <Widget>[
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                        if (_category.title != 'Todos') _editCard(_cardColor, context, _busSelected, userProvider),
-                        if (_category.title != 'Todos') Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 7),
-                            child: Text('|'),
-                        ),
-                        if (_category.title != 'Todos') _newBus(_cardColor, context, _busSelected, userProvider),
-                        if (_category.title == 'Todos') _todosInfoDialog(_cardColor, context),
-                    ],
-                ),
-                Container(
-                    height: _dynamicHeight(height),
-                    child: Card(
-                        margin: EdgeInsets.all(15),
-                        color: Colors.white,
-                        child: _cardContent(context, userProvider),
+        return WillPopScope(
+            onWillPop: () {
+                if (_isMultiSelection) {
+                    setState(() => _isMultiSelection = false);
+                    _busesToTrack.clear();
+                    return Future.value(false);
+                }
+
+                _busesToTrack.clear();
+                return Future.value(true);
+            },
+            child: Column(
+                children: <Widget>[
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                            if (widget._category.title != 'Todos') _editCard(_cardColor, context, _busSelected, userProvider),
+                            if (widget._category.title != 'Todos') Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 7),
+                                child: Text('|'),
+                            ),
+                            if (widget._category.title != 'Todos') _newBus(_cardColor, context, _busSelected, userProvider),
+                            if (widget._category.title == 'Todos') _todosInfoDialog(_cardColor, context),
+                        ],
                     ),
-                ),
-            ],
+                    Container(
+                        height: _dynamicHeight(height),
+                        child: Card(
+                            margin: EdgeInsets.all(15),
+                            color: Colors.white,
+                            child: _cardContent(context, userProvider, _cardColor, _width),
+                        ),
+                    ),
+                    if (_isMultiSelection) Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        child: RaisedButton(
+                            onPressed: () => print('BUSES TO FIND\n $_busesToTrack'),
+                            elevation: 10,
+                            child: Text('Procurar'),
+                        ),
+                    )
+                ],
+            ),
         );
     }
 
@@ -85,15 +136,17 @@ class CategoryCard extends StatelessWidget {
         );
     }
 
-    Widget _singleBus(BuildContext context, int i, UserProviders userProvider) {
-        if (_category.title == 'Todos') {
-            return BusItemDetail(_category.buses[i]);
+    Widget _singleBus(BuildContext context, int i, UserProviders userProvider, double width) {
+        final Bus bus =  widget._category.buses[i];
+
+        if (widget._category.title == 'Todos') {
+            return _buildSingleBusDetail(bus);
         }
 
         return Dismissible(
-            key: ValueKey(_category.buses[i].numero),
+            key: ValueKey(bus.numero),
             direction: DismissDirection.endToStart,
-            onDismissed: (_) => _onDeletingBus(_category.buses[i], _category.uuid, userProvider, context),
+            onDismissed: (_) => _onDeletingBus(bus, widget._category.uuid, userProvider, context),
             background: Container(
                 alignment: Alignment.centerRight,
                 padding: EdgeInsets.only(right: 20),
@@ -106,12 +159,36 @@ class CategoryCard extends StatelessWidget {
                     size: 40,
                 ),
             ),
-            child: BusItemDetail(_category.buses[i]),
+            child: _buildSingleBusDetail(bus),
         );
     }
 
-    Widget _cardContent(BuildContext context, UserProviders userProvider) {
-        if (_category.buses.isEmpty) {
+    Row _buildSingleBusDetail(Bus bus) =>
+        Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+                if (_isMultiSelection) Flexible(
+                    flex: 2,
+                    child: Checkbox(
+                        value: _busesToTrack.any((item) => item.numero == bus.numero),
+                        key: Key(bus.numero),
+                        onChanged: (value) => _onSelectionBus(bus),
+                    ),
+                ),
+                Flexible(
+                    flex: 6,
+                    child: BusItemDetail(
+                        bus,
+                        Color(widget._category.cardColor),
+                        _subject,
+                        !_isMultiSelection,
+                    ),
+                ),
+            ],
+        );
+
+    Widget _cardContent(BuildContext context, UserProviders userProvider, Color cardColor, double width) {
+        if (widget._category.buses.isEmpty) {
             return Container(
                 width: double.infinity,
                 child: Center(
@@ -126,14 +203,19 @@ class CategoryCard extends StatelessWidget {
             );
         }
 
-        return ListView.builder(
-            itemCount: _category.buses.length,
-            itemBuilder: (BuildContext ctx, int i) => _singleBus(context, i, userProvider),
+        return ListView.separated(
+            separatorBuilder: (BuildContext ctx, int i) => Divider(
+                color: cardColor,
+                indent: 5,
+                endIndent: 5,
+            ),
+            itemCount: widget._category.buses.length,
+            itemBuilder: (BuildContext ctx, int i) => _singleBus(context, i, userProvider, width),
         );
     }
 
     dynamic _onEditingClick(BuildContext context, final BusSelected busSelected, final UserProviders userProvider) {
-        if (_category.title == 'Todos') {
+        if (widget._category.title == 'Todos') {
             return showDialog(
                 context: context,
                 builder: (BuildContext ctx) =>
@@ -153,9 +235,9 @@ class CategoryCard extends StatelessWidget {
             );
         }
 
-        busSelected.setAllBusesSelected = _category.buses;
+        busSelected.setAllBusesSelected = widget._category.buses;
         return Navigator.push(context, MaterialPageRoute(
-            builder: (BuildContext ctx) => NewCategoryPage(_category),
+            builder: (BuildContext ctx) => NewCategoryPage(widget._category),
         )).then((value) => _onRemovingCategory(value, userProvider));
     }
 
@@ -191,11 +273,25 @@ class CategoryCard extends StatelessWidget {
 
     void _onRemovingCategory(bool value, UserProviders userProvider) {
         if (value == null || !value) return;
-        userProvider.deleteCategory(_category);
+        userProvider.deleteCategory(widget._category);
+    }
+
+    void _onSelectionBus(Bus bus) {
+        final bool isBusAdded = _busesToTrack.any((test) => test.numero == bus.numero);
+
+        if (isBusAdded) {
+            setState(() {
+                _busesToTrack.removeWhere((item) => item.numero == bus.numero);
+            });
+        } else {
+            setState(() {
+                _busesToTrack.add(bus);
+            });
+        }
     }
 
     void _onAddingBus(UserProviders userProviders, BusSelected busSelected, BuildContext context) {
-        busSelected.setAllBusesSelected = _category.buses;
+        busSelected.setAllBusesSelected = widget._category.buses;
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -205,8 +301,8 @@ class CategoryCard extends StatelessWidget {
                     ),
             )).then((res) async {
             if (res == null || res == false) return;
-            _category.buses = busSelected.getAllBusSelected;
-            await userProviders.updateCategory(_category);
+            widget._category.buses = busSelected.getAllBusSelected;
+            await userProviders.updateCategory(widget._category);
             busSelected.cleanBusSelected();
         });
     }
@@ -220,8 +316,15 @@ class CategoryCard extends StatelessWidget {
         }
     }
 
+    void _onMultiBusSelection(Bus value) {
+        if (value != null) {
+            setState(() => _isMultiSelection = true);
+            _onSelectionBus(value);
+        }
+    }
+
     double _dynamicHeight(double height) {
-        final buses = _category.buses;
+        final buses = widget._category.buses;
 
         if (buses.isEmpty) return height/12;
         if (buses.length == 1) return height/7.7;
@@ -230,5 +333,4 @@ class CategoryCard extends StatelessWidget {
         if (buses.length == 4) return height/2.5;
         return height/2.3;
     }
-
 }

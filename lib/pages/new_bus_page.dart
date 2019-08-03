@@ -29,7 +29,8 @@ class _NewBusPageState extends State<NewBusPage> {
     @override
     void initState(){
         super.initState();
-        _subject.debounce((_) => TimerStream(true, const Duration(milliseconds: 500)))
+        _subject
+            .debounce((_) => TimerStream(true, const Duration(milliseconds: 500)))
             .listen((String input) => _handleDFTransRequest(input));
     }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 import './routes.dart';
@@ -9,7 +10,11 @@ import './pages/home_page.dart';
 import './providers/user_provider.dart';
 import './providers/bus_selected.dart';
 
-void main() => runApp(CadeVan());
+void main() {
+//    debugPaintSizeEnabled = true;
+//    debugPaintPointersEnabled = true;
+    runApp(CadeVan());
+}
 
 class CadeVan extends StatelessWidget {
     final UserProviders userProviders = UserProviders();

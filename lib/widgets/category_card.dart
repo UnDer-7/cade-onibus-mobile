@@ -1,18 +1,24 @@
-import 'package:cade_onibus_mobile/models/bus.dart';
-import 'package:cade_onibus_mobile/utils/toast_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
-import 'package:rxdart/rxdart.dart';
+
+import '../services/location_service.dart';
+
+import '../widgets/bus_item_detail.dart';
 
 import '../providers/bus_selected.dart';
 import '../providers/user_provider.dart';
 
 import '../utils/custom_colors.dart';
-import '../widgets/bus_item_detail.dart';
+import '../utils/toast_util.dart';
+
 import '../models/category.dart';
+import '../models/bus.dart';
+import '../models/coordinates.dart';
+
 import '../pages/new_category_page.dart';
 import '../pages/new_bus_page.dart';
+import '../pages/map_page.dart';
 
 class CategoryCard extends StatefulWidget {
     final Category _category;
@@ -23,26 +29,15 @@ class CategoryCard extends StatefulWidget {
 }
 
 class _CategoryCardState extends State<CategoryCard> {
-    final BehaviorSubject<Bus> _subject = BehaviorSubject<Bus>();
     final List<Bus> _busesToTrack = [];
     bool _isMultiSelection;
+    bool _isLoading;
 
     @override
     void initState() {
+        _isLoading = false;
         _isMultiSelection = false;
-        _subject.listen((Bus value) => _onMultiBusSelection(value));
         super.initState();
-    }
-    @override
-    void deactivate() {
-        _subject.close();
-        super.deactivate();
-    }
-
-    @override
-    void dispose() {
-        _subject.close();
-        super.dispose();
     }
 
     @override
@@ -54,7 +49,7 @@ class _CategoryCardState extends State<CategoryCard> {
         final BusSelected _busSelected = Provider.of<BusSelected>(context, listen: false);
         final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
         final Color _findBusesButtonColor = CustomColors.switchColor(_cardColor);
-        
+
         return WillPopScope(
             onWillPop: () {
                 if (_isMultiSelection) {
@@ -95,7 +90,7 @@ class _CategoryCardState extends State<CategoryCard> {
                         child: RaisedButton(
                             color: _findBusesButtonColor,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                            onPressed: () => print('BUSES TO FIND\n $_busesToTrack'),
+                            onPressed: () => _sendToGoogleMaps(context),
                             elevation: 10,
                             child: Text(
                                 'Procurar',
@@ -191,7 +186,6 @@ class _CategoryCardState extends State<CategoryCard> {
                     child: BusItemDetail(
                         bus,
                         Color(widget._category.cardColor),
-                        _subject,
                         !_isMultiSelection,
                     ),
                 ),
@@ -199,6 +193,14 @@ class _CategoryCardState extends State<CategoryCard> {
         );
 
     Widget _cardContent(BuildContext context, UserProviders userProvider, Color cardColor, double width) {
+        if (_isLoading) {
+            return Center(
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(cardColor),
+                ),
+            );
+        }
+
         if (widget._category.buses.isEmpty) {
             return Container(
                 width: double.infinity,
@@ -221,7 +223,14 @@ class _CategoryCardState extends State<CategoryCard> {
                 endIndent: 5,
             ),
             itemCount: widget._category.buses.length,
-            itemBuilder: (BuildContext ctx, int i) => _singleBus(context, i, userProvider, width, cardColor),
+            itemBuilder: (BuildContext ctx, int i) => GestureDetector(
+                onLongPress: () {
+                    _isMultiSelection = true;
+                    _handleOnTap(context, widget._category.buses[i]);
+                },
+                onTap: () => _handleOnTap(context, widget._category.buses[i]),
+                child: _singleBus(context, i, userProvider, width, cardColor),
+            ),
         );
     }
 
@@ -327,10 +336,39 @@ class _CategoryCardState extends State<CategoryCard> {
         }
     }
 
-    void _onMultiBusSelection(Bus value) {
-        if (value != null) {
-            setState(() => _isMultiSelection = true);
-            _onSelectionBus(value);
+    void _handleOnTap(BuildContext context, Bus bus) {
+        _onSelectionBus(bus);
+        if (_isMultiSelection) {
+            return;
+        }
+
+        _sendToGoogleMaps(context);
+    }
+
+    Future _sendToGoogleMaps(BuildContext context) async {
+        setState(() => _isLoading = true);
+        try {
+            final locationService = await LocationService.userLocation;
+
+            final Coordinates userLocation = Coordinates(
+                latitude: locationService.latitude,
+                longitude: locationService.longitude,
+            );
+
+            Navigator.push(context, MaterialPageRoute(
+                builder: (BuildContext context) =>
+                    MapPage(
+                        userLocation,
+                        busesToTrack: _busesToTrack,
+                    ),
+            )).whenComplete(() {
+                _isLoading = false;
+                _busesToTrack.clear();
+                _isMultiSelection = false;
+            });
+        } catch(e)  {
+            print('Error -> $e');
+            _isLoading = false;
         }
     }
 

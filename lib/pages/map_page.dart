@@ -1,3 +1,4 @@
+import 'package:cade_onibus_mobile/models/bus.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -6,20 +7,27 @@ import '../models/bus_coordinates.dart';
 import '../models/coordinates.dart';
 
 class MapPage extends StatefulWidget {
-    final List<BusCoordinates> _busesCoordinates;
-    final Coordinates _coordinates;
+    final Coordinates _userCoordinates;
+    final List<Bus> busesToTrack;
 
-    MapPage(this._coordinates, [this._busesCoordinates]);
+    MapPage(
+        this._userCoordinates,
+        {
+            this.busesToTrack,
+        });
 
     @override
     _MapPageState createState() => _MapPageState();
 }
 
 class _MapPageState extends State<MapPage> {
+    final List<BusCoordinates> busCoordinates = [];
     BitmapDescriptor _busIcon;
 
     @override
     Widget build(BuildContext context) {
+        print('BUSES TO FIND -> ${widget.busesToTrack}');
+
         _createMarkerImageFromAsset(context);
         return Scaffold(
             body: Stack(
@@ -28,18 +36,18 @@ class _MapPageState extends State<MapPage> {
                         markers: _busMarkers,
                         initialCameraPosition: CameraPosition(
                             zoom: 15,
-                            target: LatLng(widget._coordinates.latitude, widget._coordinates.longitude),
+                            target: LatLng(widget._userCoordinates.latitude, widget._userCoordinates.longitude),
                         ),
                     ),
                     Container(
                         margin: EdgeInsets.symmetric(horizontal: 15, vertical: 60),
                         padding: EdgeInsets.all(5),
-                        child: Text(
-                            'Seu onibus atual: ${widget._busesCoordinates[0].properties.linha}',
-                            style: TextStyle(
-                                color: Colors.white,
-                            ),
-                        ),
+//                        child: Text(
+//                            'Seu onibus atual: ${busCoordinates[0].properties.linha}',
+//                            style: TextStyle(
+//                                color: Colors.white,
+//                            ),
+//                        ),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
                             color: Theme.of(context).primaryColor,
@@ -77,20 +85,20 @@ class _MapPageState extends State<MapPage> {
                     title: 'Minha Posição'
                 ),
                 markerId: MarkerId('user-marker'),
-                position: LatLng(widget._coordinates.latitude, widget._coordinates.longitude),
+//                position: LatLng(widget._coordinates.latitude, widget._coordinates.longitude),
             ),
         };
 
-        widget._busesCoordinates.forEach((bus) => markers.add(
-            Marker(
-                icon: _busIcon,
-                infoWindow: InfoWindow(
-                    title: 'Linha: ${bus.properties.linha}',
-                ),
-                markerId: MarkerId(bus.properties.numero),
-                position: LatLng(bus.coordinates.latitude, bus.coordinates.longitude),
-            ),
-        ));
+//        widget.busCoordinates.forEach((bus) => markers.add(
+//            Marker(
+//                icon: _busIcon,
+//                infoWindow: InfoWindow(
+//                    title: 'Linha: ${bus.properties.linha}',
+//                ),
+//                markerId: MarkerId(bus.properties.numero),
+//                position: LatLng(bus.coordinates.latitude, bus.coordinates.longitude),
+//            ),
+//        ));
 
         return markers;
     }

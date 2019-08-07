@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 
-import '../services/location_service.dart';
-
 import '../widgets/bus_item_detail.dart';
 
 import '../providers/bus_selected.dart';
@@ -14,7 +12,6 @@ import '../utils/toast_util.dart';
 
 import '../models/category.dart';
 import '../models/bus.dart';
-import '../models/coordinates.dart';
 
 import '../pages/new_category_page.dart';
 import '../pages/new_bus_page.dart';
@@ -317,10 +314,14 @@ class _CategoryCardState extends State<CategoryCard> {
             MaterialPageRoute(
                 builder: (BuildContext ctx) =>
                     NewBusPage(
-                        isAdding: true,
+                        isMultiSelection: true,
                     ),
             )).then((res) async {
-            if (res == null || res == false) return;
+            if (res == null || res == false) {
+                busSelected.cleanBusSelected();
+                return;
+            }
+
             widget._category.buses = busSelected.getAllBusSelected;
             await userProviders.updateCategory(widget._category);
             busSelected.cleanBusSelected();
@@ -348,19 +349,9 @@ class _CategoryCardState extends State<CategoryCard> {
     Future _sendToGoogleMaps(BuildContext context) async {
         setState(() => _isLoading = true);
         try {
-            final locationService = await LocationService.userLocation;
-
-            final Coordinates userLocation = Coordinates(
-                latitude: locationService.latitude,
-                longitude: locationService.longitude,
-            );
-
             Navigator.push(context, MaterialPageRoute(
                 builder: (BuildContext context) =>
-                    MapPage(
-                        userLocation,
-                        busesToTrack: _busesToTrack,
-                    ),
+                    MapPage(busesToTrack: _busesToTrack),
             )).whenComplete(() {
                 _isLoading = false;
                 _busesToTrack.clear();

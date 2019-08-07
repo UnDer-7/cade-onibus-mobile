@@ -3,22 +3,21 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 
 import '../models/bus.dart';
 import '../models/bus_coordinates.dart';
-import '../models/coordinates.dart';
+
+import '../providers/bus_selected.dart';
+import '../pages/new_bus_page.dart';
 import '../resources/df_trans_resource.dart';
 import '../utils/toast_util.dart';
 
 class MapPage extends StatefulWidget {
-    final Coordinates _userCoordinates;
     final List<Bus> busesToTrack;
 
-    MapPage(
-        this._userCoordinates,
-        {
-            this.busesToTrack,
-        });
+    MapPage({ this.busesToTrack });
 
     @override
     _MapPageState createState() => _MapPageState();
@@ -27,6 +26,10 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
     final Map<String, List<BusCoordinates>> _dfTransBuses = {};
     final List<String> _deletedLines = [];
+    StreamSubscription<LocationData> _locationStream;
+    Location _location = Location();
+    LatLng _latLng;
+    List<Bus> _busToTrackState = [];
     bool _isLoading = true;
     bool _cancelTimer = false;
     BitmapDescriptor _busIcon;
@@ -35,44 +38,30 @@ class _MapPageState extends State<MapPage> {
 
     @override
     void initState() {
-        Timer.periodic(Duration(seconds: 5), (timer) async {
-            if (_cancelTimer) return timer.cancel();
+        _locationStream = _location
+            .onLocationChanged()
+            .listen((data) => _watchUserLocation(data));
 
-            widget.busesToTrack.forEach((item) async {
-                _isLoading = true;
-                try {
-                    final busFound = await DFTransResource.findBusLocation(item.numero);
-                    if (_deletedLines.contains(item.numero)) return;
-                    _dfTransBuses[item.numero] = busFound;
-                    _addBusMarker();
-                } on DioError catch(e) {
-                    ToastUtil.showToast('Algo deu errado', context, color: ToastUtil.error);
-                    print('ERRO NO MAPS_PAGE\n$e');
-                } finally {
-                    _isLoading = false;
-                }
-            });
+        _busToTrackState = widget.busesToTrack;
+
+        Timer.periodic(Duration(seconds: 10), (timer) async {
+            _watchBusLocation(timer);
         });
 
         super.initState();
     }
 
     @override
-    void dispose() {
-        _cancelTimer = true;
-        super.dispose();
-    }
-
-    @override
-    void deactivate() {
-        _cancelTimer = true;
+    Future deactivate() async {
+        await _locationStream.cancel();
         super.deactivate();
     }
 
     @override
     WillPopScope build(BuildContext context) {
         _createMarkerImageFromAsset(context);
-        final List<String> _buses = widget.busesToTrack.map((f) => f.numero).toList();
+        final BusSelected _busSelected = Provider.of<BusSelected>(context);
+        final List<String> _buses = _busToTrackState.map((f) => f.numero).toList();
 
         return WillPopScope(
             onWillPop: () {
@@ -86,7 +75,7 @@ class _MapPageState extends State<MapPage> {
                             markers: _markers,
                             initialCameraPosition: CameraPosition(
                                 zoom: 15,
-                                target: LatLng(widget._userCoordinates.latitude, widget._userCoordinates.longitude),
+                                target: _latLng,
                             ),
                         ),
                         Container(
@@ -142,21 +131,57 @@ class _MapPageState extends State<MapPage> {
                                     ),
                             ),
                         ),
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 50),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                    IconButton(
+                                        onPressed: () => print('TODO info button'),
+                                        icon: Icon(
+                                            Icons.info,
+                                            color: Theme.of(context).primaryColor,
+                                            size: 45,
+                                        ),
+                                    ),
+                                    if (!_isLoading)IconButton(
+                                        onPressed: _watchBusLocation,
+                                        icon: Icon(
+                                            Icons.refresh,
+                                            color: Theme.of(context).primaryColor,
+                                            size: 50,
+                                        ),
+                                    ),
+                                    if (_isLoading) Padding(
+                                        padding: EdgeInsets.only(left: 10, top: 12),
+                                        child: CircularProgressIndicator(),
+                                    ),
+                                ],
+                            ),
+                        ),
                         Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
-                                Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                                    child: RaisedButton(
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                        color: Theme.of(context).primaryColor,
-                                        onPressed: () {},
-                                        child: Text(
-                                            'PROCURAR OUTRO ÔNIBUS',
-                                            style: TextStyle(
-                                                color: Colors.white
-                                            ),
+                                RaisedButton(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    color: Theme.of(context).primaryColor,
+                                    onPressed: () =>
+                                        Navigator.push(context, MaterialPageRoute(
+                                            builder: (BuildContext ctx) => NewBusPage(isMultiSelection: true, isForSaving: false),
+                                        )).then((res) {
+                                            if (res == null || res == false) {
+                                                _busSelected.cleanBusSelected();
+                                                return;
+                                            }
+                                            _busSelected.getAllBusSelected.forEach((bus) => setState(() => _busToTrackState.add(bus)));
+                                            _watchBusLocation();
+                                            _busSelected.cleanBusSelected();
+                                        }),
+                                    child: Text(
+                                        'PROCURAR OUTRO ÔNIBUS',
+                                        style: TextStyle(
+                                            color: Colors.white
                                         ),
                                     ),
                                 ),
@@ -206,7 +231,7 @@ class _MapPageState extends State<MapPage> {
                     title: 'Minha Posição'
                 ),
                 markerId: MarkerId('user-marker'),
-                position: LatLng(widget._userCoordinates.latitude, widget._userCoordinates.longitude),
+                position: _latLng,
             ),
         };
 
@@ -238,9 +263,33 @@ class _MapPageState extends State<MapPage> {
     }
 
     void _removeBusFromTracking(String linha) {
-        widget.busesToTrack.removeWhere((bus) => bus.numero == linha);
+        _busToTrackState.removeWhere((bus) => bus.numero == linha);
         _dfTransBuses.remove(linha);
         _markers.removeWhere((item) => item.markerId.value.contains(linha));
         _deletedLines.add(linha);
+    }
+
+    void _watchUserLocation(LocationData data) {
+        setState(() => _latLng = LatLng(data.latitude, data.longitude));
+    }
+
+    void _watchBusLocation([Timer timer]) {
+        if (_cancelTimer) return timer.cancel();
+
+        _busToTrackState.forEach((item) async {
+            _isLoading = true;
+            try {
+                final busFound = await DFTransResource.findBusLocation(item.numero);
+                if (_deletedLines.contains(item.numero)) return;
+                _dfTransBuses[item.numero] = busFound;
+                _addBusMarker();
+            } on DioError catch(e) {
+                ToastUtil.showToast('Algo deu errado', context, color: ToastUtil.error);
+                print('ERRO NO MAPS_PAGE\n$e');
+            } finally {
+                _isLoading = false;
+            }
+        });
+
     }
 }

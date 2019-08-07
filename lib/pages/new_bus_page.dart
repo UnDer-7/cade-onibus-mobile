@@ -12,8 +12,9 @@ import '../models/bus.dart';
 import '../resources/df_trans_resource.dart';
 
 class NewBusPage extends StatefulWidget {
-    final bool isAdding;
-    NewBusPage({this.isAdding = false});
+    final bool isMultiSelection;
+    final bool isForSaving;
+    NewBusPage({this.isMultiSelection = false, this.isForSaving = true});
 
     @override
     _NewBusPageState createState() => _NewBusPageState();
@@ -22,13 +23,20 @@ class NewBusPage extends StatefulWidget {
 class _NewBusPageState extends State<NewBusPage> {
     final BehaviorSubject<String> _subject = BehaviorSubject<String>();
     final TextEditingController ctl = TextEditingController();
-
+    String _buttonText;
     List<Bus> _bus = [];
     bool _isLoading = false;
 
     @override
     void initState(){
         super.initState();
+
+        if (widget.isForSaving) {
+            _buttonText = 'Salvar';
+        } else {
+            _buttonText = 'Rastrear';
+        }
+
         _subject
             .debounce((_) => TimerStream(true, const Duration(milliseconds: 500)))
             .listen((String input) => _handleDFTransRequest(input));
@@ -54,7 +62,7 @@ class _NewBusPageState extends State<NewBusPage> {
         return Scaffold(
             bottomNavigationBar: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15),
-                child: _buildSaveButton(context),
+                child: _buildSaveButton(context, _busSelected),
             ),
             appBar: AppBar(
                 centerTitle: true,
@@ -90,16 +98,16 @@ class _NewBusPageState extends State<NewBusPage> {
         );
     }
 
-    RaisedButton _buildSaveButton(BuildContext context) =>
+    RaisedButton _buildSaveButton(BuildContext context, BusSelected busSelected) =>
         RaisedButton(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5)),
             color: Theme
                 .of(context)
                 .primaryColor,
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: _isButtonDisabled(busSelected) ? null : () => Navigator.pop(context, true),
             child: Text(
-                'Salvar',
+                _buttonText,
                 style: TextStyle(
                     color: Colors.white,
                 ),
@@ -160,7 +168,7 @@ class _NewBusPageState extends State<NewBusPage> {
     }
 
     Widget _getBusItem(Bus bus) {
-        if (widget.isAdding) return BusItemAdding(bus);
+        if (widget.isMultiSelection) return BusItemAdding(bus);
         return BusItemDetail(bus);
     }
 
@@ -207,5 +215,9 @@ class _NewBusPageState extends State<NewBusPage> {
     }
     void _textChanged(String input) {
         _subject.add(input);
+    }
+
+    bool _isButtonDisabled(final BusSelected _busSelected) {
+        return _busSelected.getAllBusSelected.isEmpty;
     }
 }

@@ -16,8 +16,13 @@ import '../utils/toast_util.dart';
 
 class MapPage extends StatefulWidget {
     final List<Bus> busesToTrack;
+    final LatLng initialLocation;
 
-    MapPage({ this.busesToTrack });
+    MapPage(
+        {
+            @required this.initialLocation,
+            @required this.busesToTrack,
+        });
 
     @override
     _MapPageState createState() => _MapPageState();
@@ -36,12 +41,14 @@ class _MapPageState extends State<MapPage> {
     Set<Marker> _markers;
     String _linhaSelected;
 
-    @override
-    void initState() {
+    _MapPageState() {
         _locationStream = _location
             .onLocationChanged()
             .listen((data) => _watchUserLocation(data));
+    }
 
+    @override
+    void initState() {
         _busToTrackState = widget.busesToTrack;
 
         Timer.periodic(Duration(seconds: 10), (timer) async {
@@ -66,6 +73,7 @@ class _MapPageState extends State<MapPage> {
         return WillPopScope(
             onWillPop: () {
                 _cancelTimer = true;
+                _busSelected.cleanBusSelected();
                 return Future.value(true);
             },
             child: Scaffold(
@@ -75,7 +83,7 @@ class _MapPageState extends State<MapPage> {
                             markers: _markers,
                             initialCameraPosition: CameraPosition(
                                 zoom: 15,
-                                target: _latLng,
+                                target: widget.initialLocation,
                             ),
                         ),
                         Container(
@@ -166,18 +174,7 @@ class _MapPageState extends State<MapPage> {
                                 RaisedButton(
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     color: Theme.of(context).primaryColor,
-                                    onPressed: () =>
-                                        Navigator.push(context, MaterialPageRoute(
-                                            builder: (BuildContext ctx) => NewBusPage(isMultiSelection: true, isForSaving: false),
-                                        )).then((res) {
-                                            if (res == null || res == false) {
-                                                _busSelected.cleanBusSelected();
-                                                return;
-                                            }
-                                            _busSelected.getAllBusSelected.forEach((bus) => setState(() => _busToTrackState.add(bus)));
-                                            _watchBusLocation();
-                                            _busSelected.cleanBusSelected();
-                                        }),
+                                    onPressed: () => _addMoreBusToTrack(context, _busSelected),
                                     child: Text(
                                         'PROCURAR OUTRO ÔNIBUS',
                                         style: TextStyle(
@@ -260,6 +257,21 @@ class _MapPageState extends State<MapPage> {
         setState(() {
             _busIcon = bitmap;
         });
+    }
+
+    Future _addMoreBusToTrack(final BuildContext context, final BusSelected busSelected) async {
+        _busToTrackState.forEach((f) => busSelected.addBusSelected = f);
+        final res = await Navigator.push(context, MaterialPageRoute(
+            builder: (BuildContext ctx) => NewBusPage(isMultiSelection: true, isForSaving: false),
+        ));
+        if (res == null || res == false) {
+            busSelected.cleanBusSelected();
+            return;
+        }
+        _busToTrackState.clear();
+        _busToTrackState = busSelected.getAllBusSelected.map((bus) => bus).toList();
+        busSelected.cleanBusSelected();
+        _watchBusLocation();
     }
 
     void _removeBusFromTracking(String linha) {

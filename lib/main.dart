@@ -52,7 +52,16 @@ class CadeVan extends StatelessWidget {
 
     Widget _handleWaitingCase(BuildContext context) =>
         Container(
-            color: Colors.purple,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    end: Alignment.bottomLeft,
+                    begin: Alignment.topRight,
+                    colors: [
+                        Color(4285547775),
+                        Colors.pink,
+                    ]
+                )
+            ),
             child: Center(
                 child: CircularProgressIndicator()
             ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 
@@ -348,10 +350,15 @@ class _CategoryCardState extends State<CategoryCard> {
 
     Future _sendToGoogleMaps(BuildContext context) async {
         setState(() => _isLoading = true);
+        final location = await Location().getLocation();
+        final userLocation = LatLng(location.latitude, location.longitude);
         try {
             Navigator.push(context, MaterialPageRoute(
                 builder: (BuildContext context) =>
-                    MapPage(busesToTrack: _busesToTrack),
+                    MapPage(
+                        busesToTrack: _busesToTrack,
+                        initialLocation: userLocation,
+                    ),
             )).whenComplete(() {
                 _isLoading = false;
                 _busesToTrack.clear();

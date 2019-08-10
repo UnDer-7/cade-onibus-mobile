@@ -66,7 +66,7 @@ class _NewBusPageState extends State<NewBusPage> {
             ),
             appBar: AppBar(
                 centerTitle: true,
-                title: Text('Novo Ônibus'),
+                title: Text('$_buttonText Ônibus'),
             ),
             body: SingleChildScrollView(
                 child: Column(

@@ -115,18 +115,31 @@ class _MapPageState extends State<MapPage> {
                                                     child: getBadgeContent(_buses[i]),
                                                 ),
                                             ),
-                                            if (_linhaSelected == _buses[i]) Card(
+                                            if (_isLoading && _linhaSelected == _buses[i]) Card(
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(5),
+                                                  child: Column(
+                                                      children: <Widget>[
+                                                          Text('Carregando'),
+                                                          SizedBox(height: 10),
+                                                          CircularProgressIndicator(),
+                                                      ],
+                                                  ),
+                                                ),
+                                            ),
+                                            if (!_isLoading && _linhaSelected == _buses[i]) Card(
                                                 color: getBusBadgeColor(_buses[i], context),
                                                 child: Column(
                                                     children: <Widget>[
-                                                        Container(
+                                                        if (!_isLoading) Container(
                                                             margin: EdgeInsets.all(10),
                                                             child: Text(
                                                                 getCardText(_buses[i]),
                                                                 style: TextStyle(color: Colors.white),
                                                             ),
                                                         ),
-                                                        RaisedButton(
+                                                        if (!_isLoading) RaisedButton(
                                                             onPressed: () => _removeBusFromTracking(_buses[i]),
                                                             elevation: 10,
                                                             color: Colors.white,
@@ -172,7 +185,7 @@ class _MapPageState extends State<MapPage> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
                                 RaisedButton(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+//                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     color: Theme.of(context).primaryColor,
                                     onPressed: () => _addMoreBusToTrack(context, _busSelected),
                                     child: Text(
@@ -191,7 +204,8 @@ class _MapPageState extends State<MapPage> {
     }
 
     String getCardText(String linha) {
-        if (_dfTransBuses[linha].isEmpty) return 'Nenhum ônibus encontrado';
+        if (_isLoading) return 'Carregando';
+        if (_dfTransBuses != null && _dfTransBuses[linha].isEmpty) return 'Nenhum ônibus encontrado';
         return 'Ônibus encontrados: ${_dfTransBuses[linha].length}';
     }
 

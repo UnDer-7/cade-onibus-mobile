@@ -333,9 +333,11 @@ class _CategoryCardState extends State<CategoryCard> {
     void _onDeletingBus(Bus bus, String id, UserProviders userProvider, BuildContext ctx) async {
         try {
             await userProvider.deleteBus(bus, id);
-        } on DioError catch(e) {
-            print('ERRO AO DELETAR ONIBUS\n$e');
-            ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
+        } on DioError catch(err, stack) {
+            print('Erro while attempt to delete bus');
+            print('ERRO: \n$err');
+            print('StackTrace: \t$stack');
+            ToastUtil.showToast('Erro ao deletar ônibus', ctx, color: ToastUtil.error, duration: 5);
         }
     }
 
@@ -364,8 +366,11 @@ class _CategoryCardState extends State<CategoryCard> {
                 _busesToTrack.clear();
                 _isMultiSelection = false;
             });
-        } catch(e)  {
-            print('Error -> $e');
+        } catch(err, stack)  {
+            print('Erro while navigating to the MapPage');
+            print('ERRO: \n$err');
+            print('StackTrace: \t$stack');
+        } finally {
             _isLoading = false;
         }
     }

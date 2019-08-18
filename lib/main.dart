@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 import './routes.dart';
@@ -10,8 +11,13 @@ import './pages/auth_page.dart';
 import './providers/user_provider.dart';
 import './providers/bus_selected.dart';
 
+import './services/jwt_service.dart';
+import './services/check_status_service.dart';
+
 import './utils/custom_colors.dart';
-import './models/user.dart';
+import './utils/jwt.dart';
+
+import './stateful_wrapper.dart';
 
 void main() {
 //    debugPaintSizeEnabled = true;
@@ -21,6 +27,8 @@ void main() {
 
 class CadeVan extends StatelessWidget {
     final UserProviders userProviders = UserProviders();
+    final StreamController<StartupState> _startupStatus = StreamController<StartupState>();
+    bool _dfTransStatus;
 
     @override
     MultiProvider build(BuildContext context) {
@@ -39,55 +47,73 @@ class CadeVan extends StatelessWidget {
                     primarySwatch: CustomColors.primaryColor,
                     accentColor: CustomColors.primaryColor,
                 ),
-                home: AuthPage(),
+                home: StatefulWrapper(
+                    onInit: () => _loadFutures(isError: true),
+                    child: StreamBuilder<StartupState>(
+                        stream: _startupStatus.stream,
+                        builder: (ctx, snap) => _handleHomePageLoad(snap),
+                    ),
+                ),
                 routes: Routes.availableRoutes,
             ),
         );
     }
 
-    get _homePage {
-//        FutureBuilder(
-//            future: UserProviders.findUser('mateus7532@gmail.com'),
-//            builder: (BuildContext ctx, AsyncSnapshot<User> snapshot) {
-//                switch (snapshot.connectionState) {
-//                    case ConnectionState.waiting: return _handleWaitingCase(context);
-//                    default: return _handleDefaultCase(snapshot);
-//                }
-//            },
-//        );
-        return AuthPage();
-    }
-    Widget _handleWaitingCase(BuildContext context) =>
-        Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    end: Alignment.bottomLeft,
-                    begin: Alignment.topRight,
-                    colors: [
-                        Color(4285547775),
-                        Colors.pink,
-                    ]
-                )
-            ),
-            child: Center(
-                child: CircularProgressIndicator()
-            ),
-        );
+    Future<void> _loadFutures({bool isError = false}) async {
+        _startupStatus.add(StartupState.BUSY);
+        try {
+            final canActivate = await JWTService.canActivate();
 
-    Widget _handleDefaultCase(AsyncSnapshot snapshot) {
-        if (snapshot.hasError) {
-            print('ERROR\n${snapshot.error}');
-            return Center(child: Text(
-                'DEU ERROR!\n${snapshot.error}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 20
-                ),
-            ));
+            if (!canActivate) {
+                _startupStatus.add(StartupState.AUTH_PAGE);
+                return;
+            }
+
+            final token = await JWT.getToken();
+            final user = await UserProviders.findUser(token.payload.email);
+            _dfTransStatus = await CheckStatusService.isDFTransAvailable();
+            userProviders.setCurrentUser(user);
+
+            _startupStatus.add(StartupState.HOME_PAGE);
+        } catch (err, stack) {
+            print('Erro ao carregar Futures de inicialização');
+            print('ERROR: \n$err');
+            print('StackTrack: \t$stack');
+            _startupStatus.add(StartupState.ERROR);
+            throw err;
+        }
+    }
+
+    _handleHomePageLoad(AsyncSnapshot<StartupState> snap) {
+        if (!snap.hasData || snap.data == StartupState.BUSY) {
+            return Center(
+                child: CircularProgressIndicator(),
+            );
         }
 
-        final User user = snapshot.data;
-        userProviders.setCurrentUser(user);
-        return HomePage();
+        if (snap.hasError) {
+            print('User will be send to AuthPage because snapShot has error');
+            print('SNAP_SHOT ERROR\n${snap.error}');
+            return AuthPage();
+        }
+
+        if (!snap.hasData || snap.data == StartupState.ERROR) {
+            print('User will be send to AuthPage because StartupState is ${snap.data}');
+            return AuthPage();
+        }
+
+        if (!snap.hasData || snap.data == StartupState.AUTH_PAGE) {
+            return AuthPage();
+        }
+
+        if (!snap.hasData || snap.data == StartupState.HOME_PAGE) {
+            return HomePage(_dfTransStatus);
+        }
+
+        print('User will be send to AuthPage because it didnt fall in any of the IFs');
+        print('SNAP_DATA - \t${snap.data}');
+        return AuthPage();
     }
 }
+
+enum StartupState { BUSY, ERROR, HOME_PAGE, AUTH_PAGE }

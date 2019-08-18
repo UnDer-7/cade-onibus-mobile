@@ -193,17 +193,19 @@ class _NewBusPageState extends State<NewBusPage> {
             }
 
             setState(() => _bus);
-        } on DioError catch(e) {
-            print('Stack\n$e');
-            if (e.response == null) {
+        } on DioError catch(err, stack) {
+            if (err.response == null) {
                 _showToast('Algo deu errado', color: ToastUtil.error);
                 return;
             }
-            if (e.response.statusCode == 400) {
+            if (err.response.statusCode == 400) {
                 _showToast('Pesquisa invalida', color: ToastUtil.error);
                 return;
             }
 
+            print('ERRO while attempt to get bus from DFTrans');
+            print('ERRO: \n$err');
+            print('StackTrace: \t$stack');
             _showToast('Algo deu errado', color: ToastUtil.error, duration: 5);
         } finally {
             _updateLoadingState = false;

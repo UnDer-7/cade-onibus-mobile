@@ -15,6 +15,9 @@ import '../providers/user_provider.dart';
 import '../providers/bus_selected.dart';
 
 class HomePage extends StatelessWidget {
+    final bool isDFTransAvailable;
+
+    HomePage(this.isDFTransAvailable);
 
     @override
     Scaffold build(BuildContext context) {

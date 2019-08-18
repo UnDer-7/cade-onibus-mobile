@@ -309,9 +309,11 @@ class _MapPageState extends State<MapPage> {
                 if (_deletedLines.contains(item.numero)) return;
                 _dfTransBuses[item.numero] = busFound;
                 _addBusMarker();
-            } on DioError catch(e) {
-                ToastUtil.showToast('Algo deu errado', context, color: ToastUtil.error);
-                print('ERRO NO MAPS_PAGE\n$e');
+            } on DioError catch(err, stack) {
+                print('Erro while attempt to track bus');
+                print('ERROR: \n$err');
+                print('StackTrace: \t$stack');
+                ToastUtil.showToast('Erro ao rastrear ôniobus', context, color: ToastUtil.error);
             } finally {
                 _isLoading = false;
             }

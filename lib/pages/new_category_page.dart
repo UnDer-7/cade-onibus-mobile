@@ -400,12 +400,14 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
             }
             busSelected.cleanBusSelected();
             Navigator.pop(context);
-        } on DioError catch(e) {
-            print('Error -> \n $e');
-            if (e.response.statusCode == 400 && e.response.data == 'resource-already-exists') {
+        } on DioError catch(err, stack) {
+            if (err.response.statusCode == 400 && err.response.data == 'resource-already-exists') {
                 ToastUtil.showToast('Jâ existe uma categoria com esse titulo', ctx, color: ToastUtil.warning);
             }else {
-                ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
+                print('Erro while attempt to save a category');
+                print('ERRO: \n$err');
+                print('StackTrace: \t$stack');
+                ToastUtil.showToast('Erro salvar a categoria', ctx, color: ToastUtil.error, duration: 5);
             }
         }
     }

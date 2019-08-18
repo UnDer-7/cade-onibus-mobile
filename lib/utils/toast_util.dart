@@ -8,6 +8,10 @@ abstract class ToastUtil {
     static final Color error = Colors.red;
     static final Color success = Colors.green;
 
+    static final int bottom = 0;
+    static final int center = 1;
+    static final int top = 2;
+
     /// <h1>showToast</h1>
     /// <h3>Show a Toast</h3>
     static void showToast(
@@ -15,12 +19,12 @@ abstract class ToastUtil {
         BuildContext context,
         {
             Color color = Colors.green,
-            int gravity = 2,
+            int position = 2,
             int duration = 4,
         }) => Toast.show(
         msg,
         context,
-        gravity: gravity,
+        gravity: position,
         backgroundColor: color,
         textColor: CustomColors.switchColor(color),
         duration: duration,

@@ -191,8 +191,10 @@ class _BusCategoryState extends State<BusCategory> with SingleTickerProviderStat
     void _onDeletingCategory(UserProviders userProvider, BuildContext ctx) {
         try {
             userProvider.deleteCategory(widget._category);
-        } on DioError catch (e) {
-            print('ERRO:\n$e');
+        } on DioError catch (err, stack) {
+            print('Error while attempt to delete category');
+            print('ERROR: \n $err');
+            print('StackTrace: \t $stack');
             ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
         }
     }

@@ -25,8 +25,10 @@ abstract class CheckStatusService {
                 return true;
             }
             return false;
-        } on SocketException catch (_) {
+        } on SocketException catch (err, stack) {
             print('Unable to establish a connection with DFTrans');
+            print('StackTrace: \t$stack');
+            print('ERROR: \n$err');
             return false;
         } catch(err, stack) {
             print('Erro while attempt to verify connection with DFTrans');

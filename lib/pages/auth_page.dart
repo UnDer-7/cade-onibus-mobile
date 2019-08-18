@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../resources/auth_resource.dart';
 import '../resources/resource_exception.dart';
@@ -24,7 +25,13 @@ class _AuthPageState extends State<AuthPage> {
     final GlobalKey<FormState> _formKey = GlobalKey();
     String _password;
     String _email;
-    bool isLoading = false;
+    bool _isLoading = false;
+    final GoogleSignIn _googleSignIn = GoogleSignIn(
+        scopes: [
+            'email',
+            'https://www.googleapis.com/auth/contacts.readonly',
+        ],
+    );
 
     @override
     Widget build(BuildContext context) {
@@ -110,7 +117,7 @@ class _AuthPageState extends State<AuthPage> {
                                                     SizedBox(height: 15),
                                                     _buildEntrarButton(userProviders),
                                                     _buildDivider(),
-                                                    _buildGoogleButton(),
+                                                    _buildGoogleButton(userProviders),
                                                 ],
                                             ),
                                         ),
@@ -144,12 +151,12 @@ class _AuthPageState extends State<AuthPage> {
                             ),
                         ),
                     ),
-                    if (isLoading) Container(
+                    if (_isLoading) Container(
                         decoration: BoxDecoration(
                             color: Theme.of(context).primaryColor.withOpacity(0.5),
                         ),
                     ),
-                    if (isLoading) Center(
+                    if (_isLoading) Center(
                         child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
                         ),
@@ -193,7 +200,7 @@ class _AuthPageState extends State<AuthPage> {
             ]
         );
 
-    Widget _buildGoogleButton() =>
+    Widget _buildGoogleButton(UserProviders userProvider) =>
         Padding(
             padding: EdgeInsets.only(top: 5),
             child: OutlineButton(
@@ -202,7 +209,7 @@ class _AuthPageState extends State<AuthPage> {
                     width: 1,
                     color: Theme.of(context).primaryColor,
                 ),
-                onPressed: () {},
+                onPressed: () => _singInWithGoogle(userProvider),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -242,35 +249,53 @@ class _AuthPageState extends State<AuthPage> {
             ],
         );
 
+    Future<void> _singInWithGoogle(UserProviders userProvider) async {
+        try {
+            final res = await _googleSignIn.signIn();
+            setState(() => _isLoading = true);
+            final response = await AuthResource.loginWithGoogle(res.email, res.id);
+            await _singIn(response, userProvider);
+        } catch (err, stack) {
+            print('Erro while attempt to singIn with Google');
+            print('ERROR: \n$err');
+            print('StackTrace: \t$stack');
+            ToastUtil.showToast('Erro tentar fazer login com Google', context, color: ToastUtil.error);
+        } finally {
+            setState(() => _isLoading = false);
+        }
+    }
+
     void _loginWithEmail(UserProviders userProvider) async {
         if (!_formKey.currentState.validate()) return;
         _formKey.currentState.save();
-
-        setState(() => isLoading = true);
-
+        setState(() => _isLoading = true);
         try {
             if (!await _isInternetOn(context)) {
-                setState(() => isLoading = false);
+                setState(() => _isLoading = false);
                 return;
             }
             final response = await AuthResource.loginWithEmail(_email, _password);
-            final token = await JWTService.saveUser(response);
-            final user = await UserProviders.findUser(token.payload.email);
-            userProvider.setCurrentUser(user);
-
-            final isDFTransOn = await CheckStatusService.isDFTransAvailable();
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (BuildContext ctx) => HomePage(isDFTransOn))
-            );
+            await _singIn(response, userProvider);
         } on ResourceException catch(err) {
             ToastUtil.showToast(err.msg, context, color: ToastUtil.error);
         } catch(generic, stack) {
             print('StackTrace\n$stack');
             ToastUtil.showToast('Algo deu errado', context, color: ToastUtil.error);
         } finally {
-            setState(() => isLoading = false);
+            setState(() => _isLoading = false);
         }
+    }
+
+    Future<void> _singIn(final String response, final UserProviders userProvider) async {
+        final token = await JWTService.saveUser(response);
+        final user = await UserProviders.findUser(token.payload.email);
+        userProvider.setCurrentUser(user);
+
+        final isDFTransOn = await CheckStatusService.isDFTransAvailable();
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (BuildContext ctx) => HomePage(isDFTransOn))
+        );
     }
 
     Future<bool> _isInternetOn(BuildContext context) async {

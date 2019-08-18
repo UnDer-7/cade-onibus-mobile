@@ -1,0 +1,44 @@
+{
+  "project_info": {
+    "project_number": "83439041810",
+    "firebase_url": "https://cade-onibus-prod.firebaseio.com",
+    "project_id": "cade-onibus-prod",
+    "storage_bucket": "cade-onibus-prod.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83439041810:android:50ac34e0be644612",
+        "android_client_info": {
+          "package_name": "com.cade.cade_onibus_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "83439041810-l60ueg55ivs0fvqcdiqoip343glnaa90.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cade.cade_onibus_mobile",
+            "certificate_hash": "a0988e8633f1979fa99234d0ef62d833598c4dc9"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAh3peGhYWplXDgzaI_ixCf9IOjqOcZ1Us"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "83439041810-bnmf6jsjl2ep6f5l0uqqlv5ikdfq9usr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

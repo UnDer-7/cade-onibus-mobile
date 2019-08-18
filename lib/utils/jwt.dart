@@ -19,6 +19,7 @@ abstract class JWT {
     static Future<Token> getToken() async {
         try {
             final preferences = await SharedPreferences.getInstance();
+//            preferences.remove(SharedPreferencesKeys.TOKEN.toString());
             final jsonRes = preferences.getString(SharedPreferencesKeys.TOKEN.toString());
             if (jsonRes == null) return null;
             return Token.fromSharedPreferences(json.decode(jsonRes));

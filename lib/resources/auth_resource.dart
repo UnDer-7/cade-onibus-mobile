@@ -1,5 +1,6 @@
-import 'package:dio/dio.dart';
 import 'dart:convert';
+
+import 'package:dio/dio.dart';
 
 import './resource_exception.dart';
 import '../utils/api_util.dart';

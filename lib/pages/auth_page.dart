@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../resources/auth_resource.dart';
 import '../resources/resource_exception.dart';
+import '../resources/users_resource.dart';
 
 import '../utils/toast_util.dart';
 import '../utils/validations.dart';
@@ -68,7 +70,10 @@ class _AuthPageState extends State<AuthPage> {
                             ),
                         ),
                     ),
-                    SvgPicture.asset('assets/images/bus_stop_backgroud.svg'),
+                    SvgPicture.asset(
+                        'assets/images/bus_stop_backgroud.svg',
+                        semanticsLabel: 'background',
+                    ),
                     Align(
                         alignment: Alignment.bottomCenter,
                         child: SingleChildScrollView(
@@ -209,7 +214,7 @@ class _AuthPageState extends State<AuthPage> {
                     width: 1,
                     color: Theme.of(context).primaryColor,
                 ),
-                onPressed: () => _singInWithGoogle(userProvider),
+                onPressed: () => _loginWithGoogle(userProvider),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -249,12 +254,18 @@ class _AuthPageState extends State<AuthPage> {
             ],
         );
 
-    Future<void> _singInWithGoogle(UserProviders userProvider) async {
+    Future<void> _loginWithGoogle(UserProviders userProvider) async {
+        var googleResponse;
         try {
-            final res = await _googleSignIn.signIn();
+            googleResponse = await _googleSignIn.signIn();
             setState(() => _isLoading = true);
-            final response = await AuthResource.loginWithGoogle(res.email, res.id);
+            final response = await AuthResource.loginWithGoogle(googleResponse.email, googleResponse.id);
             await _singIn(response, userProvider);
+        } on ResourceException catch (err) {
+            if (err.msg == 'Usuário não encontrado') {
+                print('Usuario n encontrado');
+                await _createUserWithGoogle(googleResponse, userProvider);
+            }
         } catch (err, stack) {
             print('Erro while attempt to singIn with Google');
             print('ERROR: \n$err');
@@ -265,7 +276,7 @@ class _AuthPageState extends State<AuthPage> {
         }
     }
 
-    void _loginWithEmail(UserProviders userProvider) async {
+    Future<void> _loginWithEmail(UserProviders userProvider) async {
         if (!_formKey.currentState.validate()) return;
         _formKey.currentState.save();
         setState(() => _isLoading = true);
@@ -296,6 +307,27 @@ class _AuthPageState extends State<AuthPage> {
             context,
             MaterialPageRoute(builder: (BuildContext ctx) => HomePage(isDFTransOn))
         );
+    }
+
+    Future<void> _createUserWithGoogle(GoogleSignInAccount account, UserProviders userProvider) async {
+        try {
+            final user = await UserResource.createUserWithGoogle(account);
+            final response = await AuthResource.loginWithGoogle(user.email, user.googleId);
+            await _singIn(response, userProvider);
+        } on DioError catch(err) {
+            print('Request erro while creating user with Google');
+            print('ERROR: \n$err');
+            print('Response: \t${err.response}');
+            print('StatusCode: \t${err.response.statusCode}');
+            ToastUtil.showToast('Não foi possivel criar conta', context, color: ToastUtil.error);
+            return null;
+        } catch (generic, stack) {
+            print('Error while creating user with Google');
+            print('ERROR: \n$generic');
+            print('StackTrace: \t$stack');
+            ToastUtil.showToast('Algo deu errado ao criar conta', context, color: ToastUtil.error);
+            throw generic;
+        }
     }
 
     Future<bool> _isInternetOn(BuildContext context) async {

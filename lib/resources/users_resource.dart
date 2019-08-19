@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../utils/api_util.dart';
 import '../models/user.dart';
@@ -10,6 +13,18 @@ abstract class UserResource {
 
     static Future<User> getUser(String email) {
         return _dio.get(_resourceUrl + '/$email')
+            .then((res) => res.data)
+            .then((user) => User.fromJSON(user));
+    }
+
+    static Future<User> createUserWithGoogle(final GoogleSignInAccount google) async {
+        final Map<String, String> user = {
+            'email': google.email,
+            'google_id': google.id,
+            'name': google.displayName,
+        };
+
+        return _dio.post(_resourceUrl, data: json.encode(user))
             .then((res) => res.data)
             .then((user) => User.fromJSON(user));
     }

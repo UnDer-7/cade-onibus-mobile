@@ -107,7 +107,7 @@ class CadeVan extends StatelessWidget {
         }
 
         if (!snap.hasData || snap.data == StartupState.HOME_PAGE) {
-            return HomePage(_dfTransStatus);
+            return HomePage(_dfTransStatus, false);
         }
 
         print('User will be send to AuthPage because it didnt fall in any of the IFs');

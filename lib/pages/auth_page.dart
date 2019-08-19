@@ -141,6 +141,8 @@ class _AuthPageState extends State<AuthPage> {
                     Align(
                         alignment: Alignment.bottomCenter,
                         child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20),
+                            padding: EdgeInsets.only(bottom: 10),
                             width: double.infinity,
                             child: RaisedButton(
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
@@ -297,7 +299,7 @@ class _AuthPageState extends State<AuthPage> {
         }
     }
 
-    Future<void> _singIn(final String response, final UserProviders userProvider) async {
+    Future<void> _singIn(final String response, final UserProviders userProvider, {final bool isNewUser = false}) async {
         final token = await JWTService.saveUser(response);
         final user = await UserProviders.findUser(token.payload.email);
         userProvider.setCurrentUser(user);
@@ -305,7 +307,7 @@ class _AuthPageState extends State<AuthPage> {
         final isDFTransOn = await CheckStatusService.isDFTransAvailable();
         Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (BuildContext ctx) => HomePage(isDFTransOn))
+            MaterialPageRoute(builder: (BuildContext ctx) => HomePage(isDFTransOn, isNewUser))
         );
     }
 
@@ -313,7 +315,7 @@ class _AuthPageState extends State<AuthPage> {
         try {
             final user = await UserResource.createUserWithGoogle(account);
             final response = await AuthResource.loginWithGoogle(user.email, user.googleId);
-            await _singIn(response, userProvider);
+            await _singIn(response, userProvider, isNewUser: true);
         } on DioError catch(err) {
             print('Request erro while creating user with Google');
             print('ERROR: \n$err');

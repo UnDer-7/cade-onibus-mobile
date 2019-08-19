@@ -14,13 +14,27 @@ import '../pages/map_page.dart';
 import '../providers/user_provider.dart';
 import '../providers/bus_selected.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
     final bool isDFTransAvailable;
-
-    HomePage(this.isDFTransAvailable);
+    final bool _isNewUser;
+    HomePage(this.isDFTransAvailable, this._isNewUser);
 
     @override
+    _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+    @override
+    void initState() {
+        if (widget._isNewUser) {
+            Future.delayed(Duration.zero, () => _loadDialog(context));
+        }
+        super.initState();
+    }
+    @override
     Scaffold build(BuildContext context) {
+        print('IS NEW USER -> ${widget._isNewUser}');
         final BusSelected _busSelected = Provider.of<BusSelected>(context, listen: false);
 
         return Scaffold(
@@ -33,17 +47,29 @@ class HomePage extends StatelessWidget {
                 animatedIconTheme: IconThemeData(size: 22.0),
                 children: [
                     SpeedDialChild(
-                        onTap: () => _onTrackBus(context, _busSelected),
+                        label: 'Rastrar Ônibus',
                         child: Icon(Icons.directions_bus),
-                        label: 'Rastrar Ônibus'
+                        onTap: () => _onTrackBus(context, _busSelected),
                     ),
                     SpeedDialChild(
+                        label: 'Nova Categoria',
+                        child: Icon(Icons.category),
                         onTap: () =>
                             Navigator.pushNamed(
-                                context, Routes.NEW_CATEGORY_PAGE),
-                        child: Icon(Icons.category),
-                        label: 'Nova Categoria'
+                                context, Routes.NEW_CATEGORY_PAGE)
                     ),
+                    SpeedDialChild(
+                        label: 'Melhorias/Bugs',
+                        child: Icon(Icons.bug_report)
+                    ),
+                    SpeedDialChild(
+                        label: 'Sobre o app',
+                        child: Icon(Icons.info),
+                    ),
+                    SpeedDialChild(
+                        label: 'Sair',
+                        child: Icon(Icons.exit_to_app),
+                    )
                 ],
             ),
             body: Consumer<UserProviders>(
@@ -57,7 +83,31 @@ class HomePage extends StatelessWidget {
         );
     }
 
-    Future _onTrackBus(BuildContext context, final BusSelected busSelected) async {
+    Future<void> _loadDialog(BuildContext context) async {
+        showDialog(
+            context: context,
+            builder: (BuildContext ctx) =>
+                AlertDialog(
+                    title: Text('Vamos criar uma categoria?'),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 5,
+                    content: Text('Uma categoria serve para separa seus ônibus.\n'
+                        'Tente criar uma chamada Casa com ônibus que vão para sua casa'),
+                    actions: <Widget>[
+                        FlatButton(
+                            onPressed: () {
+                                Navigator.pop(ctx);
+                                Navigator.pushNamed(context, Routes.NEW_CATEGORY_PAGE);
+                            },
+                            child: Text('Criar categoria'),
+                        ),
+                    ],
+                ),
+        );
+    }
+
+    Future<void> _onTrackBus(BuildContext context, final BusSelected busSelected) async {
         final userLocation = await Location().getLocation();
 
         final response = await Navigator.push(

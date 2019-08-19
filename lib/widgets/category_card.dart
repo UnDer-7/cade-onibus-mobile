@@ -200,7 +200,7 @@ class _CategoryCardState extends State<CategoryCard> {
             );
         }
 
-        if (widget._category.buses.isEmpty) {
+        if (widget._category.buses.isEmpty && widget._category.title != 'Todos') {
             return Container(
                 width: double.infinity,
                 child: Center(
@@ -213,6 +213,22 @@ class _CategoryCardState extends State<CategoryCard> {
                     ),
                 ),
             );
+        }
+
+        if (widget._category.buses.isEmpty && widget._category.title == 'Todos') {
+            return Container(
+                width: double.infinity,
+                child: Center(
+                    child: Text(
+                        'Crie um categoria clicando no botão inferior e adicione ônibus nela',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                        ),
+                    ),
+                ),
+            );
+
         }
 
         return ListView.separated(

@@ -258,7 +258,12 @@ class _AuthPageState extends State<AuthPage> {
                 ),
                 Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Text("Ou"),
+                    child: Text(
+                        'Ou',
+                        style: TextStyle(
+                            color: Colors.white,
+                        ),
+                    ),
                 ),
                 Expanded(
                     child: Divider(
@@ -271,12 +276,9 @@ class _AuthPageState extends State<AuthPage> {
     Widget _buildGoogleButton(UserProviders userProvider) =>
         Padding(
             padding: EdgeInsets.only(top: 5),
-            child: OutlineButton(
+            child: RaisedButton(
+                color: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                borderSide: BorderSide(
-                    width: 1,
-                    color: Theme.of(context).primaryColor,
-                ),
                 onPressed: () => _loginWithGoogle(userProvider),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

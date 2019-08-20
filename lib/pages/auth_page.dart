@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,9 +26,14 @@ class AuthPage extends StatefulWidget {
 
 class _AuthPageState extends State<AuthPage> {
     final GlobalKey<FormState> _formKey = GlobalKey();
+
     String _password;
     String _email;
     bool _isLoading = false;
+    bool _showPassword = false;
+    bool _hasEmailFormError = false;
+    bool _hasPasswordFormError = false;
+
     final GoogleSignIn _googleSignIn = GoogleSignIn(
         scopes: [
             'email',
@@ -81,50 +87,105 @@ class _AuthPageState extends State<AuthPage> {
                                 margin: EdgeInsets.only(bottom: 90),
                                 width: _width / 1.3,
                                 height: _height / 2.3,
-                                child: Card(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    child: Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: Form(
-                                            key: _formKey,
-                                            child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                children: <Widget>[
-                                                    TextFormField(
-                                                        onSaved: (value) => _email = value,
-                                                        keyboardType: TextInputType.emailAddress,
-                                                        validator: (value) {
-                                                            final defaultVal = Validations.defaultValidator(value, 2);
-                                                            if (defaultVal != null) return defaultVal;
-
-                                                            final email = Validations.isEmailValid(input: value);
-                                                            if (email != null) return email;
-
-                                                            return null;
-                                                        },
-                                                        decoration: InputDecoration(
-                                                            labelText: 'E-mail',
+                                child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Form(
+                                        key: _formKey,
+                                        child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                                            children: <Widget>[
+                                                TextFormField(
+                                                    onSaved: (value) => _email = value,
+                                                    keyboardType: TextInputType.emailAddress,
+                                                    validator: _emailFormValidation,
+                                                    decoration: InputDecoration(
+                                                        labelText: 'E-mail',
+                                                        hasFloatingPlaceholder: false,
+                                                        errorStyle: TextStyle(
+                                                            color: Colors.white,
+                                                        ),
+                                                        errorBorder: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(20),
+                                                            borderSide: BorderSide(
+                                                                color: Theme.of(context).errorColor,
+                                                                width: 3,
+                                                            ),                                                        ),
+                                                        enabledBorder: OutlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                                color: Theme.of(context).primaryColor,
+                                                                width: 3,
+                                                            ),
+                                                            borderRadius: BorderRadius.circular(20),
+                                                        ),
+                                                        border: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(20),
+                                                        ),
+                                                        focusedBorder: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(20),
+                                                            borderSide: BorderSide(
+                                                                color: Theme.of(context).primaryColor,
+                                                                width: 3,
+                                                            )
+                                                        ),
+                                                        filled: true,
+                                                        fillColor: Colors.white,
+                                                        suffixIcon: Icon(
+                                                            Icons.email,
+                                                            color: _getEmailIconColor,
                                                         ),
                                                     ),
-                                                    TextFormField(
-                                                        onSaved: (value) => _password = value,
-                                                        obscureText: true,
-                                                        validator: (value) {
-                                                            final required = Validations.defaultValidator(value, 3);
-                                                            if (required != null) return required;
-
-                                                            return null;
-                                                        },
-                                                        decoration: InputDecoration(
-                                                            labelText: 'Password',
+                                                ),
+                                                SizedBox(height: 10),
+                                                TextFormField(
+                                                    onSaved: (value) => _password = value,
+                                                    obscureText: !_showPassword,
+                                                    validator: _passwordFormValidation,
+                                                    decoration: InputDecoration(
+                                                        labelText: 'Senha',
+                                                        hasFloatingPlaceholder: false,
+                                                        errorStyle: TextStyle(
+                                                            color: Colors.white,
+                                                        ),
+                                                        errorBorder: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(20),
+                                                            borderSide: BorderSide(
+                                                                color: Theme.of(context).errorColor,
+                                                                width: 3,
+                                                            ),
+                                                        ),
+                                                        enabledBorder: OutlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                                color: Theme.of(context).primaryColor,
+                                                                width: 3,
+                                                            ),
+                                                            borderRadius: BorderRadius.circular(20),
+                                                        ),
+                                                        border: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(20),
+                                                        ),
+                                                        focusedBorder: OutlineInputBorder(
+                                                            borderRadius: BorderRadius.circular(20),
+                                                            borderSide: BorderSide(
+                                                                color: Theme.of(context).primaryColor,
+                                                                width: 3,
+                                                            )
+                                                        ),
+                                                        filled: true,
+                                                        fillColor: Colors.white,
+                                                        suffixIcon: IconButton(
+                                                            icon: Icon(
+                                                                _gePasswordIcon,
+                                                                color: _getPasswordIconColor,
+                                                            ),
+                                                            onPressed: () => setState(() => _showPassword = !_showPassword),
                                                         ),
                                                     ),
-                                                    SizedBox(height: 15),
-                                                    _buildEntrarButton(userProviders),
-                                                    _buildDivider(),
-                                                    _buildGoogleButton(userProviders),
-                                                ],
-                                            ),
+                                                ),
+                                                SizedBox(height: 15),
+                                                _buildEntrarButton(userProviders),
+                                                _buildDivider(),
+                                                _buildGoogleButton(userProviders),
+                                            ],
                                         ),
                                     ),
                                 ),
@@ -255,6 +316,59 @@ class _AuthPageState extends State<AuthPage> {
                 ),
             ],
         );
+
+    IconData get _gePasswordIcon {
+        if (_showPassword) return FontAwesomeIcons.eye;
+        return FontAwesomeIcons.eyeSlash;
+    }
+
+    Color get _getEmailIconColor {
+        if (_hasEmailFormError) return Colors.red;
+        return null;
+    }
+
+    Color get _getPasswordIconColor {
+        if (_hasPasswordFormError) return Colors.red;
+        return null;
+    }
+
+    String _emailFormValidation(String value) {
+        final defaultVal = Validations.defaultValidator(value, 2);
+        if (defaultVal != null) {
+            setState(() => _setEmailFormErro = true);
+            return defaultVal;
+        }
+
+        final email = Validations.isEmailValid(input: value);
+        if (email != null) {
+            setState(() => _setEmailFormErro = true);
+            return email;
+        }
+
+        setState(() => _setEmailFormErro = false);
+        return null;
+
+    }
+
+    String _passwordFormValidation(String value) {
+        final required = Validations.defaultValidator(value, 3);
+        if (required != null) {
+            _setPasswordFormErro = true;
+            return required;
+        }
+
+        _setPasswordFormErro = false;
+        return null;
+
+    }
+
+    set _setPasswordFormErro(bool value) {
+        setState(() => _hasPasswordFormError = value);
+    }
+
+    set _setEmailFormErro(bool value) {
+        setState(() => _hasEmailFormError = value);
+    }
 
     Future<void> _loginWithGoogle(UserProviders userProvider) async {
         var googleResponse;

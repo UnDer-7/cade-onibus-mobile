@@ -1,59 +1,51 @@
 import 'package:flutter/material.dart';
 
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../resources/users_resource.dart';
 import '../resources/auth_resource.dart';
 import '../resources/resource_exception.dart';
-import '../resources/users_resource.dart';
-
-import '../utils/toast_util.dart';
-import '../utils/validations.dart';
 
 import '../services/jwt_service.dart';
 import '../services/check_status_service.dart';
-import '../services/logger_service.dart';
+import '../services/service_exception.dart';
 
-import '../widgets/ou_divider.dart';
-import '../routes.dart';
-import '../providers/user_provider.dart';
+import '../utils/validations.dart';
+import '../utils/toast_util.dart';
+
 import '../pages/home_page.dart';
+import '../widgets/ou_divider.dart';
+import '../providers/user_provider.dart';
 
-class AuthPage extends StatefulWidget {
+
+class NewAccountPage extends StatefulWidget {
     @override
-    _AuthPageState createState() => _AuthPageState();
+    _NewAccountPageState createState() => _NewAccountPageState();
 }
 
-class _AuthPageState extends State<AuthPage> {
-    final LoggerService logger = LoggerService('_AuthPageState');
+class _NewAccountPageState extends State<NewAccountPage> {
     final GlobalKey<FormState> _formKey = GlobalKey();
+    bool _isLoading = false;
 
     String _password;
     String _email;
-    bool _isLoading = false;
+    String _name;
     bool _showPassword = false;
     bool _hasEmailFormError = false;
     bool _hasPasswordFormError = false;
+    bool _hasNameFormError = false;
 
-
-    final GoogleSignIn _googleSignIn = GoogleSignIn(
-        scopes: [
-            'email',
-            'https://www.googleapis.com/auth/contacts.readonly',
-        ],
-    );
+    @override
+    void initState() {
+        super.initState();
+    }
 
     @override
     Widget build(BuildContext context) {
-        final double _width = MediaQuery.of(context).size.width;
-        final double _height = MediaQuery.of(context).size.height;
+        final UserProviders _userProvider = Provider.of<UserProviders>(context);
         final double _keyboardOpen = MediaQuery.of(context).viewInsets.bottom;
-
-        final UserProviders userProviders = Provider.of<UserProviders>(context);
-        logger.info(text: 'Caralho viado', methodName: 'build');
 
         return Scaffold(
             resizeToAvoidBottomInset: false,
@@ -85,20 +77,77 @@ class _AuthPageState extends State<AuthPage> {
                             ),
                         ),
                     ),
+                    Padding(
+                        padding: EdgeInsets.only(top: 100),
+                        child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Text(
+                                'Nova Conta',
+                                style: TextStyle(
+                                    fontFamily: 'Quicksand',
+                                    fontSize: 30,
+                                    color: Colors.white,
+                                ),
+                            ),
+                        ),
+                    ),
                     SvgPicture.asset(
                         'assets/images/bus_stop_backgroud.svg',
                         semanticsLabel: 'background',
                     ),
                     Positioned(
-                        left: 20,
-                        right: 20,
                         bottom: MediaQuery.of(context).viewInsets.bottom,
-                        child: Padding(
-                            padding: EdgeInsets.only(bottom: _getFormPaddingButton(_keyboardOpen, _height)),
-                            child: Form(
-                                key: _formKey,
+                        left: 0,
+                        right: 0,
+                        child: Form(
+                            key: _formKey,
+                            child: Padding(
+                                padding: EdgeInsets.only(bottom: _getFormPaddingButton(_keyboardOpen), left: 20, right: 20),
                                 child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
                                     children: <Widget>[
+                                        TextFormField(
+                                            onSaved: (value) => _name = value,
+                                            keyboardType: TextInputType.text,
+                                            validator: _nameFormValidation,
+                                            decoration: InputDecoration(
+                                                labelText: 'Nome',
+                                                hasFloatingPlaceholder: false,
+                                                errorStyle: TextStyle(
+                                                    color: Colors.white,
+                                                ),
+                                                errorBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    borderSide: BorderSide(
+                                                        color: Theme.of(context).errorColor,
+                                                        width: 3,
+                                                    ),                                                        ),
+                                                enabledBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Theme.of(context).primaryColor,
+                                                        width: 3,
+                                                    ),
+                                                    borderRadius: BorderRadius.circular(20),
+                                                ),
+                                                border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    borderSide: BorderSide(
+                                                        color: Theme.of(context).primaryColor,
+                                                        width: 3,
+                                                    )
+                                                ),
+                                                filled: true,
+                                                fillColor: Colors.white,
+                                                suffixIcon: Icon(
+                                                    Icons.person,
+                                                    color: _getNameIconColor,
+                                                ),
+                                            ),
+                                        ),
+                                        SizedBox(height: 10),
                                         TextFormField(
                                             onSaved: (value) => _email = value,
                                             keyboardType: TextInputType.emailAddress,
@@ -191,48 +240,23 @@ class _AuthPageState extends State<AuthPage> {
                             ),
                         ),
                     ),
-                    Padding(
-                        padding: EdgeInsets.only(bottom: _height / 9, right: 20, left: 20),
+                    Container(
+                        padding: EdgeInsets.only(bottom: 90, left: 20, right: 20),
                         child: Align(
                             alignment: Alignment.bottomCenter,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                    SizedBox(height: 15),
-                                    _buildEntrarButton(userProviders),
-                                    OuDivider(),
-                                    _buildGoogleButton(userProviders),
-                                ],
-                            ),
+                            child: _buildSubmitButton(_userProvider),
+                        ),
+                    ),
+                    Padding(
+                        padding: EdgeInsets.only(bottom: 60),
+                        child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: OuDivider(),
                         ),
                     ),
                     Align(
                         alignment: Alignment.bottomCenter,
-                        child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 20),
-                            padding: EdgeInsets.only(bottom: 37),
-                            width: double.infinity,
-                            child: RaisedButton(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                                elevation: 5,
-                                color: Colors.white,
-                                onPressed: () {},
-                                child: Text(
-                                    'Só quero procurar um ônibus',
-                                    style: TextStyle(
-                                        color: Colors.pink,
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                    Container(
-                        margin: EdgeInsets.only(bottom: 0),
-                        child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: _buildNewUserButton(),
-                        ),
+                        child: _buildGoogleButton(_userProvider),
                     ),
                     if (_isLoading) Container(
                         decoration: BoxDecoration(
@@ -249,26 +273,14 @@ class _AuthPageState extends State<AuthPage> {
         );
     }
 
-    RaisedButton _buildEntrarButton(UserProviders userProviders) =>
-        RaisedButton(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            color: Theme.of(context).primaryColor,
-            onPressed: () => _loginWithEmail(userProviders),
-            child: Text(
-                'Entrar',
-                style: TextStyle(
-                    color: Colors.white,
-                ),
-            ),
-        );
-
     Widget _buildGoogleButton(UserProviders userProvider) =>
         Padding(
-            padding: EdgeInsets.only(top: 5),
+            padding: EdgeInsets.only(bottom: 15, left: 20, right: 20),
             child: RaisedButton(
                 color: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                onPressed: () => _loginWithGoogle(userProvider),
+//                onPressed: () => _loginWithGoogle(userProvider),
+                onPressed: () => {},
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -279,38 +291,21 @@ class _AuthPageState extends State<AuthPage> {
                         ),
                         Padding(
                             padding: EdgeInsets.only(left: 10),
-                            child: Text('Entrar com Google'),
+                            child: Text('Cria conta usando Google'),
                         ),
                     ],
                 ),
             ),
         );
 
-    Row _buildNewUserButton() =>
-        Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-                Text(
-                    'Novo usuario?',
-                    style: TextStyle(
-                        color: Colors.white,
-                    ),
-                ),
-                FlatButton(
-                    onPressed: () => Navigator.pushNamed(context, Routes.NEW_ACCOUNT_PAGE),
-                    child: Text(
-                        'Criar Conta',
-                        style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                        ),
-                    ),
-                ),
-            ],
-        );
-
     IconData get _gePasswordIcon {
         if (_showPassword) return FontAwesomeIcons.eye;
         return FontAwesomeIcons.eyeSlash;
+    }
+
+    Color get _getNameIconColor {
+        if (_hasNameFormError) return Colors.red;
+        return null;
     }
 
     Color get _getEmailIconColor {
@@ -323,9 +318,21 @@ class _AuthPageState extends State<AuthPage> {
         return null;
     }
 
-    double _getFormPaddingButton(double isOpen, double height) {
-        if (isOpen == 0) return height / 3.4;
+    double _getFormPaddingButton(double isOpen) {
+        if (isOpen == 0) return 150;
         return 10;
+    }
+
+    String _nameFormValidation(String value) {
+        final required = Validations.defaultValidator(value, 3);
+        if (required != null) {
+            _setNameFormErro = true;
+            return required;
+        }
+
+        _setNameFormErro = false;
+        return null;
+
     }
 
     String _emailFormValidation(String value) {
@@ -358,58 +365,56 @@ class _AuthPageState extends State<AuthPage> {
 
     }
 
-    set _setPasswordFormErro(bool value) {
+    set _setNameFormErro(bool value) =>
+        setState(() => _hasNameFormError = value);
+
+    set _setPasswordFormErro(bool value) =>
         setState(() => _hasPasswordFormError = value);
-    }
 
-    set _setEmailFormErro(bool value) {
+
+    set _setEmailFormErro(bool value) =>
         setState(() => _hasEmailFormError = value);
-    }
 
-    Future<void> _loginWithGoogle(UserProviders userProvider) async {
-        var googleResponse;
-        try {
-            googleResponse = await _googleSignIn.signIn();
-            setState(() => _isLoading = true);
-            final response = await AuthResource.loginWithGoogle(googleResponse.email, googleResponse.id);
-            await _singIn(response, userProvider);
-        } on ResourceException catch (err) {
-            if (err.msg == 'Usuário não encontrado') {
-                print('Usuario n encontrado');
-                await _createUserWithGoogle(googleResponse, userProvider);
-            }
-        } catch (err, stack) {
-            print('Erro while attempt to singIn with Google');
-            print('ERROR: \n$err');
-            print('StackTrace: \t$stack');
-            ToastUtil.showToast('Erro tentar fazer login com Google', context, color: ToastUtil.error);
-        } finally {
-            setState(() => _isLoading = false);
-        }
-    }
 
-    Future<void> _loginWithEmail(UserProviders userProvider) async {
+    SizedBox _buildSubmitButton(UserProviders userProviders) =>
+        SizedBox(
+            width: double.maxFinite,
+            child: RaisedButton(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                color: Theme.of(context).primaryColor,
+                onPressed: () => _submit(userProviders),
+                child: Text(
+                    'Criar Conta',
+                    style: TextStyle(
+                        color: Colors.white,
+                    ),
+                ),
+            ),
+        );
+
+    Future<void> _submit(UserProviders userProvider) async {
         if (!_formKey.currentState.validate()) return;
         _formKey.currentState.save();
+
         setState(() => _isLoading = true);
+
         try {
-            if (!await _isInternetOn(context)) {
-                setState(() => _isLoading = false);
-                return;
-            }
+            await UserResource.createUserWithEmail(_email, _password, _name);
             final response = await AuthResource.loginWithEmail(_email, _password);
             await _singIn(response, userProvider);
         } on ResourceException catch(err) {
             ToastUtil.showToast(err.msg, context, color: ToastUtil.error);
         } catch(generic, stack) {
-            print('StackTrace\n$stack');
-            ToastUtil.showToast('Algo deu errado', context, color: ToastUtil.error);
+            print('Erro ao criar usuario com email/senha');
+            print('ERRO: \n$generic');
+            print('StackTrace: $stack');
+            ToastUtil.showToast('Algo deu errado ao criar usuário', context, color: ToastUtil.error);
         } finally {
             setState(() => _isLoading = false);
         }
     }
 
-    Future<void> _singIn(final String response, final UserProviders userProvider, {final bool isNewUser = false}) async {
+    Future<void> _singIn(final String response, final UserProviders userProvider) async {
         final token = await JWTService.saveUser(response);
         final user = await UserProviders.findUser(token.payload.email);
         userProvider.setCurrentUser(user);
@@ -417,37 +422,9 @@ class _AuthPageState extends State<AuthPage> {
         final isDFTransOn = await CheckStatusService.isDFTransAvailable();
         Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (BuildContext ctx) => HomePage(isDFTransOn, isNewUser))
+            MaterialPageRoute(
+                builder: (BuildContext ctx) => HomePage(isDFTransOn, true),
+            ),
         );
-    }
-
-    Future<void> _createUserWithGoogle(GoogleSignInAccount account, UserProviders userProvider) async {
-        try {
-            final user = await UserResource.createUserWithGoogle(account);
-            final response = await AuthResource.loginWithGoogle(user.email, user.googleId);
-            await _singIn(response, userProvider, isNewUser: true);
-        } on DioError catch(err) {
-            print('Request erro while creating user with Google');
-            print('ERROR: \n$err');
-            print('Response: \t${err.response}');
-            print('StatusCode: \t${err.response.statusCode}');
-            ToastUtil.showToast('Não foi possivel criar conta', context, color: ToastUtil.error);
-            return null;
-        } catch (generic, stack) {
-            print('Error while creating user with Google');
-            print('ERROR: \n$generic');
-            print('StackTrace: \t$stack');
-            ToastUtil.showToast('Algo deu errado ao criar conta', context, color: ToastUtil.error);
-            throw generic;
-        }
-    }
-
-    Future<bool> _isInternetOn(BuildContext context) async {
-        final isInternetOn = await CheckStatusService.isInternetAvailable();
-        if (!isInternetOn) {
-            ToastUtil.showToast('Sem conexão com a internet', context, color: ToastUtil.warning);
-            return false;
-        }
-        return true;
     }
 }

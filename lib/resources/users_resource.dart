@@ -29,6 +29,18 @@ abstract class UserResource {
             .then((user) => User.fromJSON(user));
     }
 
+    static Future<User> createUserWithEmail(final String email, final String password, final String name) async {
+        final Map<String, String> user = {
+            'name': name,
+            'email': email,
+            'password': password,
+        };
+
+        return _dio.post(_resourceUrl, data: json.encode(user))
+            .then((res) => res.data)
+            .then((user) => User.fromJSON(user));
+    }
+
     static Future<List<Category>> addCategory(String category) {
         return _dio.post(_resourceUrl + '/category', data: category)
             .then((res) => res.data)

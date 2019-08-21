@@ -13,6 +13,7 @@ import './providers/bus_selected.dart';
 
 import './services/jwt_service.dart';
 import './services/check_status_service.dart';
+import './services/logger_service.dart';
 
 import './utils/custom_colors.dart';
 import './utils/jwt.dart';
@@ -28,8 +29,10 @@ void main() {
 class CadeVan extends StatelessWidget {
     final UserProviders userProviders = UserProviders();
     final StreamController<StartupState> _startupStatus = StreamController<StartupState>();
+    final LoggerService _logger = LoggerService('CadeVan');
     bool _dfTransStatus;
 
+    /// todo EveryStartup send LOGGES to backen
     @override
     MultiProvider build(BuildContext context) {
         return MultiProvider(
@@ -60,6 +63,7 @@ class CadeVan extends StatelessWidget {
     }
 
     Future<void> _loadFutures({bool isError = false}) async {
+        _logger.info(text: 'Starting to load Futures', methodName: '_loadFutures');
         _startupStatus.add(StartupState.BUSY);
         try {
             final canActivate = await JWTService.canActivate();

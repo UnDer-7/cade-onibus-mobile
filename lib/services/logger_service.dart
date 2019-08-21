@@ -1,0 +1,38 @@
+import 'package:f_logs/model/flog/flog.dart';
+import 'package:f_logs/model/flog/flog_config.dart';
+import 'package:f_logs/model/flog/log.dart';
+import 'package:f_logs/utils/formatter/formate_type.dart';
+
+class LoggerService {
+  final String _className;
+  LoggerService(this._className) {
+    final config = LogsConfig()
+      ..formatType = FormatType.FORMAT_SQUARE
+      ..isDebuggable = true;
+
+    FLog.applyConfigurations(config);
+  }
+
+  void info({final String methodName, final String text}) {
+    FLog.info(
+        className: _className,
+        methodName: methodName,
+        text: text);
+  }
+
+  void error({final String methodName, final String text, final Exception exception}) {
+    FLog.error(
+        className: _className,
+        methodName: methodName,
+        exception: exception,
+        text: text);
+  }
+
+  Future<void> exportLogs() async {
+    return await FLog.exportLogs();
+  }
+
+  Future<void> clearLogs() async {
+    return await FLog.clearLogs();
+  }
+}

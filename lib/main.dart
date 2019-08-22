@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import './routes.dart';
 
 import './pages/home_page.dart';
-import './pages/auth_page.dart';
+import './pages/auth/main_auth_page.dart';
 
 import './providers/user_provider.dart';
 import './providers/bus_selected.dart';
@@ -21,6 +21,7 @@ import './utils/jwt.dart';
 import './stateful_wrapper.dart';
 
 void main() {
+    LoggerService('Main').info(text: 'Starting the App', methodName: 'main');
 //    debugPaintSizeEnabled = true;
 //    debugPaintPointersEnabled = true;
     runApp(CadeVan());
@@ -35,6 +36,7 @@ class CadeVan extends StatelessWidget {
     /// todo EveryStartup send LOGGES to backen
     @override
     MultiProvider build(BuildContext context) {
+
         return MultiProvider(
             providers: [
                 ChangeNotifierProvider.value(
@@ -98,16 +100,16 @@ class CadeVan extends StatelessWidget {
         if (snap.hasError) {
             print('User will be send to AuthPage because snapShot has error');
             print('SNAP_SHOT ERROR\n${snap.error}');
-            return AuthPage();
+            return MainAuthPage();
         }
 
         if (!snap.hasData || snap.data == StartupState.ERROR) {
             print('User will be send to AuthPage because StartupState is ${snap.data}');
-            return AuthPage();
+            return MainAuthPage();
         }
 
         if (!snap.hasData || snap.data == StartupState.AUTH_PAGE) {
-            return AuthPage();
+            return MainAuthPage();
         }
 
         if (!snap.hasData || snap.data == StartupState.HOME_PAGE) {
@@ -116,7 +118,7 @@ class CadeVan extends StatelessWidget {
 
         print('User will be send to AuthPage because it didnt fall in any of the IFs');
         print('SNAP_DATA - \t${snap.data}');
-        return AuthPage();
+        return MainAuthPage();
     }
 }
 

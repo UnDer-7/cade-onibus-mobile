@@ -16,7 +16,7 @@ class OuDivider extends StatelessWidget {
                   child: Text(
                       'Ou',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                       ),
                   ),
               ),

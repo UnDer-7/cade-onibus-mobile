@@ -63,6 +63,7 @@ flutter:
         - assets/images/bus-marker.svg
         - assets/images/google_icon.svg
         - assets/images/bus_stop_backgroud.svg
+        - assets/images/bus_stop_backgroud_2.svg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

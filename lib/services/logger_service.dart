@@ -2,6 +2,7 @@ import 'package:f_logs/model/flog/flog.dart';
 import 'package:f_logs/model/flog/flog_config.dart';
 import 'package:f_logs/model/flog/log.dart';
 import 'package:f_logs/utils/formatter/formate_type.dart';
+import 'package:meta/meta.dart';
 
 class LoggerService {
   final String _className;
@@ -13,14 +14,21 @@ class LoggerService {
     FLog.applyConfigurations(config);
   }
 
-  void info({final String methodName, final String text}) {
+  void info({
+      @required final String methodName,
+      @required final String text,
+  }) {
     FLog.info(
         className: _className,
         methodName: methodName,
         text: text);
   }
 
-  void error({final String methodName, final String text, final Exception exception}) {
+  void error({
+      @required final String methodName,
+      @required final String text,
+      @required final Exception exception
+  }) {
     FLog.error(
         className: _className,
         methodName: methodName,

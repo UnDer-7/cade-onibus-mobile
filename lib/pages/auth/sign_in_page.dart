@@ -16,11 +16,16 @@ import '../../utils/validations.dart';
 import '../../services/jwt_service.dart';
 import '../../services/check_status_service.dart';
 
+import './main_auth_page.dart';
 import '../../pages/home_page.dart';
 import '../../widgets/ou_divider.dart';
 import '../../providers/user_provider.dart';
 
 class SingInPage extends StatefulWidget {
+    final PageController _pageController;
+
+    SingInPage(this._pageController);
+
     @override
     _SingInPageState createState() => _SingInPageState();
 }
@@ -42,99 +47,109 @@ class _SingInPageState extends State<SingInPage> {
     bool _hasPasswordFormError = false;
 
     @override
-    Scaffold build(BuildContext context) {
+    WillPopScope build(BuildContext context) {
         final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
         final double _height = MediaQuery.of(context).size.height;
 
-        return Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: Stack(
-                children: <Widget>[
-                    Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                                Container(
-                                    margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                    child: Form(
-                                        key: _formKey,
-                                        child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                                            children: <Widget>[
-                                                _buildEmailField(),
-                                                SizedBox(height: 15),
-                                                _buildPasswordField(),
-                                                SizedBox(height: 20),
-                                                RaisedButton(
-                                                    onPressed: () => _singInWithEmail(userProvider),
-                                                    child: Text(
-                                                        'Entrar',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
+        return WillPopScope(
+            onWillPop: () {
+                widget._pageController.animateToPage(
+                    MainAuthPage.landPage,
+                    duration: Duration(milliseconds: 800),
+                    curve: Curves.bounceOut,
+                );
+                return Future.value(false);
+            },
+            child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                body: Stack(
+                    children: <Widget>[
+                        Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 40),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                    Container(
+                                        margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                        child: Form(
+                                            key: _formKey,
+                                            child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                children: <Widget>[
+                                                    _buildEmailField(),
+                                                    SizedBox(height: 15),
+                                                    _buildPasswordField(),
+                                                    SizedBox(height: 20),
+                                                    RaisedButton(
+                                                        onPressed: () => _singInWithEmail(userProvider),
+                                                        child: Text(
+                                                            'Entrar',
+                                                            style: TextStyle(
+                                                                color: Colors.white,
+                                                            ),
                                                         ),
+                                                        color: Theme.of(context).primaryColor,
+                                                        padding: EdgeInsets.symmetric(vertical: 15),
+                                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                                                     ),
-                                                    color: Theme.of(context).primaryColor,
-                                                    padding: EdgeInsets.symmetric(vertical: 15),
-                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                                                ),
-                                            ],
+                                                ],
+                                            ),
                                         ),
                                     ),
-                                ),
-                                if (_isKeyBoardOpen(context)) SizedBox(height: 15),
-                                if (!_isKeyBoardOpen(context)) Padding(
-                                    padding: EdgeInsets.only(top: 15),
-                                    child: OuDivider(),
-                                ),
-                                if (!_isKeyBoardOpen(context)) Padding(
-                                    padding: EdgeInsets.only(bottom: 30),
-                                    child: FlatButton(
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                                        onPressed: () => _singInWithGoogle(userProvider),
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                                SvgPicture.asset(
-                                                    'assets/images/google_icon.svg',
-                                                    height: 30,
-                                                    width: 30,
-                                                ),
-                                                Padding(
-                                                    padding: EdgeInsets.only(left: 10),
-                                                    child: Text('Entrar com Google'),
-                                                ),
-                                            ],
+                                    if (_isKeyBoardOpen(context)) SizedBox(height: 15),
+                                    if (!_isKeyBoardOpen(context)) Padding(
+                                        padding: EdgeInsets.only(top: 15),
+                                        child: OuDivider(),
+                                    ),
+                                    if (!_isKeyBoardOpen(context)) Padding(
+                                        padding: EdgeInsets.only(bottom: 30),
+                                        child: FlatButton(
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                                            onPressed: () => _singInWithGoogle(userProvider),
+                                            child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                    SvgPicture.asset(
+                                                        'assets/images/google_icon.svg',
+                                                        height: 30,
+                                                        width: 30,
+                                                    ),
+                                                    Padding(
+                                                        padding: EdgeInsets.only(left: 10),
+                                                        child: Text('Entrar com Google'),
+                                                    ),
+                                                ],
+                                            ),
                                         ),
                                     ),
-                                ),
-                            ],
+                                ],
+                            ),
                         ),
-                    ),
-                    Padding(
-                        padding: EdgeInsets.only(top: _height / 20),
-                        child: Align(
-                            alignment: Alignment.topCenter,
-                            child: Text(
-                                'Cadê\nÔnibus',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontFamily: 'Quicksand',
-                                    fontSize: _isKeyBoardOpen(context) ? 45 : 70,
-                                    color: Theme.of(context).primaryColor,
+                        Padding(
+                            padding: EdgeInsets.only(top: _height / 20),
+                            child: Align(
+                                alignment: Alignment.topCenter,
+                                child: Text(
+                                    'Cadê\nÔnibus',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontFamily: 'Quicksand',
+                                        fontSize: _isKeyBoardOpen(context) ? 45 : 70,
+                                        color: Theme.of(context).primaryColor,
+                                    ),
                                 ),
                             ),
                         ),
-                    ),
-                    if (_isLoading) Container(
-                        color: Theme.of(context).primaryColor.withOpacity(0.8),
-                        child: Center(
-                            child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        if (_isLoading) Container(
+                            color: Theme.of(context).primaryColor.withOpacity(0.8),
+                            child: Center(
+                                child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
                             ),
                         ),
-                    ),
-                ],
+                    ],
+                ),
             ),
         );
     }

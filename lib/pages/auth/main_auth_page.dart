@@ -20,9 +20,9 @@ class MainAuthPage extends StatelessWidget {
 //            physics: NeverScrollableScrollPhysics(),
                 controller: _pageController,
                 children: <Widget>[
-                    SingInPage(),
+                    SingInPage(_pageController),
                     LandPage(_pageController),
-                    SingUpPage(),
+                    SingUpPage(_pageController),
                 ],
             ),
         );

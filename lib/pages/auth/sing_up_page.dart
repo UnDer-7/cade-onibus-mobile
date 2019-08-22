@@ -16,11 +16,16 @@ import '../../utils/validations.dart';
 import '../../services/jwt_service.dart';
 import '../../services/check_status_service.dart';
 
+import './main_auth_page.dart';
 import '../../pages/home_page.dart';
 import '../../widgets/ou_divider.dart';
 import '../../providers/user_provider.dart';
 
 class SingUpPage extends StatefulWidget {
+    final PageController _pageController;
+
+    SingUpPage(this._pageController);
+
     @override
     _SingUpPageState createState() => _SingUpPageState();
 }
@@ -45,103 +50,113 @@ class _SingUpPageState extends State<SingUpPage> {
     );
 
     @override
-    Scaffold build(BuildContext context) {
+    WillPopScope build(BuildContext context) {
         final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
         final double _height = MediaQuery.of(context).size.height;
 
-        return Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: Stack(
-                children: <Widget>[
-                    Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                                Container(
-                                    margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                    child: Form(
-                                        key: _formKey,
-                                        child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                                            children: <Widget>[
-                                                _buildNameField(),
-                                                SizedBox(height: 15),
-                                                _buildEmailField(),
-                                                SizedBox(height: 15),
-                                                _buildPasswordField(),
-                                                SizedBox(height: 20),
-                                                RaisedButton(
-                                                    onPressed: () => _submit(userProvider),
-                                                    child: Text(
-                                                        'Criar Conta',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                        ),
-                                                    ),
-                                                    color: Theme.of(context).primaryColor,
-                                                    padding: EdgeInsets.symmetric(vertical: 15),
-                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                ),
-                                if (_isKeyBoardOpen(context)) SizedBox(height: 15),
-                                if (!_isKeyBoardOpen(context)) Padding(
-                                    padding: EdgeInsets.only(top: 15),
-                                    child: OuDivider(),
-                                ),
-                                if (!_isKeyBoardOpen(context)) Padding(
-                                    padding: EdgeInsets.only(bottom: 15),
-                                    child: FlatButton(
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                                        onPressed: () => _createUserWithGoogle(userProvider),
+        return WillPopScope(
+            onWillPop: () {
+                widget._pageController.animateToPage(
+                    MainAuthPage.landPage,
+                    duration: Duration(milliseconds: 800),
+                    curve: Curves.bounceOut,
+                );
+                return Future.value(false);
+            },
+          child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              body: Stack(
+                  children: <Widget>[
+                      Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 40),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                  Container(
+                                      margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                      child: Form(
+                                          key: _formKey,
+                                          child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                                              children: <Widget>[
+                                                  _buildNameField(),
+                                                  SizedBox(height: 15),
+                                                  _buildEmailField(),
+                                                  SizedBox(height: 15),
+                                                  _buildPasswordField(),
+                                                  SizedBox(height: 20),
+                                                  RaisedButton(
+                                                      onPressed: () => _submit(userProvider),
+                                                      child: Text(
+                                                          'Criar Conta',
+                                                          style: TextStyle(
+                                                              color: Colors.white,
+                                                          ),
+                                                      ),
+                                                      color: Theme.of(context).primaryColor,
+                                                      padding: EdgeInsets.symmetric(vertical: 15),
+                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                                                  ),
+                                              ],
+                                          ),
+                                      ),
+                                  ),
+                                  if (_isKeyBoardOpen(context)) SizedBox(height: 15),
+                                  if (!_isKeyBoardOpen(context)) Padding(
+                                      padding: EdgeInsets.only(top: 15),
+                                      child: OuDivider(),
+                                  ),
+                                  if (!_isKeyBoardOpen(context)) Padding(
+                                      padding: EdgeInsets.only(bottom: 15),
+                                      child: FlatButton(
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                                          onPressed: () => _createUserWithGoogle(userProvider),
 //                                        onPressed: () => _singInWithGoogle(userProvider),
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                                SvgPicture.asset(
-                                                    'assets/images/google_icon.svg',
-                                                    height: 30,
-                                                    width: 30,
-                                                ),
-                                                Padding(
-                                                    padding: EdgeInsets.only(left: 10),
-                                                    child: Text('Criar conta com Google'),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                ),
-                            ],
-                        ),
-                    ),
-                    Padding(
-                        padding: EdgeInsets.only(top: _height / 20),
-                        child: Align(
-                            alignment: Alignment.topCenter,
-                            child: Text(
-                                'Cadê\nÔnibus',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontFamily: 'Quicksand',
-                                    fontSize: _isKeyBoardOpen(context) ? 45 : 70,
-                                    color: Theme.of(context).primaryColor,
-                                ),
-                            ),
-                        ),
-                    ),
-                    if (_isLoading) Container(
-                        color: Theme.of(context).primaryColor.withOpacity(0.8),
-                        child: Center(
-                            child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                        ),
-                    ),
-                ],
-            ),
+                                          child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                  SvgPicture.asset(
+                                                      'assets/images/google_icon.svg',
+                                                      height: 30,
+                                                      width: 30,
+                                                  ),
+                                                  Padding(
+                                                      padding: EdgeInsets.only(left: 10),
+                                                      child: Text('Criar conta com Google'),
+                                                  ),
+                                              ],
+                                          ),
+                                      ),
+                                  ),
+                              ],
+                          ),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.only(top: _height / 20),
+                          child: Align(
+                              alignment: Alignment.topCenter,
+                              child: Text(
+                                  'Cadê\nÔnibus',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontFamily: 'Quicksand',
+                                      fontSize: _isKeyBoardOpen(context) ? 45 : 70,
+                                      color: Theme.of(context).primaryColor,
+                                  ),
+                              ),
+                          ),
+                      ),
+                      if (_isLoading) Container(
+                          color: Theme.of(context).primaryColor.withOpacity(0.8),
+                          child: Center(
+                              child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                          ),
+                      ),
+                  ],
+              ),
+          ),
         );
     }
 

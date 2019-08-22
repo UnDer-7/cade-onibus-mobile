@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -23,8 +25,9 @@ import '../../providers/user_provider.dart';
 
 class SingInPage extends StatefulWidget {
     final PageController _pageController;
+    final StreamController<bool> _isLoadingStream;
 
-    SingInPage(this._pageController);
+    SingInPage(this._pageController, this._isLoadingStream);
 
     @override
     _SingInPageState createState() => _SingInPageState();
@@ -53,6 +56,9 @@ class _SingInPageState extends State<SingInPage> {
 
         return WillPopScope(
             onWillPop: () {
+                if (_isLoading) {
+                    return Future.value(false);
+                }
                 widget._pageController.animateToPage(
                     MainAuthPage.landPage,
                     duration: Duration(milliseconds: 800),
@@ -292,6 +298,13 @@ class _SingInPageState extends State<SingInPage> {
         setState(() => _hasEmailFormError = value);
     }
 
+    set _updateLoadingState(bool value) {
+        setState(() {
+            _isLoading = value;
+            widget._isLoadingStream.add(value);
+        });
+    }
+
     bool _isKeyBoardOpen(BuildContext context) {
         if (MediaQuery.of(context).viewInsets.bottom == 0) return false;
         return true;
@@ -300,10 +313,10 @@ class _SingInPageState extends State<SingInPage> {
     Future<void> _singInWithEmail(final UserProviders userProvider) async {
         if (!_formKey.currentState.validate()) return;
         _formKey.currentState.save();
-        setState(() => _isLoading = true);
+        _updateLoadingState = true;
         try {
             if (!await _isInternetOn(context)) {
-                setState(() => _isLoading = false);
+                _updateLoadingState = false;
                 return;
             }
             final response = await AuthResource.loginWithEmail(_email, _password);
@@ -314,7 +327,7 @@ class _SingInPageState extends State<SingInPage> {
             print('StackTrace\n$stack');
             ToastUtil.showToast('Algo deu errado', context, color: ToastUtil.error);
         } finally {
-            setState(() => _isLoading = false);
+            _updateLoadingState = false;
         }
     }
 
@@ -322,7 +335,7 @@ class _SingInPageState extends State<SingInPage> {
         var googleResponse;
         try {
             googleResponse = await _googleSignIn.signIn();
-            setState(() => _isLoading = true);
+            _updateLoadingState = true;
             final response = await AuthResource.loginWithGoogle(googleResponse.email, googleResponse.id);
             await _singIn(response, userProvider);
         } on ResourceException catch (err) {
@@ -336,7 +349,7 @@ class _SingInPageState extends State<SingInPage> {
             print('StackTrace: \t$stack');
             ToastUtil.showToast('Erro tentar fazer login com Google', context, color: ToastUtil.error);
         } finally {
-            setState(() => _isLoading = false);
+            _updateLoadingState = false;
         }
     }
 

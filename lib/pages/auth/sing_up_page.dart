@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -23,8 +25,9 @@ import '../../providers/user_provider.dart';
 
 class SingUpPage extends StatefulWidget {
     final PageController _pageController;
+    final StreamController<bool> _isLoadingStream;
 
-    SingUpPage(this._pageController);
+    SingUpPage(this._pageController, this._isLoadingStream);
 
     @override
     _SingUpPageState createState() => _SingUpPageState();
@@ -56,6 +59,9 @@ class _SingUpPageState extends State<SingUpPage> {
 
         return WillPopScope(
             onWillPop: () {
+                if (_isLoading) {
+                    return Future.value(false);
+                }
                 widget._pageController.animateToPage(
                     MainAuthPage.landPage,
                     duration: Duration(milliseconds: 800),
@@ -318,6 +324,13 @@ class _SingUpPageState extends State<SingUpPage> {
         return null;
     }
 
+    set _updateLoadingState(bool value) {
+        setState(() {
+            _isLoading = value;
+            widget._isLoadingStream.add(value);
+        });
+    }
+
     String _nameFormValidation(String value) {
         final required = Validations.defaultValidator(value, 3);
         if (required != null) {
@@ -373,8 +386,7 @@ class _SingUpPageState extends State<SingUpPage> {
     Future<void> _submit(UserProviders userProvider) async {
         if (!_formKey.currentState.validate()) return;
         _formKey.currentState.save();
-
-        setState(() => _isLoading = true);
+        _updateLoadingState = true;
 
         try {
             await UserResource.createUserWithEmail(_email, _password, _name);
@@ -388,14 +400,14 @@ class _SingUpPageState extends State<SingUpPage> {
             print('StackTrace: $stack');
             ToastUtil.showToast('Algo deu errado ao criar usuário', context, color: ToastUtil.error);
         } finally {
-            setState(() => _isLoading = false);
+            _updateLoadingState = false;
         }
     }
     Future<void> _createUserWithGoogle(UserProviders userProvider) async {
         GoogleSignInAccount googleResponse;
         try {
             googleResponse = await _googleSignIn.signIn();
-            setState(() => _isLoading = true);
+            _updateLoadingState = true;
             final user = await UserResource.createUserWithGoogle(googleResponse);
             final response = await AuthResource.loginWithGoogle(user.email, user.googleId);
             await _singIn(response, userProvider);
@@ -418,7 +430,7 @@ class _SingUpPageState extends State<SingUpPage> {
             ToastUtil.showToast('Algo deu errado ao criar conta', context, color: ToastUtil.error);
             throw generic;
         } finally {
-            setState(() => _isLoading = false);
+            _updateLoadingState = false;
         }
     }
 

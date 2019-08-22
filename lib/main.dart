@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -100,15 +101,18 @@ class CadeVan extends StatelessWidget {
         if (snap.hasError) {
             print('User will be send to AuthPage because snapShot has error');
             print('SNAP_SHOT ERROR\n${snap.error}');
+            _saveHowManyTimesGoToMainAuthPage();
             return MainAuthPage();
         }
 
         if (!snap.hasData || snap.data == StartupState.ERROR) {
             print('User will be send to AuthPage because StartupState is ${snap.data}');
+            _saveHowManyTimesGoToMainAuthPage();
             return MainAuthPage();
         }
 
         if (!snap.hasData || snap.data == StartupState.AUTH_PAGE) {
+            _saveHowManyTimesGoToMainAuthPage();
             return MainAuthPage();
         }
 
@@ -119,6 +123,19 @@ class CadeVan extends StatelessWidget {
         print('User will be send to AuthPage because it didnt fall in any of the IFs');
         print('SNAP_DATA - \t${snap.data}');
         return MainAuthPage();
+    }
+
+    void _saveHowManyTimesGoToMainAuthPage() {
+        SharedPreferences.getInstance().then((res) {
+
+            int opened = res.getInt(SharedPreferencesKeys.APP_OPEN_COUNT.toString());
+            if (opened == null) {
+                res.setInt(SharedPreferencesKeys.APP_OPEN_COUNT.toString(), 1);
+            } else {
+                final newOpened = opened + 1;
+                res.setInt(SharedPreferencesKeys.APP_OPEN_COUNT.toString(), newOpened);
+            }
+        });
     }
 }
 

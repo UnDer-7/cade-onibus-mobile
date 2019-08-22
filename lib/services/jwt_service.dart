@@ -45,4 +45,5 @@ class JWTServiceException implements Exception {
 
 enum SharedPreferencesKeys {
     TOKEN,
+    APP_OPEN_COUNT,
 }

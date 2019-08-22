@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './main_auth_page.dart';
 import '../map_page.dart';
+import '../../services/jwt_service.dart';
 
 class LandPage extends StatelessWidget {
     final PageController _pageController;
@@ -94,6 +96,14 @@ class LandPage extends StatelessWidget {
     }
 
     Future<void> _navigateToMapPage(BuildContext ctx) async {
+        final answer = await _showCreateAccountDialog(ctx);
+        if (answer) {
+            await Future.delayed(Duration(milliseconds: 100));
+            _navigateTo(MainAuthPage.signUp);
+            return;
+        } else {
+            await Future.delayed(Duration(milliseconds: 100));
+        }
         final userLocation = await Location().getLocation();
 
         Navigator.push(ctx, MaterialPageRoute(
@@ -102,5 +112,48 @@ class LandPage extends StatelessWidget {
                 initialLocation: LatLng(userLocation.latitude, userLocation.longitude)
             ),
         ));
+    }
+
+    Future<bool> _showCreateAccountDialog(BuildContext context) async {
+        final SharedPreferences preferences = await SharedPreferences.getInstance();
+        int opened = preferences.getInt(SharedPreferencesKeys.APP_OPEN_COUNT.toString());
+        if (opened > 5) {
+            final answer = await showDialog(
+                context: context,
+                builder: (BuildContext ctx) => AlertDialog(
+                    title: Text('Vamos Criar uma Conta?'),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 5,
+                    content: Text(
+                        'Você já esta usando o Cadê Ônibus a algum tempo, que tal criar uma conta?\n\n'
+                            'Com a conta você pode salvar seu ônibus mais utilizado em categorias criadas por você.\n\n'
+                            'Você pode criar uma conta com Google, é muito simples!'
+                    ),
+                    actions: <Widget>[
+                        FlatButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text(
+                                'Mais Tarde',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                ),
+                            ),
+                        ),
+                        FlatButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: Text(
+                                'Ok',
+                                style: TextStyle(
+                                    color: Colors.green,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+            );
+            return Future.value(answer);
+        }
+        return Future.value(false);
     }
 }

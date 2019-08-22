@@ -35,7 +35,7 @@ class _MapPageState extends State<MapPage> {
     Location _location = Location();
     LatLng _latLng;
     List<Bus> _busToTrackState = [];
-    bool _isLoading = true;
+    bool _isLoading = false;
     bool _cancelTimer = false;
     BitmapDescriptor _busIcon;
     Set<Marker> _markers;
@@ -180,22 +180,23 @@ class _MapPageState extends State<MapPage> {
                                 ],
                             ),
                         ),
-                        Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                                RaisedButton(
-//                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                                padding: EdgeInsets.only(bottom: 20),
+                                child: RaisedButton(
+                                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                                     color: Theme.of(context).primaryColor,
                                     onPressed: () => _addMoreBusToTrack(context, _busSelected),
                                     child: Text(
-                                        'PROCURAR OUTRO ÔNIBUS',
+                                        'ADICIONAR ÔNIBUS A BUSCA',
                                         style: TextStyle(
                                             color: Colors.white
                                         ),
                                     ),
                                 ),
-                            ],
+                            ),
                         ),
                     ],
                 ),

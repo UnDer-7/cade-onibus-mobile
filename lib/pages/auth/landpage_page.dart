@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 import './main_auth_page.dart';
+import '../map_page.dart';
 
 class LandPage extends StatelessWidget {
     final PageController _pageController;
@@ -68,7 +71,7 @@ class LandPage extends StatelessWidget {
                         FlatButton(
                             padding: EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                            onPressed: () => print('IMPLEMEMNTAR !!'),
+                            onPressed: () => _navigateToMapPage(context),
                             child: Text(
                                 'Só quero procurar um ônibus',
                                 style: TextStyle(
@@ -88,5 +91,16 @@ class LandPage extends StatelessWidget {
             duration: Duration(milliseconds: 800),
             curve: Curves.bounceOut,
         );
+    }
+
+    Future<void> _navigateToMapPage(BuildContext ctx) async {
+        final userLocation = await Location().getLocation();
+
+        Navigator.push(ctx, MaterialPageRoute(
+            builder: (_) => MapPage(
+                busesToTrack: [],
+                initialLocation: LatLng(userLocation.latitude, userLocation.longitude)
+            ),
+        ));
     }
 }

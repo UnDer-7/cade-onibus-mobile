@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catcher/core/catcher.dart';
 import 'package:dio/dio.dart';
 
 import './resource_exception.dart';
@@ -21,7 +22,7 @@ abstract class AuthResource{
         try {
             final response = await _dio.post(_emailUrl, data: json.encode(user));
             return response.data;
-        } on DioError catch (err) {
+        } on DioError catch (err, stack) {
             if (err.response.data == 'resource-not-found' && err.response.statusCode == 404) {
                 throw ResourceException('Usuário não encontrado');
             }
@@ -35,6 +36,7 @@ abstract class AuthResource{
             print('Message -> \t${err.message}');
             print('Error -> \t${err.error}');
             print('statusCode -> \t${err.response.statusCode}');
+            Catcher.reportCheckedError(err, stack);
             throw ResourceException(
                 'Operação falhou',
                 classOrigin: 'AuthResource',
@@ -45,6 +47,7 @@ abstract class AuthResource{
             print('Erro INESPERADO no loginWithEmail');
             print('Error -> \t$generic');
             print('StackTrace: \t$stack');
+            Catcher.reportCheckedError(generic, stack);
             throw generic;
         }
     }
@@ -59,7 +62,7 @@ abstract class AuthResource{
         try {
             final response = await _dio.post(_googleUrl, data: json.encode(user));
             return response.data;
-        } on DioError catch (err) {
+        } on DioError catch (err, stack) {
             if (err.response.data == 'resource-not-found' && err.response.statusCode == 404) {
                 throw ResourceException('Usuário não encontrado');
             }
@@ -73,6 +76,7 @@ abstract class AuthResource{
             print('Message -> \t${err.message}');
             print('Error -> \t${err.error}');
             print('statusCode -> \t${err.response.statusCode}');
+            Catcher.reportCheckedError(err, stack);
             throw ResourceException(
                 'Operação falhou',
                 classOrigin: 'AuthResource',
@@ -83,6 +87,7 @@ abstract class AuthResource{
             print('Erro INESPERADO no loginWithGoogle');
             print('Error -> \t$generic');
             print('StackTrace: \t$stack');
+            Catcher.reportCheckedError(generic, stack);
             throw generic;
         }
     }

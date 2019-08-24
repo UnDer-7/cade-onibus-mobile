@@ -1,4 +1,5 @@
 import 'package:cade_onibus_mobile/utils/toast_util.dart';
+import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
@@ -195,7 +196,9 @@ class _BusCategoryState extends State<BusCategory> with SingleTickerProviderStat
             print('Error while attempt to delete category');
             print('ERROR: \n $err');
             print('StackTrace: \t $stack');
-            ToastUtil.showToast('Algo deu errado', ctx, color: ToastUtil.error, duration: 5);
+            Catcher.reportCheckedError(err, stack);
+        } catch (err, stack) {
+            Catcher.reportCheckedError(err, stack);
         }
     }
 

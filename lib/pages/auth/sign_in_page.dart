@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -338,15 +339,17 @@ class _SingInPageState extends State<SingInPage> {
             _updateLoadingState = true;
             final response = await AuthResource.loginWithGoogle(googleResponse.email, googleResponse.id);
             await _singIn(response, userProvider);
-        } on ResourceException catch (err) {
+        } on ResourceException catch (err, stack) {
             if (err.msg == 'Usuário não encontrado') {
                 print('Usuario n encontrado');
                 await _createUserWithGoogle(googleResponse, userProvider);
             }
+            Catcher.reportCheckedError(err, stack);
         } catch (err, stack) {
             print('Erro while attempt to singIn with Google');
             print('ERROR: \n$err');
             print('StackTrace: \t$stack');
+            Catcher.reportCheckedError(err, stack);
             ToastUtil.showToast('Erro tentar fazer login com Google', context, color: ToastUtil.error);
         } finally {
             _updateLoadingState = false;
@@ -370,17 +373,19 @@ class _SingInPageState extends State<SingInPage> {
             final user = await UserResource.createUserWithGoogle(account);
             final response = await AuthResource.loginWithGoogle(user.email, user.googleId);
             await _singIn(response, userProvider, isNewUser: true);
-        } on DioError catch(err) {
+        } on DioError catch(err, stack) {
             print('Request erro while creating user with Google');
             print('ERROR: \n$err');
             print('Response: \t${err.response}');
             print('StatusCode: \t${err.response.statusCode}');
+            Catcher.reportCheckedError(err, stack);
             ToastUtil.showToast('Não foi possivel criar conta', context, color: ToastUtil.error);
             return null;
         } catch (generic, stack) {
             print('Error while creating user with Google');
             print('ERROR: \n$generic');
             print('StackTrace: \t$stack');
+            Catcher.reportCheckedError(generic, stack);
             ToastUtil.showToast('Algo deu errado ao criar conta', context, color: ToastUtil.error);
             throw generic;
         }

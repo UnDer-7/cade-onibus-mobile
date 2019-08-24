@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catcher/core/catcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/jwt_service.dart';
@@ -24,8 +25,9 @@ abstract class JWT {
             final jsonRes = preferences.getString(SharedPreferencesKeys.TOKEN.toString());
             if (jsonRes == null) return null;
             return Token.fromSharedPreferences(json.decode(jsonRes));
-        } catch (err) {
-            throw err;
+        } catch (err, stack) {
+            Catcher.reportCheckedError(err, stack);
+            return null;
         }
     }
 

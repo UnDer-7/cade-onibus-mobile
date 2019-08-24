@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -411,7 +412,7 @@ class _SingUpPageState extends State<SingUpPage> {
             final user = await UserResource.createUserWithGoogle(googleResponse);
             final response = await AuthResource.loginWithGoogle(user.email, user.googleId);
             await _singIn(response, userProvider);
-        } on DioError catch(err) {
+        } on DioError catch(err, stack) {
             if (err.response.toString() == 'resource-already-exists' && err.response.statusCode == 400) {
                 final response = await AuthResource.loginWithGoogle(googleResponse.email, googleResponse.id);
                 await _singIn(response, userProvider, isNewUser: false);
@@ -421,6 +422,7 @@ class _SingUpPageState extends State<SingUpPage> {
             print('ERROR: \n$err');
             print('Response: \t${err.response}');
             print('StatusCode: \t${err.response.statusCode}');
+            Catcher.reportCheckedError(err, stack);
             ToastUtil.showToast('Não foi possivel criar conta', context, color: ToastUtil.error);
             return null;
         } catch (generic, stack) {
@@ -428,6 +430,7 @@ class _SingUpPageState extends State<SingUpPage> {
             print('ERROR: \n$generic');
             print('StackTrace: \t$stack');
             ToastUtil.showToast('Algo deu errado ao criar conta', context, color: ToastUtil.error);
+            Catcher.reportCheckedError(generic, stack);
             throw generic;
         } finally {
             _updateLoadingState = false;

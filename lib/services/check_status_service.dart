@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:catcher/core/catcher.dart';
+
 abstract class CheckStatusService {
     static Future<bool> isInternetAvailable() async {
         try {
@@ -14,7 +16,8 @@ abstract class CheckStatusService {
         } catch(err, stack) {
             print('Erro while attempt to verify internet connection');
             print('StackTrace \n$stack');
-            throw err;
+            Catcher.reportCheckedError(err, stack);
+            return false;
         }
     }
 
@@ -29,10 +32,12 @@ abstract class CheckStatusService {
             print('Unable to establish a connection with DFTrans');
             print('StackTrace: \t$stack');
             print('ERROR: \n$err');
+            Catcher.reportCheckedError(err, stack);
             return false;
         } catch(err, stack) {
             print('Erro while attempt to verify connection with DFTrans');
             print('StackTrace \n$stack');
+            Catcher.reportCheckedError(err, stack);
             throw err;
         }
     }

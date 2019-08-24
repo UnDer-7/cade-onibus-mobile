@@ -27,6 +27,12 @@ class _MainAuthPageState extends State<MainAuthPage> {
     ];
 
     @override
+    void dispose() {
+        _isLoadingStream.close();
+        super.dispose();
+    }
+
+    @override
     Widget build(BuildContext context) {
         return Container(
             color: Theme.of(context).primaryColor,

@@ -30,11 +30,6 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
     <string>O Cadê Ônibus precisa saber a sua localização</string>
 
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Cadê Ônibus precisa de acesso de armazenamento para salvar conteudo do app</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Cadê Ônibus precisa de acesso de armazenamento para salvar conteudo do app</string>
-
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

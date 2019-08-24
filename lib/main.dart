@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:catcher/catcher_plugin.dart';
 
 import './routes.dart';
 
@@ -14,27 +15,28 @@ import './providers/bus_selected.dart';
 
 import './services/jwt_service.dart';
 import './services/check_status_service.dart';
-import './services/logger_service.dart';
 
 import './utils/custom_colors.dart';
 import './utils/jwt.dart';
 
+import './config/catcher_config.dart';
 import './stateful_wrapper.dart';
 
 void main() {
-    LoggerService('Main').info(text: 'Starting the App', methodName: 'main');
-//    debugPaintSizeEnabled = true;
-//    debugPaintPointersEnabled = true;
-    runApp(CadeVan());
+    CatcherConfig config = CatcherConfig();
+    Catcher(
+        CadeVan(),
+        debugConfig: config.debugConfig(),
+        releaseConfig: config.releaseConfig(),
+        enableLogger: true,
+    );
 }
 
 class CadeVan extends StatelessWidget {
     final UserProviders userProviders = UserProviders();
     final StreamController<StartupState> _startupStatus = StreamController<StartupState>();
-    final LoggerService _logger = LoggerService('CadeVan');
     bool _dfTransStatus;
 
-    /// todo EveryStartup send LOGGES to backen
     @override
     MultiProvider build(BuildContext context) {
 
@@ -48,6 +50,7 @@ class CadeVan extends StatelessWidget {
                 )
             ],
             child: MaterialApp(
+                navigatorKey: Catcher.navigatorKey,
                 title: 'Cadê Ônibus',
                 theme: ThemeData(
                     primarySwatch: CustomColors.primaryColor,
@@ -66,7 +69,6 @@ class CadeVan extends StatelessWidget {
     }
 
     Future<void> _loadFutures({bool isError = false}) async {
-        _logger.info(text: 'Starting to load Futures', methodName: '_loadFutures');
         _startupStatus.add(StartupState.BUSY);
         try {
             final canActivate = await JWTService.canActivate();
@@ -87,7 +89,7 @@ class CadeVan extends StatelessWidget {
             print('ERROR: \n$err');
             print('StackTrack: \t$stack');
             _startupStatus.add(StartupState.ERROR);
-            throw err;
+            Catcher.reportCheckedError(err, stack);
         }
     }
 

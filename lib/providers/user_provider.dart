@@ -2,9 +2,11 @@ import 'package:cade_onibus_mobile/models/bus.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
-import '../resources/users_resource.dart';
 import '../models/category.dart';
 import '../models/user.dart';
+
+import '../resources/category_resource.dart';
+import '../resources/users_resource.dart';
 
 class UserProviders with ChangeNotifier {
     User _user;
@@ -12,26 +14,26 @@ class UserProviders with ChangeNotifier {
     Future<void> addCategory(Category category) async {
         final jsonBody = Category.toJSON(category);
 
-        _user.categories = await UserResource.addCategory(json.encode(jsonBody));
+        _user.categories = await CategoryResource.addCategory(json.encode(jsonBody));
         notifyListeners();
     }
 
     Future<void> updateCategory(Category category) async {
         final jsonBody = Category.toJSON(category);
 
-        _user.categories = await UserResource.updateCategory(json.encode(jsonBody));
+        _user.categories = await CategoryResource.updateCategory(json.encode(jsonBody));
         notifyListeners();
     }
 
     Future<void> deleteCategory(Category category) async {
         final jsonBody = Category.toJSON(category);
-        _user.categories = await UserResource.deleteCategory(json.encode(jsonBody), category.uuid);
+        _user.categories = await CategoryResource.deleteCategory(json.encode(jsonBody), category.uuid);
         notifyListeners();
     }
 
     Future<void> deleteBus(Bus bus, String id) async {
         final jsonBody = Bus.toJSON(bus);
-        _user.categories = await UserResource.removeBus(json.encode(jsonBody), id);
+        _user.categories = await CategoryResource.removeBus(json.encode(jsonBody), id);
         notifyListeners();
     }
 

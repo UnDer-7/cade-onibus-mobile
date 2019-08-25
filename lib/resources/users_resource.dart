@@ -6,7 +6,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../config/dio_config.dart';
 import '../utils/api_util.dart';
 import '../models/user.dart';
-import '../models/category.dart';
 
 abstract class UserResource {
     static final Dio _dioAuth = DioConfig.dioFactory();
@@ -43,37 +42,5 @@ abstract class UserResource {
         return _dio.post(_resourceUrl, data: json.encode(user))
             .then((res) => res.data)
             .then((user) => User.fromJSON(user));
-    }
-
-    static Future<List<Category>> addCategory(String category) {
-        print('POST request to add new category\tURL: $_resourceUrl/category');
-        return _dioAuth.post(_resourceUrl + '/category', data: category)
-            .then((res) => res.data)
-            .then((categories) => categories.map((cat) => Category.fromJSON(cat)).toList())
-            .then((untyped) => List<Category>.from(untyped));
-    }
-
-    static Future<List<Category>> updateCategory(String category) {
-        print('PUT request to update category\tURL: $_resourceUrl/category');
-        return _dioAuth.put(_resourceUrl + '/category', data: category)
-            .then((res) => res.data)
-            .then((categories) => categories.map((cat) => Category.fromJSON(cat)).toList())
-            .then((untyped) => List<Category>.from(untyped));
-    }
-
-    static Future<List<Category>> deleteCategory(String category, String uuid) {
-        print('DELETE request to delete category\tURL: $_resourceUrl/category/$uuid');
-        return _dioAuth.delete(_resourceUrl + '/category/$uuid', data: category)
-            .then((res) => res.data)
-            .then((categories) => categories.map((cat) => Category.fromJSON(cat)).toList())
-            .then((untyped) => List<Category>.from(untyped));
-    }
-
-    static Future<List<Category>> removeBus(String bus, String id) {
-        print('DELETE request to remove bus\tURL: $_resourceUrl/category/bus/$id');
-        return _dioAuth.delete(_resourceUrl + '/category/bus/$id', data: bus)
-            .then((res) => res.data)
-            .then((categories) => categories.map((cat) => Category.fromJSON(cat)).toList())
-            .then((untyped) => List<Category>.from(untyped));
     }
 }

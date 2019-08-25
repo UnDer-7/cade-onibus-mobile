@@ -91,7 +91,7 @@ class LandPage extends StatelessWidget {
         _pageController.animateToPage(
             pageNumber,
             duration: Duration(milliseconds: 800),
-            curve: Curves.bounceOut,
+            curve: Curves.fastOutSlowIn,
         );
     }
 

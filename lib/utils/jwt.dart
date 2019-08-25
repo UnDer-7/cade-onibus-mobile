@@ -31,6 +31,11 @@ abstract class JWT {
         }
     }
 
+    static Future<void> removeToken() async {
+        final preferences = await SharedPreferences.getInstance();
+        preferences.remove(SharedPreferencesKeys.TOKEN.toString());
+    }
+
     static _decodeBase64(String text) {
         switch (text.length % 4) {
             case 0:

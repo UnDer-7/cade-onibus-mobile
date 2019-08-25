@@ -16,15 +16,21 @@ class MainAuthPage extends StatefulWidget {
 }
 
 class _MainAuthPageState extends State<MainAuthPage> {
-    static final StreamController<bool> _isLoadingStream = StreamController<bool>();
+    StreamController<bool> _isLoadingStream;
+    List<Widget> _pages;
 
     static final PageController _pageController = PageController(initialPage: MainAuthPage.landPage);
 
-    final List<Widget> _pages = [
-        SingInPage(_pageController, _isLoadingStream),
-        LandPage(_pageController),
-        SingUpPage(_pageController, _isLoadingStream),
-    ];
+    @override
+    void initState() {
+        _isLoadingStream = StreamController<bool>.broadcast();
+        _pages = [
+            SingInPage(_pageController, _isLoadingStream),
+            LandPage(_pageController),
+            SingUpPage(_pageController, _isLoadingStream),
+        ];
+        super.initState();
+    }
 
     @override
     void dispose() {
@@ -33,11 +39,17 @@ class _MainAuthPageState extends State<MainAuthPage> {
     }
 
     @override
+    void deactivate() {
+        _isLoadingStream.close();
+        super.deactivate();
+    }
+
+    @override
     Widget build(BuildContext context) {
         return Container(
             color: Theme.of(context).primaryColor,
             child: StreamBuilder(
-                stream: _isLoadingStream.stream,
+                stream: _isLoadingStream.stream.asBroadcastStream(),
                 builder: (_, snap) => _loadPageView(snap),
             ),
         );

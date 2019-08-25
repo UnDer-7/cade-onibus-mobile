@@ -43,13 +43,14 @@ class _NewBusPageState extends State<NewBusPage> {
     }
 
     @override
-    void deactivate() {
+    deactivate() {
         _subject.close();
         super.deactivate();
     }
 
     @override
-    void dispose() {
+    dispose() {
+        _subject.close();
         super.dispose();
     }
 

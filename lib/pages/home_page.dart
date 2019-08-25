@@ -4,15 +4,16 @@ import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-import '../models/bus.dart';
-import '../routes.dart';
-import '../widgets/bus_category.dart';
-
 import '../pages/new_bus_page.dart';
 import '../pages/map_page.dart';
 
 import '../providers/user_provider.dart';
 import '../providers/bus_selected.dart';
+
+import '../models/bus.dart';
+import '../routes.dart';
+import '../widgets/bus_category.dart';
+import '../services/jwt_service.dart';
 
 class HomePage extends StatefulWidget {
     final bool isDFTransAvailable;
@@ -69,6 +70,7 @@ class _HomePageState extends State<HomePage> {
                     SpeedDialChild(
                         label: 'Sair',
                         child: Icon(Icons.exit_to_app),
+                        onTap: () => JWTService.singOut(context),
                     )
                 ],
             ),

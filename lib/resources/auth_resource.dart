@@ -13,12 +13,11 @@ abstract class AuthResource{
     static final Dio _dio = Dio();
 
     static Future<String> loginWithEmail(final String email, final String password) async {
+        print('POST request login with Email\tURL: $_emailUrl');
         Map<String, String> user = {
             'email': email,
             'password': password,
         };
-
-        print('${DateTime.now()} - POST request to: $_emailUrl');
         try {
             final response = await _dio.post(_emailUrl, data: json.encode(user));
             return response.data;
@@ -53,12 +52,12 @@ abstract class AuthResource{
     }
 
     static Future<String> loginWithGoogle(final String email, final String googleId) async {
+        print('POST request login with Google\tURL: $_googleUrl');
         final Map<String, String> user = {
             'email': email,
             'google_id': googleId,
         };
 
-        print('${DateTime.now()} - POST requesto to $_googleUrl');
         try {
             final response = await _dio.post(_googleUrl, data: json.encode(user));
             return response.data;

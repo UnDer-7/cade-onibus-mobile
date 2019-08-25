@@ -40,11 +40,9 @@ class _SingUpPageState extends State<SingUpPage> {
 
     String _password;
     String _email;
-    String _name;
     bool _showPassword = false;
     bool _hasEmailFormError = false;
     bool _hasPasswordFormError = false;
-    bool _hasNameFormError = false;
 
     final GoogleSignIn _googleSignIn = GoogleSignIn(
         scopes: [
@@ -86,7 +84,6 @@ class _SingUpPageState extends State<SingUpPage> {
                                           child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.stretch,
                                               children: <Widget>[
-                                                  _buildNameField(),
                                                   SizedBox(height: 15),
                                                   _buildEmailField(),
                                                   SizedBox(height: 15),
@@ -166,49 +163,6 @@ class _SingUpPageState extends State<SingUpPage> {
           ),
         );
     }
-
-    TextFormField _buildNameField() =>
-        TextFormField(
-            onSaved: (value) => _name = value,
-            keyboardType: TextInputType.text,
-            validator: _nameFormValidation,
-            decoration: InputDecoration(
-                labelText: 'Nome',
-                hasFloatingPlaceholder: false,
-                errorStyle: TextStyle(
-                    color: Colors.white,
-                ),
-                errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(
-                        color: Theme.of(context).errorColor,
-                        width: 3,
-                    ),                                                        ),
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 3,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                ),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                ),
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 3,
-                    )
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                suffixIcon: Icon(
-                    Icons.person,
-                    color: _getNameIconColor,
-                ),
-            ),
-        );
 
     TextFormField _buildEmailField() =>
         TextFormField(
@@ -310,11 +264,6 @@ class _SingUpPageState extends State<SingUpPage> {
         return FontAwesomeIcons.eyeSlash;
     }
 
-    Color get _getNameIconColor {
-        if (_hasNameFormError) return Colors.red;
-        return null;
-    }
-
     Color get _getEmailIconColor {
         if (_hasEmailFormError) return Colors.red;
         return null;
@@ -330,18 +279,6 @@ class _SingUpPageState extends State<SingUpPage> {
             _isLoading = value;
             widget._isLoadingStream.add(value);
         });
-    }
-
-    String _nameFormValidation(String value) {
-        final required = Validations.defaultValidator(value, 3);
-        if (required != null) {
-            _setNameFormErro = true;
-            return required;
-        }
-
-        _setNameFormErro = false;
-        return null;
-
     }
 
     String _emailFormValidation(String value) {
@@ -374,9 +311,6 @@ class _SingUpPageState extends State<SingUpPage> {
 
     }
 
-    set _setNameFormErro(bool value) =>
-        setState(() => _hasNameFormError = value);
-
     set _setPasswordFormErro(bool value) =>
         setState(() => _hasPasswordFormError = value);
 
@@ -390,7 +324,7 @@ class _SingUpPageState extends State<SingUpPage> {
         _updateLoadingState = true;
 
         try {
-            await UserResource.createUserWithEmail(_email, _password, _name);
+            await UserResource.createUserWithEmail(_email, _password);
             final response = await AuthResource.loginWithEmail(_email, _password);
             await _singIn(response, userProvider);
         } on ResourceException catch(err) {
@@ -399,6 +333,7 @@ class _SingUpPageState extends State<SingUpPage> {
             print('Erro ao criar usuario com email/senha');
             print('ERRO: \n$generic');
             print('StackTrace: $stack');
+            Catcher.reportCheckedError(generic, stack);
             ToastUtil.showToast('Algo deu errado ao criar usuário', context, color: ToastUtil.error);
         } finally {
             _updateLoadingState = false;

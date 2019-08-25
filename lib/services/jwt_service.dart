@@ -1,10 +1,11 @@
-import 'dart:convert';
+import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './service_exception.dart';
 import '../models/token.dart';
 import '../utils/jwt.dart';
+import '../routes.dart';
 
 abstract class JWTService {
     static Future<Token> saveUser(String jwt) async {
@@ -35,6 +36,11 @@ abstract class JWTService {
             return false;
         }
         return token.payload.exp.isAfter(DateTime.now());
+    }
+
+    static void singOut(BuildContext ctx) {
+        JWT.removeToken();
+        Navigator.pushReplacementNamed(ctx, Routes.MAIN_AUTH_PAGE);
     }
 }
 

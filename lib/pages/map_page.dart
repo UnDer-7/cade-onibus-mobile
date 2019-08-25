@@ -59,9 +59,15 @@ class _MapPageState extends State<MapPage> {
     }
 
     @override
-    Future deactivate() async {
-        await _locationStream.cancel();
+    deactivate() {
+        _locationStream.cancel();
         super.deactivate();
+    }
+
+    @override
+    dispose() {
+        _locationStream.cancel();
+        super.dispose();
     }
 
     @override
@@ -81,6 +87,7 @@ class _MapPageState extends State<MapPage> {
                     children: <Widget>[
                         GoogleMap(
                             markers: _markers,
+                            onMapCreated: (_) => _watchBusLocation(),
                             initialCameraPosition: CameraPosition(
                                 zoom: 15,
                                 target: widget.initialLocation,
@@ -118,14 +125,14 @@ class _MapPageState extends State<MapPage> {
                                             if (_isLoading && _linhaSelected == _buses[i]) Card(
                                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                                                 child: Padding(
-                                                  padding: const EdgeInsets.all(5),
-                                                  child: Column(
-                                                      children: <Widget>[
-                                                          Text('Carregando'),
-                                                          SizedBox(height: 10),
-                                                          CircularProgressIndicator(),
-                                                      ],
-                                                  ),
+                                                    padding: const EdgeInsets.all(5),
+                                                    child: Column(
+                                                        children: <Widget>[
+                                                            Text('Carregando'),
+                                                            SizedBox(height: 10),
+                                                            CircularProgressIndicator(),
+                                                        ],
+                                                    ),
                                                 ),
                                             ),
                                             if (!_isLoading && _linhaSelected == _buses[i]) Card(

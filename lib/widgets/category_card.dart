@@ -66,12 +66,12 @@ class _CategoryCardState extends State<CategoryCard> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
                             if (widget._category.title != 'Todos') _editCard(_cardColor, context, _busSelected, userProvider),
-                            if (widget._category.title != 'Todos') Padding(
+                            if (widget._category.title != 'Todos' ) Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 7),
                                 child: Text('|'),
                             ),
                             if (widget._category.title != 'Todos') _newBus(_cardColor, context, _busSelected, userProvider),
-                            if (widget._category.title == 'Todos') _todosInfoDialog(_cardColor, context),
+                            if (widget._category.title == 'Todos' || widget._category.title == 'Cadê Ônibus Web') _todosInfoDialog(_cardColor, context, widget._category.title),
                         ],
                     ),
                     Container(
@@ -104,9 +104,9 @@ class _CategoryCardState extends State<CategoryCard> {
         );
     }
 
-    GestureDetector _todosInfoDialog(Color cardColor, BuildContext context) =>
+    GestureDetector _todosInfoDialog(Color cardColor, BuildContext context, String title) =>
         GestureDetector(
-            onTap: () => _showTodosInfoDialog(context),
+            onTap: () => title == 'Todos' ? _showTodosInfoDialog(context) : _showCadeOnibusWebInfoDialog(context),
             child: Padding(
                 padding: const EdgeInsets.only(right: 13),
                 child: Icon(
@@ -287,9 +287,37 @@ class _CategoryCardState extends State<CategoryCard> {
                     content: Text(
                         'A categoria Todos contem os ônibus de todas as categorias.\n\n'
                             'Você não pode editar ela (adicionar ou remover ônibus), os ônibus são colocados automaticamene.\n\n'
-                            'A categoria Todos tem todos os ônibus cadastrados no site do Cadê Ônibus (cadeonibus.web.app)\n\n'
+                            'Os ônibus da versão web são são pegos a partir dessa categoria\n\n.'
                             'Se você remover um ônibus de alguma categora e esse ônibus não estiver cadastro em mais nem uma, ele sera excluido da categoria Todos.\n\n'
                             'A categoria Todos não possui ônibus repetidos.',
+                        textAlign: TextAlign.start,
+                    ),
+                    actions: <Widget>[
+                        FlatButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text(
+                                'Fechar',
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                ),
+                            ),
+                        )
+                    ],
+                ),
+        );
+
+    void _showCadeOnibusWebInfoDialog(BuildContext context) =>
+        showDialog(
+            context: context,
+            builder: (BuildContext ctx) =>
+                AlertDialog(
+                    title: Text('Categoria Cadê Ônibus Web'),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    elevation: 5,
+                    content: Text(
+                        'Essa categoria foi gerada a partir dos seus ônibus cadastrados na versão web do Cadê Ônibus.\n\n'
+                            'Você pode alterá-la normalmente que os ônibus da versão web não serão alterados, ela é uma categoria normal.\n\n'
+                            'Os ônibus da versão web são os ônibus da categoria Todos.',
                         textAlign: TextAlign.start,
                     ),
                     actions: <Widget>[

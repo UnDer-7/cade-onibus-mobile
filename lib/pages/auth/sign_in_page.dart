@@ -63,12 +63,13 @@ class _SingInPageState extends State<SingInPage> {
                 widget._pageController.animateToPage(
                     MainAuthPage.landPage,
                     duration: Duration(milliseconds: 800),
-                    curve: Curves.bounceOut,
+                    curve: Curves.fastOutSlowIn,
                 );
                 return Future.value(false);
             },
             child: Scaffold(
                 resizeToAvoidBottomInset: false,
+                backgroundColor: Colors.white,
                 body: Stack(
                     children: <Widget>[
                         Padding(

@@ -98,11 +98,8 @@ class LandPage extends StatelessWidget {
     Future<void> _navigateToMapPage(BuildContext ctx) async {
         final answer = await _showCreateAccountDialog(ctx);
         if (answer) {
-            await Future.delayed(Duration(milliseconds: 100));
             _navigateTo(MainAuthPage.signUp);
             return;
-        } else {
-            await Future.delayed(Duration(milliseconds: 100));
         }
         final userLocation = await Location().getLocation();
 
@@ -127,8 +124,7 @@ class LandPage extends StatelessWidget {
                     elevation: 5,
                     content: Text(
                         'Você já esta usando o Cadê Ônibus a algum tempo, que tal criar uma conta?\n\n'
-                            'Com a conta você pode salvar seu ônibus mais utilizado em categorias criadas por você.\n\n'
-                            'Você pode criar uma conta com Google, é muito simples!'
+                            'Com a conta você pode salvar seu ônibus mais utilizado em categorias criadas por você.'
                     ),
                     actions: <Widget>[
                         FlatButton(

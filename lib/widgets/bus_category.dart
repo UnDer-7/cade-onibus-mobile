@@ -206,21 +206,21 @@ class _BusCategoryState extends State<BusCategory> with SingleTickerProviderStat
         final title = widget._category.title.split(' ');
         StringBuffer finalTitle = StringBuffer();
 
-        if (title.length > 3) {
+        if (title.length > 2) {
             final firstLetter = title.first.substring(0, 1);
-            final lastLatter = title.last.substring(0, 1);
+            final lastLatter = title[1].substring(0, 1);
             finalTitle.write(firstLetter + lastLatter);
-        } else {
-            title.forEach((item) {
-                finalTitle.write(item.substring(0, 1));
-            });
+            return finalTitle.toString();
         }
+
+        title.forEach((item) {
+            finalTitle.write(item.substring(0, 1));
+        });
         return finalTitle.toString();
     }
 
     double get _fontSize {
         if (_icon.length == 2) return 20;
-        if (_icon.length == 3) return 18;
         return 30;
     }
 

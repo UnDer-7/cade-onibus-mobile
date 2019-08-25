@@ -11,8 +11,9 @@ import '../../services/jwt_service.dart';
 
 class LandPage extends StatelessWidget {
     final PageController _pageController;
+    final bool isDFTransAvailable;
 
-    LandPage(this._pageController);
+    LandPage(this._pageController, this.isDFTransAvailable);
 
     @override
     Scaffold build(BuildContext context) {
@@ -87,6 +88,36 @@ class LandPage extends StatelessWidget {
         );
     }
 
+    Future<void> _showDialogDFTransOff(BuildContext context) async {
+        await showDialog(
+            context: context,
+            builder: (BuildContext ctx) =>
+                AlertDialog(
+                    title: Text(
+                        'DFTrans está indisponivel no momento!',
+                        style: TextStyle(
+                            color: Colors.red,
+                        ),
+                    ),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 5,
+                    content: Text('Com o DFTrans indisponivel você não consiguira achar nem um ônibus'),
+                    actions: <Widget>[
+                        FlatButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: Text(
+                                'Ok',
+                                style: TextStyle(
+                                    color: Colors.green,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+        );
+    }
+
     void _navigateTo(final int pageNumber) {
         _pageController.animateToPage(
             pageNumber,
@@ -96,6 +127,9 @@ class LandPage extends StatelessWidget {
     }
 
     Future<void> _navigateToMapPage(BuildContext ctx) async {
+        if (isDFTransAvailable != null && !isDFTransAvailable) {
+            await _showDialogDFTransOff(ctx);
+        }
         final answer = await _showCreateAccountDialog(ctx);
         if (answer) {
             _navigateTo(MainAuthPage.signUp);

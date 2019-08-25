@@ -104,18 +104,18 @@ class CadeVan extends StatelessWidget {
             print('User will be send to AuthPage because snapShot has error');
             print('SNAP_SHOT ERROR\n${snap.error}');
             _saveHowManyTimesGoToMainAuthPage();
-            return MainAuthPage();
+            return MainAuthPage(_dfTransStatus);
         }
 
         if (!snap.hasData || snap.data == StartupState.ERROR) {
             print('User will be send to AuthPage because StartupState is ${snap.data}');
             _saveHowManyTimesGoToMainAuthPage();
-            return MainAuthPage();
+            return MainAuthPage(_dfTransStatus);
         }
 
         if (!snap.hasData || snap.data == StartupState.AUTH_PAGE) {
             _saveHowManyTimesGoToMainAuthPage();
-            return MainAuthPage();
+            return MainAuthPage(_dfTransStatus);
         }
 
         if (!snap.hasData || snap.data == StartupState.HOME_PAGE) {
@@ -124,7 +124,7 @@ class CadeVan extends StatelessWidget {
 
         print('User will be send to AuthPage because it didnt fall in any of the IFs');
         print('SNAP_DATA - \t${snap.data}');
-        return MainAuthPage();
+        return MainAuthPage(_dfTransStatus);
     }
 
     void _saveHowManyTimesGoToMainAuthPage() {

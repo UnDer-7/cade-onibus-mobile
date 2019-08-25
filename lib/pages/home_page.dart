@@ -40,8 +40,17 @@ class _HomePageState extends State<HomePage> {
 
         return Scaffold(
             appBar: AppBar(
-                centerTitle: true,
-                title: Text('Cadê Ônibus'),
+                title: Row(
+                    children: <Widget>[
+                        Text('Status DFTrans: '),
+                        Text(
+                            _getDFTransStatus,
+                            style: TextStyle(
+                                color: _getDFTransStatusColor,
+                            ),
+                        )
+                    ],
+                ),
             ),
             floatingActionButton: SpeedDial(
                 animatedIcon: AnimatedIcons.menu_close,
@@ -70,16 +79,16 @@ class _HomePageState extends State<HomePage> {
                     SpeedDialChild(
                         label: 'Sair',
                         child: Icon(Icons.exit_to_app),
-                        onTap: () => JWTService.singOut(context),
+                        onTap: () => JWTService.singOut(context, widget.isDFTransAvailable),
                     )
                 ],
             ),
             body: Consumer<UserProviders>(
-                builder: (_, UserProviders model, Widget widget) =>
+                builder: (_, UserProviders model, Widget ig) =>
                     ListView.builder(
                         itemCount: model.getCategory.length,
                         itemBuilder: (BuildContext ctx, int i) =>
-                            BusCategory(model.getCategory[i]),
+                            BusCategory(model.getCategory[i], widget.isDFTransAvailable),
                     ),
             ),
         );
@@ -109,7 +118,51 @@ class _HomePageState extends State<HomePage> {
         );
     }
 
+    String get _getDFTransStatus {
+        if (widget.isDFTransAvailable) return 'Ativo';
+        return 'Inativo';
+    }
+
+    Color get _getDFTransStatusColor {
+        if (widget.isDFTransAvailable) return Colors.green;
+        return Colors.red;
+    }
+
+    Future<void> _showDialogDFTransOff() async {
+        await showDialog(
+            context: context,
+            builder: (BuildContext ctx) =>
+                AlertDialog(
+                    title: Text(
+                        'DFTrans está indisponivel no momento!',
+                        style: TextStyle(
+                            color: Colors.red,
+                        ),
+                    ),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 5,
+                    content: Text('Com o DFTrans indisponivel você não consiguira achar nem um ônibus'),
+                    actions: <Widget>[
+                        FlatButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: Text(
+                                'Ok',
+                                style: TextStyle(
+                                    color: Colors.green,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+        );
+    }
+
     Future<void> _onTrackBus(BuildContext context, final BusSelected busSelected) async {
+        if (!widget.isDFTransAvailable) {
+            await _showDialogDFTransOff();
+        }
+
         final userLocation = await Location().getLocation();
 
         final response = await Navigator.push(

@@ -10,6 +10,9 @@ class MainAuthPage extends StatefulWidget {
     static final int landPage = 1;
     static final int signIn = 0;
     static final int signUp = 2;
+    final bool isDFTransAvailable;
+
+    MainAuthPage(this.isDFTransAvailable);
 
     @override
     _MainAuthPageState createState() => _MainAuthPageState();
@@ -26,7 +29,7 @@ class _MainAuthPageState extends State<MainAuthPage> {
         _isLoadingStream = StreamController<bool>.broadcast();
         _pages = [
             SingInPage(_pageController, _isLoadingStream),
-            LandPage(_pageController),
+            LandPage(_pageController, widget.isDFTransAvailable),
             SingUpPage(_pageController, _isLoadingStream),
         ];
         super.initState();

@@ -21,9 +21,8 @@ import '../pages/map_page.dart';
 
 class CategoryCard extends StatefulWidget {
     final Category _category;
-    final bool isDFTransAvailable;
 
-    CategoryCard(this._category, this.isDFTransAvailable);
+    CategoryCard(this._category);
 
     @override
     _CategoryCardState createState() => _CategoryCardState();
@@ -387,36 +386,6 @@ class _CategoryCardState extends State<CategoryCard> {
         }
     }
 
-    Future<void> _showDialogDFTransOff() async {
-        await showDialog(
-            context: context,
-            builder: (BuildContext ctx) =>
-                AlertDialog(
-                    title: Text(
-                        'DFTrans está indisponivel no momento!',
-                        style: TextStyle(
-                            color: Colors.red,
-                        ),
-                    ),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    elevation: 5,
-                    content: Text('Com o DFTrans indisponivel você não consiguira achar nem um ônibus'),
-                    actions: <Widget>[
-                        FlatButton(
-                            onPressed: () => Navigator.pop(ctx, true),
-                            child: Text(
-                                'Ok',
-                                style: TextStyle(
-                                    color: Colors.green,
-                                ),
-                            ),
-                        ),
-                    ],
-                ),
-        );
-    }
-
     void _handleOnTap(BuildContext context, Bus bus) {
         _onSelectionBus(bus);
         if (_isMultiSelection) {
@@ -427,10 +396,6 @@ class _CategoryCardState extends State<CategoryCard> {
     }
 
     Future _sendToGoogleMaps(BuildContext context) async {
-        if (!widget.isDFTransAvailable) {
-            await _showDialogDFTransOff();
-        }
-
         setState(() => _isLoading = true);
         final location = await Location().getLocation();
         final userLocation = LatLng(location.latitude, location.longitude);

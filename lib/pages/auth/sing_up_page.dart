@@ -16,13 +16,12 @@ import '../../resources/users_resource.dart';
 import '../../utils/toast_util.dart';
 import '../../utils/validations.dart';
 
-import '../../services/jwt_service.dart';
-import '../../services/check_status_service.dart';
 
 import './main_auth_page.dart';
 import '../../pages/home_page.dart';
 import '../../widgets/ou_divider.dart';
 import '../../providers/user_provider.dart';
+import '../../services/jwt_service.dart';
 
 class SingUpPage extends StatefulWidget {
     final PageController _pageController;
@@ -378,11 +377,10 @@ class _SingUpPageState extends State<SingUpPage> {
         final user = await UserProviders.findUser(token.payload.email);
         userProvider.setCurrentUser(user);
 
-        final isDFTransOn = await CheckStatusService.isDFTransAvailable();
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (BuildContext ctx) => HomePage(isDFTransOn, isNewUser),
+                builder: (BuildContext ctx) => HomePage(isNewUser),
             ),
         );
     }

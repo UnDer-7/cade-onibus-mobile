@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import './service_exception.dart';
 import '../models/token.dart';
 import '../utils/jwt.dart';
-import '../pages/auth/main_auth_page.dart';
+import '../routes.dart';
 
 abstract class JWTService {
     static Future<Token> saveUser(String jwt) async {
@@ -38,11 +38,9 @@ abstract class JWTService {
         return token.payload.exp.isAfter(DateTime.now());
     }
 
-    static void singOut(BuildContext ctx, bool dfTransStatus) {
+    static void singOut(BuildContext ctx) {
         JWT.removeToken();
-        Navigator.pushReplacement(ctx, MaterialPageRoute(
-            builder: (BuildContext context) => MainAuthPage(dfTransStatus),
-        ));
+        Navigator.pushReplacementNamed(ctx, Routes.MAIN_AUTH_PAGE);
     }
 }
 

@@ -1,4 +1,3 @@
-import 'package:cade_onibus_mobile/utils/toast_util.dart';
 import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +10,8 @@ import '../providers/user_provider.dart';
 
 class BusCategory extends StatefulWidget {
     final Category _category;
-    final bool isDFTransAvailable;
 
-    BusCategory(this._category, this.isDFTransAvailable);
+    BusCategory(this._category);
 
     @override
     _BusCategoryState createState() => _BusCategoryState();
@@ -82,7 +80,7 @@ class _BusCategoryState extends State<BusCategory> with SingleTickerProviderStat
                                 progress: _animationController,
                             ),
                         ),
-                        if (_isSelect) CategoryCard(_category, widget.isDFTransAvailable),
+                        if (_isSelect) CategoryCard(_category),
                     ],
                 ),
             ),

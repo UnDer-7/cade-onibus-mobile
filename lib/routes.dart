@@ -18,6 +18,7 @@ abstract class Routes {
     static final Map<String, WidgetBuilder> _availableRoutes = {
         NEW_BUS_PAGE: (BuildContext ctx) => NewBusPage(),
         NEW_CATEGORY_PAGE: (BuildContext ctx) => NewCategoryPage(),
+        MAIN_AUTH_PAGE: (BuildContext ctx) => MainAuthPage(),
     };
 
     static Map<String, WidgetBuilder> get availableRoutes => Map.from(_availableRoutes);

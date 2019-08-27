@@ -362,10 +362,9 @@ class _SingInPageState extends State<SingInPage> {
         final user = await UserProviders.findUser(token.payload.email);
         userProvider.setCurrentUser(user);
 
-        final isDFTransOn = await CheckStatusService.isDFTransAvailable();
         Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (BuildContext ctx) => HomePage(isDFTransOn, isNewUser))
+            MaterialPageRoute(builder: (BuildContext ctx) => HomePage(isNewUser))
         );
     }
 

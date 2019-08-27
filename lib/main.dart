@@ -5,20 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:catcher/catcher_plugin.dart';
 
-import './routes.dart';
-
 import './pages/home_page.dart';
 import './pages/auth/main_auth_page.dart';
 
 import './providers/user_provider.dart';
 import './providers/bus_selected.dart';
 
-import './services/jwt_service.dart';
-import './services/check_status_service.dart';
-
 import './utils/custom_colors.dart';
 import './utils/jwt.dart';
 
+import './routes.dart';
+import './services/jwt_service.dart';
 import './config/catcher_config.dart';
 import './stateful_wrapper.dart';
 
@@ -36,7 +33,6 @@ void main() {
 class CadeVan extends StatelessWidget {
     final UserProviders userProviders = UserProviders();
     final StreamController<StartupState> _startupStatus = StreamController<StartupState>();
-    bool _dfTransStatus;
 
     @override
     MultiProvider build(BuildContext context) {
@@ -81,7 +77,6 @@ class CadeVan extends StatelessWidget {
 
             final token = await JWT.getToken();
             final user = await UserProviders.findUser(token.payload.email);
-            _dfTransStatus = await CheckStatusService.isDFTransAvailable();
             userProviders.setCurrentUser(user);
 
             _startupStatus.add(StartupState.HOME_PAGE);
@@ -105,27 +100,27 @@ class CadeVan extends StatelessWidget {
             print('User will be send to AuthPage because snapShot has error');
             print('SNAP_SHOT ERROR\n${snap.error}');
             _saveHowManyTimesGoToMainAuthPage();
-            return MainAuthPage(_dfTransStatus);
+            return MainAuthPage();
         }
 
         if (!snap.hasData || snap.data == StartupState.ERROR) {
             print('User will be send to AuthPage because StartupState is ${snap.data}');
             _saveHowManyTimesGoToMainAuthPage();
-            return MainAuthPage(_dfTransStatus);
+            return MainAuthPage();
         }
 
         if (!snap.hasData || snap.data == StartupState.AUTH_PAGE) {
             _saveHowManyTimesGoToMainAuthPage();
-            return MainAuthPage(_dfTransStatus);
+            return MainAuthPage();
         }
 
         if (!snap.hasData || snap.data == StartupState.HOME_PAGE) {
-            return HomePage(_dfTransStatus, false);
+            return HomePage(false);
         }
 
         print('User will be send to AuthPage because it didnt fall in any of the IFs');
         print('SNAP_DATA - \t${snap.data}');
-        return MainAuthPage(_dfTransStatus);
+        return MainAuthPage();
     }
 
     void _saveHowManyTimesGoToMainAuthPage() {

@@ -12,9 +12,12 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!--###################-->
 
+    <!--WORKS -> docker exec mongoDB mongoimport &#45;&#45;db CADE_ONIBUS &#45;&#45;collection users backup.json-->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="cade_onibus_mobile"
+        android:label="Cadê Ônibus"
         android:icon="@mipmap/ic_launcher">
         <!--GOOGLE MAPS API-KEY-->
         <meta-data android:name="com.google.android.geo.API_KEY"

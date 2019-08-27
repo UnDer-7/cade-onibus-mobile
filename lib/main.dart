@@ -27,6 +27,7 @@ void main() {
     Catcher(
         CadeVan(),
         debugConfig: config.debugConfig(),
+        profileConfig: config.releaseConfig(),
         releaseConfig: config.releaseConfig(),
         enableLogger: true,
     );

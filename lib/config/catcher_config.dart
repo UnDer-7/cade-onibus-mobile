@@ -46,7 +46,7 @@ class CatcherConfig {
 
     CatcherOptions releaseConfig() {
         return CatcherOptions(
-            DialogReportMode(),
+            SilentReportMode(),
             [
                 _email,
                 _toast,

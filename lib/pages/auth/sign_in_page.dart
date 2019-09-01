@@ -337,6 +337,7 @@ class _SingInPageState extends State<SingInPage> {
         var googleResponse;
         try {
             googleResponse = await _googleSignIn.signIn();
+            if (googleResponse == null) return;
             _updateLoadingState = true;
             final response = await AuthResource.loginWithGoogle(googleResponse.email, googleResponse.id);
             await _singIn(response, userProvider);

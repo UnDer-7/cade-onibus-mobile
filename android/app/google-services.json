@@ -15,11 +15,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "83439041810-l60ueg55ivs0fvqcdiqoip343glnaa90.apps.googleusercontent.com",
+          "client_id": "83439041810-ugfnge1n17hb256lmn95lh8g2ak8i2gr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.cade.cade_onibus_mobile",
-            "certificate_hash": "a0988e8633f1979fa99234d0ef62d833598c4dc9"
+            "certificate_hash": "18bc3022506a288a52dc2eb9e1941c844b22dfec"
+          }
+        },
+        {
+          "client_id": "83439041810-pocn5pkpg8d65e7t6nhunqau6aludved.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cade.cade_onibus_mobile",
+            "certificate_hash": "e1fb13a6c076fd6888fdc51f51cb1bb2c7074572"
           }
         }
       ],

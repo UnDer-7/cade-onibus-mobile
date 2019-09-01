@@ -97,6 +97,7 @@ class LandPage extends StatelessWidget {
 
     Future<void> _navigateToMapPage(BuildContext ctx) async {
         final answer = await _showCreateAccountDialog(ctx);
+        if (answer == null) return;
         if (answer) {
             _navigateTo(MainAuthPage.signUp);
             return;

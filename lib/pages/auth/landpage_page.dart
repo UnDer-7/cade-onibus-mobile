@@ -16,68 +16,93 @@ class LandPage extends StatelessWidget {
 
     @override
     Scaffold build(BuildContext context) {
-        final double _height = MediaQuery.of(context).size.height;
-
         return Scaffold(
             backgroundColor: Theme.of(context).primaryColor,
             body: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.end,
+                child: Stack(
                     children: <Widget>[
-                        Text(
-                            'Cadê Ônibus',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontFamily: 'Quicksand',
-                                fontSize: 40,
-                                color: Colors.white,
+                        Padding(
+                            padding: EdgeInsets.only(top: 50),
+                            child: Align(
+                                alignment: Alignment.topCenter,
+                                child: SvgPicture.asset(
+                                    'assets/images/bus_stop_backgroud_2.svg',
+                                    semanticsLabel: 'background',
+                                    alignment: Alignment.topCenter,
+                                ),
                             ),
                         ),
-                        SvgPicture.asset(
-                            'assets/images/bus_stop_backgroud_2.svg',
-                            semanticsLabel: 'background',
-                            alignment: Alignment.topCenter,
-                        ),
-                        OutlineButton(
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                        Positioned(
+                            top: 230,
+                            left: 0,
+                            right: 0,
                             child: Text(
-                                'Entrar',
+                                'Cadê Ônibus',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
+                                    fontFamily: 'Quicksand',
+                                    fontSize: 40,
                                     color: Colors.white,
                                 ),
                             ),
-                            onPressed: () => _navigateTo(MainAuthPage.signIn),
-                            borderSide: BorderSide(
-                                color: Colors.white,
-                            ),
                         ),
-                        SizedBox(height: 15),
                         Padding(
-                            padding: EdgeInsets.only(bottom: _height / 15),
-                            child: RaisedButton(
-                                child: Text(
-                                    'Nova Conta',
-                                    style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
+                          padding: EdgeInsets.only(bottom: 140),
+                          child: Align(
+                              alignment: Alignment.bottomCenter,
+                            child: SizedBox(
+                                width: double.infinity,
+                              child: OutlineButton(
+                                  padding: EdgeInsets.symmetric(vertical: 15),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                                  child: Text(
+                                      'Entrar',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                      ),
+                                  ),
+                                  onPressed: () => _navigateTo(MainAuthPage.signIn),
+                                  borderSide: BorderSide(
+                                      color: Colors.white,
+                                  ),
+                              ),
+                            ),
+                          ),
+                        ),
+//                        SizedBox(height: 15),
+                        Padding(
+                            padding: const EdgeInsets.only(bottom: 70),
+                            child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: SizedBox(
+                                    width: double.infinity,
+                                    child: RaisedButton(
+                                        child: Text(
+                                            'Nova Conta',
+                                            style: TextStyle(
+                                                color: Theme.of(context).primaryColor,
+                                            ),
+                                        ),
+                                        color: Colors.white,
+                                        padding: EdgeInsets.symmetric(vertical: 15),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                                        onPressed: () => _navigateTo(MainAuthPage.signUp),
                                     ),
                                 ),
-                                color: Colors.white,
-                                padding: EdgeInsets.symmetric(vertical: 15),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                                onPressed: () => _navigateTo(MainAuthPage.signUp),
                             ),
                         ),
-                        FlatButton(
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                            onPressed: () => _navigateToMapPage(context),
-                            child: Text(
-                                'Só quero procurar um ônibus',
-                                style: TextStyle(
-                                    color: Colors.white,
+                        Align(
+                            alignment: Alignment.bottomCenter,
+                            child: FlatButton(
+                                padding: EdgeInsets.symmetric(vertical: 15),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                                onPressed: () => _navigateToMapPage(context),
+                                child: Text(
+                                    'Só quero procurar um ônibus',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                    ),
                                 ),
                             ),
                         ),

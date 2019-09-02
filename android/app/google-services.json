@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "83439041810-3mcp1c0k6d4vfnn9v1r5rusnikqgvc75.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cade.cade_onibus_mobile",
+            "certificate_hash": "825661aa48dd0fbe1d6bb1a24f1427740cba2844"
+          }
+        },
+        {
           "client_id": "83439041810-ugfnge1n17hb256lmn95lh8g2ak8i2gr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

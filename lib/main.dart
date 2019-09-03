@@ -22,7 +22,7 @@ import './stateful_wrapper.dart';
 void main() {
     CatcherConfig config = CatcherConfig();
     Catcher(
-        CadeVan(),
+        CadeOnibus(),
         debugConfig: config.debugConfig(),
         profileConfig: config.releaseConfig(),
         releaseConfig: config.releaseConfig(),
@@ -30,7 +30,7 @@ void main() {
     );
 }
 
-class CadeVan extends StatelessWidget {
+class CadeOnibus extends StatelessWidget {
     final UserProviders userProviders = UserProviders();
     final StreamController<StartupState> _startupStatus = StreamController<StartupState>();
 

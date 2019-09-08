@@ -121,6 +121,7 @@ class LandPage extends StatelessWidget {
     }
 
     Future<void> _navigateToMapPage(BuildContext ctx) async {
+        await _saveHowManyTimesOpenMap();
         final answer = await _showCreateAccountDialog(ctx);
         if (answer == null) return;
         if (answer) {
@@ -135,6 +136,17 @@ class LandPage extends StatelessWidget {
                 initialLocation: LatLng(userLocation.latitude, userLocation.longitude)
             ),
         ));
+    }
+
+    Future<void> _saveHowManyTimesOpenMap() async {
+        final res = await SharedPreferences.getInstance();
+        int opened = res.getInt(SharedPreferencesKeys.APP_OPEN_COUNT.toString());
+        if (opened == null) {
+            res.setInt(SharedPreferencesKeys.APP_OPEN_COUNT.toString(), 1);
+        } else {
+            final newOpened = opened + 1;
+            res.setInt(SharedPreferencesKeys.APP_OPEN_COUNT.toString(), newOpened);
+        }
     }
 
     Future<bool> _showCreateAccountDialog(BuildContext context) async {

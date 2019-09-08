@@ -336,6 +336,10 @@ class _SingInPageState extends State<SingInPage> {
     Future<void> _singInWithGoogle(UserProviders userProvider) async {
         var googleResponse;
         try {
+            if (!await _isInternetOn(context)) {
+                _updateLoadingState = false;
+                return;
+            }
             googleResponse = await _googleSignIn.signIn();
             if (googleResponse == null) return;
             _updateLoadingState = true;

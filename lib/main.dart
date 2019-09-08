@@ -18,6 +18,7 @@ import './routes.dart';
 import './services/jwt_service.dart';
 import './config/catcher_config.dart';
 import './stateful_wrapper.dart';
+import './services/check_status_service.dart';
 
 void main() {
     CatcherConfig config = CatcherConfig();
@@ -33,6 +34,7 @@ void main() {
 class CadeOnibus extends StatelessWidget {
     final UserProviders userProviders = UserProviders();
     final StreamController<StartupState> _startupStatus = StreamController<StartupState>();
+    final Map<String, bool> internetStatus = {};
 
     @override
     MultiProvider build(BuildContext context) {
@@ -68,18 +70,21 @@ class CadeOnibus extends StatelessWidget {
     Future<void> _loadFutures({bool isError = false}) async {
         _startupStatus.add(StartupState.BUSY);
         try {
+            final internet = await CheckStatusService.isInternetAvailable();
             final canActivate = await JWTService.canActivate();
 
+            internetStatus.addAll({ 'status': internet });
             if (!canActivate) {
                 _startupStatus.add(StartupState.AUTH_PAGE);
                 return;
             }
 
+            _startupStatus.add(StartupState.HOME_PAGE);
+            if (!internet) return;
+
             final token = await JWT.getToken();
             final user = await UserProviders.findUser(token.payload.email);
             userProviders.setCurrentUser(user);
-
-            _startupStatus.add(StartupState.HOME_PAGE);
         } catch (err, stack) {
             print('Erro ao carregar Futures de inicialização');
             print('ERROR: \n$err');
@@ -112,7 +117,7 @@ class CadeOnibus extends StatelessWidget {
         }
 
         if (!snap.hasData || snap.data == StartupState.HOME_PAGE) {
-            return HomePage(false);
+            return HomePage(false, internetStatus['status']);
         }
 
         print('User will be send to AuthPage because it didnt fall in any of the IFs');

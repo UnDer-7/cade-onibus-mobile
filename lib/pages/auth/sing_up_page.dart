@@ -16,12 +16,13 @@ import '../../resources/users_resource.dart';
 import '../../utils/toast_util.dart';
 import '../../utils/validations.dart';
 
+import '../../services/jwt_service.dart';
+import '../../services/check_status_service.dart';
 
 import './main_auth_page.dart';
 import '../../pages/home_page.dart';
 import '../../widgets/ou_divider.dart';
 import '../../providers/user_provider.dart';
-import '../../services/jwt_service.dart';
 
 class SingUpPage extends StatefulWidget {
     final PageController _pageController;
@@ -115,7 +116,6 @@ class _SingUpPageState extends State<SingUpPage> {
                                       child: FlatButton(
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                                           onPressed: () => _createUserWithGoogle(userProvider),
-//                                        onPressed: () => _singInWithGoogle(userProvider),
                                           child: Row(
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: <Widget>[
@@ -172,9 +172,6 @@ class _SingUpPageState extends State<SingUpPage> {
             decoration: InputDecoration(
                 labelText: 'E-mail',
                 hasFloatingPlaceholder: false,
-                errorStyle: TextStyle(
-                    color: Colors.white,
-                ),
                 errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: BorderSide(
@@ -215,9 +212,6 @@ class _SingUpPageState extends State<SingUpPage> {
             decoration: InputDecoration(
                 labelText: 'Senha',
                 hasFloatingPlaceholder: false,
-                errorStyle: TextStyle(
-                    color: Colors.white,
-                ),
                 errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                     borderSide: BorderSide(
@@ -320,6 +314,10 @@ class _SingUpPageState extends State<SingUpPage> {
 
     Future<void> _submit(UserProviders userProvider) async {
         if (!_formKey.currentState.validate()) return;
+        if (!await _isInternetOn(context)) {
+            _updateLoadingState = false;
+            return;
+        }
         _formKey.currentState.save();
         _updateLoadingState = true;
 
@@ -339,9 +337,14 @@ class _SingUpPageState extends State<SingUpPage> {
             _updateLoadingState = false;
         }
     }
+
     Future<void> _createUserWithGoogle(UserProviders userProvider) async {
         GoogleSignInAccount googleResponse;
         try {
+            if (!await _isInternetOn(context)) {
+                _updateLoadingState = false;
+                return null;
+            }
             googleResponse = await _googleSignIn.signIn();
             _updateLoadingState = true;
             final user = await UserResource.createUserWithGoogle(googleResponse);
@@ -384,4 +387,14 @@ class _SingUpPageState extends State<SingUpPage> {
             ),
         );
     }
+
+    Future<bool> _isInternetOn(BuildContext context) async {
+        final isInternetOn = await CheckStatusService.isInternetAvailable();
+        if (!isInternetOn) {
+            ToastUtil.showToast('Sem conexão com a internet', context, color: ToastUtil.warning);
+            return false;
+        }
+        return true;
+    }
+
 }

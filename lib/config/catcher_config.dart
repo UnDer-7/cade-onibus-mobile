@@ -49,7 +49,6 @@ class CatcherConfig {
             SilentReportMode(),
             [
                 _email,
-                _toast,
             ],
         );
     }

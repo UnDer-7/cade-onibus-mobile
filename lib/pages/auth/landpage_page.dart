@@ -5,9 +5,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../services/jwt_service.dart';
+import '../../services/check_status_service.dart';
+
 import './main_auth_page.dart';
 import '../map_page.dart';
-import '../../services/jwt_service.dart';
+import '../../utils/toast_util.dart';
 
 class LandPage extends StatelessWidget {
     final PageController _pageController;
@@ -121,6 +124,9 @@ class LandPage extends StatelessWidget {
     }
 
     Future<void> _navigateToMapPage(BuildContext ctx) async {
+        if (!await _isInternetOn(ctx)) {
+            return;
+        }
         await _saveHowManyTimesOpenMap();
         final answer = await _showCreateAccountDialog(ctx);
         if (answer == null) return;
@@ -189,5 +195,14 @@ class LandPage extends StatelessWidget {
             return Future.value(answer);
         }
         return Future.value(false);
+    }
+
+    Future<bool> _isInternetOn(BuildContext context) async {
+        final isInternetOn = await CheckStatusService.isInternetAvailable();
+        if (!isInternetOn) {
+            ToastUtil.showToast('Sem conexão com a internet', context, color: ToastUtil.warning);
+            return false;
+        }
+        return true;
     }
 }

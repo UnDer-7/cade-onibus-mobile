@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:catcher/catcher_plugin.dart';
 
+import './pages/no_internet_page.dart';
 import './pages/home_page.dart';
 import './pages/auth/main_auth_page.dart';
 
@@ -116,8 +116,12 @@ class CadeOnibus extends StatelessWidget {
             return MainAuthPage();
         }
 
+        if (snap.data == StartupState.HOME_PAGE && !internetStatus['status']) {
+            return NoInternetPage();
+        }
+
         if (!snap.hasData || snap.data == StartupState.HOME_PAGE) {
-            return HomePage(false, internetStatus['status']);
+            return HomePage(false);
         }
 
         print('User will be send to AuthPage because it didnt fall in any of the IFs');

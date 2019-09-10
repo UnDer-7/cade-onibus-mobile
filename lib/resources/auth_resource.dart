@@ -26,6 +26,10 @@ abstract class AuthResource{
                 throw ResourceException('Usuário não encontrado');
             }
 
+            if (err.response.data == 'email-used-on-google' && err.response.statusCode == 400) {
+                throw ResourceException('E-Mail cadastrado com Google\nTente entrar com Google');
+            }
+
             if (err.response.data == 'invalid-credentials' && err.response.statusCode == 400) {
                 throw ResourceException('Senha incorreta');
             }

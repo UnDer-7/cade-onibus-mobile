@@ -324,7 +324,7 @@ class _SingInPageState extends State<SingInPage> {
             final response = await AuthResource.loginWithEmail(_email, _password);
             await _singIn(response, userProvider);
         } on ResourceException catch(err) {
-            ToastUtil.showToast(err.msg, context, color: ToastUtil.error);
+            ToastUtil.showToast(err.msg, context, color: ToastUtil.error, duration: 5);
         } catch(generic, stack) {
             print('StackTrace\n$stack');
             ToastUtil.showToast('Algo deu errado', context, color: ToastUtil.error);

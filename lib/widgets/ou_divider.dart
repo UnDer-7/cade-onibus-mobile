@@ -14,7 +14,7 @@ class OuDivider extends StatelessWidget {
               Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Text(
-                      'Ou',
+                      'OU',
                       style: TextStyle(
                           color: Colors.black,
                       ),

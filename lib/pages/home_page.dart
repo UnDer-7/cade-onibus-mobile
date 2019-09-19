@@ -15,6 +15,7 @@ import '../services/jwt_service.dart';
 import '../models/bus.dart';
 import '../routes.dart';
 import '../widgets/bus_category.dart';
+import '../utils/toast_util.dart';
 
 class HomePage extends StatefulWidget {
     final bool _isNewUser;
@@ -58,10 +59,12 @@ class _HomePageState extends State<HomePage> {
                                 context, Routes.NEW_CATEGORY_PAGE)
                     ),
                     SpeedDialChild(
+                        onTap: _toBeImplemented,
                         label: 'Melhorias/Bugs',
                         child: Icon(Icons.bug_report)
                     ),
                     SpeedDialChild(
+                        onTap: _toBeImplemented,
                         label: 'Sobre o app',
                         child: Icon(Icons.info),
                     ),
@@ -129,4 +132,9 @@ class _HomePageState extends State<HomePage> {
             ),
         ));
     }
+
+    void _toBeImplemented() {
+        ToastUtil.showToast('Funcionalidade em Desenvolvimento', context, color: ToastUtil.warning, position: ToastUtil.bottom);
+    }
+
 }

@@ -349,6 +349,7 @@ class _SingInPageState extends State<SingInPage> {
             if (err.msg == 'Usuário não encontrado') {
                 print('Usuario n encontrado');
                 await _createUserWithGoogle(googleResponse, userProvider);
+                return;
             }
 
             if (err.msg == 'already-in-use') {

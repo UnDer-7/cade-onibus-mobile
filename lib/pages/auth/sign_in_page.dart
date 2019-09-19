@@ -113,7 +113,7 @@ class _SingInPageState extends State<SingInPage> {
                                         padding: EdgeInsets.only(bottom: 30),
                                         child: FlatButton(
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                                            onPressed: () => _singInWithGoogle(userProvider),
+                                            onPressed: () => singInWithGoogle(userProvider),
                                             child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 children: <Widget>[
@@ -333,7 +333,7 @@ class _SingInPageState extends State<SingInPage> {
         }
     }
 
-    Future<void> _singInWithGoogle(UserProviders userProvider) async {
+    Future<void> singInWithGoogle(UserProviders userProvider) async {
         var googleResponse;
         try {
             if (!await _isInternetOn(context)) {
@@ -350,6 +350,12 @@ class _SingInPageState extends State<SingInPage> {
                 print('Usuario n encontrado');
                 await _createUserWithGoogle(googleResponse, userProvider);
             }
+
+            if (err.msg == 'already-in-use') {
+                ToastUtil.showToast('Usuário cadastrado com senha\nEntre usando E-mail e Senha', context, color: ToastUtil.error, duration: 4);
+                return;
+            }
+
             Catcher.reportCheckedError(err, stack);
         } catch (err, stack) {
             print('Erro while attempt to singIn with Google');

@@ -74,6 +74,10 @@ abstract class AuthResource{
                 throw ResourceException('Senha incorreta');
             }
 
+            if (err.response.data == 'can-crate' && err.response.statusCode == 400) {
+                throw ResourceException('already-in-use');
+            }
+
             print('Erro ao realizar request para {$_googleUrl} - Metodo: loginWithGoogle | Class: AuthResource');
             print('Response -> \t${err.response}');
             print('Message -> \t${err.message}');

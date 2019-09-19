@@ -19,8 +19,8 @@ import '../../utils/validations.dart';
 import '../../services/jwt_service.dart';
 import '../../services/check_status_service.dart';
 
-import './main_auth_page.dart';
 import '../../pages/home_page.dart';
+import './main_auth_page.dart';
 import '../../widgets/ou_divider.dart';
 import '../../providers/user_provider.dart';
 
@@ -329,7 +329,7 @@ class _SingUpPageState extends State<SingUpPage> {
             await _singIn(response, userProvider);
         } on ResourceException catch(err) {
             if (err.msg == 'can-crate') {
-                final res = await _loadDialog();
+                final res = await _loadDialog(userProvider);
                 if (res != null && res) {
                     await _associateAccounts(userProvider);
                 }
@@ -347,7 +347,7 @@ class _SingUpPageState extends State<SingUpPage> {
         }
     }
 
-    Future<bool> _loadDialog() async {
+    Future<bool> _loadDialog(UserProviders userProvider) async {
         final answer = await showDialog(
             context: context,
             builder: (BuildContext ctx) =>
@@ -390,7 +390,10 @@ class _SingUpPageState extends State<SingUpPage> {
                     ),
                     actions: <Widget>[
                         FlatButton(
-                            onPressed: () => Navigator.pop(ctx, false),
+                            onPressed: () async {
+                                Navigator.pop(ctx, false);
+                                await _singInWithGoogle(userProvider);
+                            },
                             child: Text(
                                 'Entrar usando Google',
                                 style: TextStyle(
@@ -544,9 +547,16 @@ class _SingUpPageState extends State<SingUpPage> {
                     ),
                     actions: <Widget>[
                         FlatButton(
-                            onPressed: () {},
+                            onPressed: () {
+                                Navigator.pop(ctx);
+                                widget._pageController.animateToPage(
+                                    MainAuthPage.signIn,
+                                    duration: Duration(milliseconds: 800),
+                                    curve: Curves.fastOutSlowIn,
+                                );
+                            },
                             child: Text(
-                                'Entrar usando Google',
+                                'Entrar E-mail/senha',
                                 style: TextStyle(
                                     color: Theme.of(context).primaryColor,
                                 ),
@@ -598,4 +608,26 @@ class _SingUpPageState extends State<SingUpPage> {
         return true;
     }
 
+    Future<void> _singInWithGoogle(UserProviders userProvider) async {
+        var googleResponse;
+        try {
+            if (!await _isInternetOn(context)) {
+                _updateLoadingState = false;
+                return;
+            }
+            googleResponse = await _googleSignIn.signIn();
+            if (googleResponse == null) return;
+            _updateLoadingState = true;
+            final response = await AuthResource.loginWithGoogle(googleResponse.email, googleResponse.id);
+            await _singIn(response, userProvider, isNewUser: false);
+        }  catch (err, stack) {
+            print('Erro while attempt to singIn with Google');
+            print('ERROR: \n$err');
+            print('StackTrace: \t$stack');
+            Catcher.reportCheckedError(err, stack);
+            ToastUtil.showToast('Erro tentar fazer login com Google', context, color: ToastUtil.error);
+        } finally {
+            _updateLoadingState = false;
+        }
+    }
 }

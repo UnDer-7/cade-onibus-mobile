@@ -79,12 +79,13 @@ class CadeOnibus extends StatelessWidget {
                 return;
             }
 
-            _startupStatus.add(StartupState.HOME_PAGE);
-            if (!internet) return;
-
             final token = await JWT.getToken();
             final user = await UserProviders.findUser(token.payload.email);
             userProviders.setCurrentUser(user);
+
+            _startupStatus.add(StartupState.HOME_PAGE);
+            if (!internet) return;
+
         } catch (err, stack) {
             print('Erro ao carregar Futures de inicialização');
             print('ERROR: \n$err');
@@ -96,8 +97,13 @@ class CadeOnibus extends StatelessWidget {
 
     _handleHomePageLoad(AsyncSnapshot<StartupState> snap) {
         if (!snap.hasData || snap.data == StartupState.BUSY) {
-            return Center(
-                child: CircularProgressIndicator(),
+            return Container(
+                color: Color.fromRGBO(112, 68, 255, 1),
+                child: Center(
+                    child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                ),
             );
         }
 

@@ -317,7 +317,7 @@ class _CategoryCardState extends State<CategoryCard> {
                     elevation: 5,
                     content: Text(
                         'Essa categoria foi gerada a partir dos seus ônibus cadastrados na versão web do Cadê Ônibus.\n\n'
-                            'Você pode alterá-la normalmente que os ônibus da versão web não serão alterados, ela é uma categoria normal.\n\n'
+                            'Ônibus cadastrados no site apareceram nessa categoria.'
                             'Os ônibus da versão web são os ônibus da categoria Todos.',
                         textAlign: TextAlign.start,
                     ),

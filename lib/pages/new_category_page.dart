@@ -13,8 +13,9 @@ import '../pages/new_bus_page.dart';
 
 class NewCategoryPage extends StatefulWidget {
     final Category _categoryToEdit;
+    final bool isNew;
 
-    NewCategoryPage([this._categoryToEdit]);
+    NewCategoryPage([this._categoryToEdit, this.isNew = true]);
 
     @override
     _NewCategoryPageState createState() => _NewCategoryPageState();
@@ -51,7 +52,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                 ),
                 appBar: AppBar(
                     actions: <Widget>[
-                        PopupMenuButton(
+                        if (!widget.isNew) PopupMenuButton(
                             onSelected: (value) => _showDeleteCategoryDialog(context, value),
                             itemBuilder: (BuildContext ctx) => [
                                 PopupMenuItem(
@@ -139,7 +140,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     title: Text('Descartar Categoria'),
                     content: Text(
-                        'Se você descartar a categoria todo processo será perdido',
+                        'Se você sair sem salvar todo processo será perdido!',
                         textAlign: TextAlign.start,
                     ),
                     actions: <Widget>[
@@ -149,7 +150,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                                 Navigator.pop(context, true);
                             },
                             child: Text(
-                                'Descartar Categoria',
+                                'Não salvar',
                                 style: TextStyle(
                                     color: Colors.red,
                                 ),
@@ -158,7 +159,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                         FlatButton(
                             onPressed: () => Navigator.pop(context, false),
                             child: Text(
-                                'Continuar Criando',
+                                'Continuar',
                                 style: TextStyle(
                                     color: Colors.green,
                                 ),
@@ -167,7 +168,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                     ],
                 ),
         );
-        return Future.value(answer);
+        return Future.value(answer == null ? false : answer);
     }
 
     RaisedButton _buildSaveButton(BuildContext context, UserProviders userProvider, BusSelected busSelected) =>

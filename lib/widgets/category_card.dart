@@ -273,7 +273,7 @@ class _CategoryCardState extends State<CategoryCard> {
 
         busSelected.setAllBusesSelected = widget._category.buses;
         return Navigator.push(context, MaterialPageRoute(
-            builder: (BuildContext ctx) => NewCategoryPage(widget._category),
+            builder: (BuildContext ctx) => NewCategoryPage(widget._category, false),
         )).then((value) => _onRemovingCategory(value, userProvider));
     }
 

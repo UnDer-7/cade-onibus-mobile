@@ -80,10 +80,11 @@ class CadeOnibus extends StatelessWidget {
             }
 
             final token = await JWT.getToken();
-            final user = await UserProviders.findUser(token.payload.email);
-            userProviders.setCurrentUser(user);
+            UserProviders.findUser(token.payload.email)
+            .then((user) {
+                userProviders.setCurrentUser(user);
+            }).whenComplete(() => _startupStatus.add(StartupState.HOME_PAGE));
 
-            _startupStatus.add(StartupState.HOME_PAGE);
             if (!internet) return;
 
         } catch (err, stack) {
@@ -107,6 +108,10 @@ class CadeOnibus extends StatelessWidget {
             );
         }
 
+        if (snap.data == StartupState.HOME_PAGE && !internetStatus['status']) {
+            return NoInternetPage();
+        }
+
         if (snap.hasError) {
             print('User will be send to AuthPage because snapShot has error');
             print('SNAP_SHOT ERROR\n${snap.error}');
@@ -120,10 +125,6 @@ class CadeOnibus extends StatelessWidget {
 
         if (!snap.hasData || snap.data == StartupState.AUTH_PAGE) {
             return MainAuthPage();
-        }
-
-        if (snap.data == StartupState.HOME_PAGE && !internetStatus['status']) {
-            return NoInternetPage();
         }
 
         if (!snap.hasData || snap.data == StartupState.HOME_PAGE) {

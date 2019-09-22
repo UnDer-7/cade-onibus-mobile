@@ -140,7 +140,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     title: Text('Descartar Categoria'),
                     content: Text(
-                        'Se você sair sem salvar todo processo será perdido!',
+                        'Se você sair sem salvar, todo processo será perdido!',
                         textAlign: TextAlign.start,
                     ),
                     actions: <Widget>[

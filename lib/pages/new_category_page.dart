@@ -42,7 +42,6 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
         final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
         final BusSelected busSelected = Provider.of<BusSelected>(context, listen: false);
         final double _height = MediaQuery.of(context).size.height;
-
         return WillPopScope(
             onWillPop: () => _buildLeavePageConfirmationDialog(busSelected, context),
             child: Scaffold(
@@ -264,6 +263,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
 
     TextFormField get _buildNameField =>
         TextFormField(
+            enabled: !_isNameEnable,
             controller: _textEditingController,
             textCapitalization: TextCapitalization.words,
             onSaved: (String input) => _categoryName = input,
@@ -275,6 +275,10 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                 return null;
             },
         );
+
+    bool get _isNameEnable {
+        return _textEditingController.text != null && _textEditingController.text == 'Cadê Ônibus Web';
+    }
 
     Row get _buildColorPickerField =>
         Row(

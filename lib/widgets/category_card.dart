@@ -286,11 +286,11 @@ class _CategoryCardState extends State<CategoryCard> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     elevation: 5,
                     content: Text(
-                        'A categoria Todos contem os ônibus de todas as categorias.\n\n'
-                            'Você não pode editar ela (adicionar ou remover ônibus), os ônibus são colocados automaticamene.\n\n'
-                            'Os ônibus da versão web são são pegos a partir dessa categoria\n\n.'
-                            'Se você remover um ônibus de alguma categora e esse ônibus não estiver cadastro em mais nem uma, ele sera excluido da categoria Todos.\n\n'
-                            'A categoria Todos não possui ônibus repetidos.',
+                        'Esta categoria contém os ônibus de todas as categorias. '
+                            'Você não pode efetuar nenhuma alteração pois os ônibus são adicionados automaticamente.\n\n'
+                            'Caso você remova algum ônibus de alguma categoria e o mesmo não estar em nenhuma categoria, ele também será removido da categoria todos. '
+                            'Os ônibus desta categorias são únicos ou seja não repetem caso haja ônibus iguais em diferentes categorias\n\n'
+                            'Os ônibus do Cadê Ônibus Web vêm dessa categoria',
                         textAlign: TextAlign.start,
                     ),
                     actions: <Widget>[
@@ -316,9 +316,9 @@ class _CategoryCardState extends State<CategoryCard> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     elevation: 5,
                     content: Text(
-                        'Essa categoria foi gerada a partir dos seus ônibus cadastrados na versão web do Cadê Ônibus.\n\n'
-                            'Ônibus cadastrados no site apareceram nessa categoria.'
-                            'Os ônibus da versão web são os ônibus da categoria Todos.',
+                        'Categoria gerada a partir dos ônibus cadastrados na versão WEB do cadê ônibus. '
+                            'Os ônibus desta categoria são os mesmos da categoria Todos.\n\n'
+                            'Sempre que um ônibus for cadastrado na versão Web sera gerado essa categoria.',
                         textAlign: TextAlign.start,
                     ),
                     actions: <Widget>[

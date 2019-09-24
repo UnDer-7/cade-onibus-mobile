@@ -55,6 +55,14 @@ class CadeOnibus extends StatelessWidget {
                     primarySwatch: CustomColors.primaryColor,
                     accentColor: CustomColors.primaryColor,
                 ),
+                builder: (BuildContext ctx, Widget widget) {
+                    Catcher.addDefaultErrorWidget(
+                        showStacktrace: false,
+                        customTitle: 'Algo deu errado, sorry :(',
+                        customDescription: 'Tente reniciar o aplicativo',
+                    );
+                    return widget;
+                },
                 home: StatefulWrapper(
                     onInit: () => _loadFutures(isError: true),
                     child: StreamBuilder<StartupState>(

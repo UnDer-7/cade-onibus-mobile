@@ -213,6 +213,7 @@ class _MapPageState extends State<MapPage> {
 
     String getCardText(String linha) {
         if (_isLoading) return 'Carregando';
+        if (_dfTransBuses.isEmpty) return 'Ônibus ainda não foi rastreado';
         if (_dfTransBuses != null && _dfTransBuses[linha].isEmpty) return 'Nenhum ônibus encontrado';
         return 'Ônibus encontrados: ${_dfTransBuses[linha].length}';
     }
@@ -299,6 +300,7 @@ class _MapPageState extends State<MapPage> {
     void _removeBusFromTracking(String linha) {
         _busToTrackState.removeWhere((bus) => bus.numero == linha);
         _dfTransBuses.remove(linha);
+        if (_markers == null) return;
         _markers.removeWhere((item) => item.markerId.value.contains(linha));
         _deletedLines.add(linha);
     }
@@ -317,11 +319,11 @@ class _MapPageState extends State<MapPage> {
                 if (_deletedLines.contains(item.numero)) return;
                 _dfTransBuses[item.numero] = busFound;
                 _addBusMarker();
-            } on DioError catch(err, stack) {
+            } catch(err, stack) {
                 print('Erro while attempt to track bus');
                 print('ERROR: \n$err');
                 print('StackTrace: \t$stack');
-                ToastUtil.showToast('Erro ao rastrear ôniobus', context, color: ToastUtil.error);
+                ToastUtil.showToast('DFTrans fora ar\nTente mais tarde', context, color: ToastUtil.error);
             } finally {
                 _isLoading = false;
             }

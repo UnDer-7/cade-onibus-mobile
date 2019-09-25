@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
                 animatedIconTheme: IconThemeData(size: 22.0),
                 children: [
                     SpeedDialChild(
-                        label: 'Rastrar Ônibus',
+                        label: 'Rastrear Ônibus',
                         child: Icon(Icons.directions_bus),
                         onTap: () => _onTrackBus(context, _busSelected),
                     ),
@@ -58,11 +58,11 @@ class _HomePageState extends State<HomePage> {
                             Navigator.pushNamed(
                                 context, Routes.NEW_CATEGORY_PAGE)
                     ),
-                    SpeedDialChild(
-                        onTap: _toBeImplemented,
-                        label: 'Melhorias/Bugs',
-                        child: Icon(Icons.bug_report)
-                    ),
+//                    SpeedDialChild(
+//                        onTap: _toBeImplemented,
+//                        label: 'Melhorias/Bugs',
+//                        child: Icon(Icons.bug_report)
+//                    ),
                     SpeedDialChild(
                         onTap: _toBeImplemented,
                         label: 'Sobre o app',

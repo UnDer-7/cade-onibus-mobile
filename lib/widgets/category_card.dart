@@ -15,6 +15,7 @@ import '../utils/toast_util.dart';
 import '../models/category.dart';
 import '../models/bus.dart';
 
+import '../services/check_status_service.dart';
 import '../pages/new_category_page.dart';
 import '../pages/new_bus_page.dart';
 import '../pages/map_page.dart';
@@ -396,6 +397,19 @@ class _CategoryCardState extends State<CategoryCard> {
     }
 
     Future _sendToGoogleMaps(BuildContext context) async {
+        final hasPermission = await CheckStatusService.hasLocationPermission();
+        if (!hasPermission) {
+            CheckStatusService.showGPSRequiredDialog(context, true);
+            setState(_clear);
+            return;
+        }
+
+        final isGPSAvailable = await CheckStatusService.isGPSAvailable();
+        if (!isGPSAvailable) {
+            CheckStatusService.showGPSRequiredDialog(context);
+            setState(_clear);
+            return;
+        }
         setState(() => _isLoading = true);
         final location = await Location().getLocation();
         final userLocation = LatLng(location.latitude, location.longitude);
@@ -406,11 +420,7 @@ class _CategoryCardState extends State<CategoryCard> {
                         busesToTrack: _busesToTrack,
                         initialLocation: userLocation,
                     ),
-            )).whenComplete(() {
-                _isLoading = false;
-                _busesToTrack.clear();
-                _isMultiSelection = false;
-            });
+            )).whenComplete(_clear);
         } catch(err, stack)  {
             print('Erro while navigating to the MapPage');
             print('ERRO: \n$err');
@@ -418,6 +428,12 @@ class _CategoryCardState extends State<CategoryCard> {
         } finally {
             _isLoading = false;
         }
+    }
+
+    void _clear() {
+        _isLoading = false;
+        _busesToTrack.clear();
+        _isMultiSelection = false;
     }
 
     double _dynamicHeight(double height) {

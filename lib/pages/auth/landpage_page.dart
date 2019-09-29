@@ -127,6 +127,19 @@ class LandPage extends StatelessWidget {
         if (!await _isInternetOn(ctx)) {
             return;
         }
+
+        final hasPermission = await CheckStatusService.hasLocationPermission();
+        if (!hasPermission) {
+            CheckStatusService.showGPSRequiredDialog(ctx, true);
+            return;
+        }
+
+        final isGPSAvailable = await CheckStatusService.isGPSAvailable();
+        if (!isGPSAvailable) {
+            CheckStatusService.showGPSRequiredDialog(ctx);
+            return;
+        }
+
         await _saveHowManyTimesOpenMap();
         final answer = await _showCreateAccountDialog(ctx);
         if (answer == null) return;

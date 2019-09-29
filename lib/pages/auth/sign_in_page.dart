@@ -39,7 +39,6 @@ class _SingInPageState extends State<SingInPage> {
     final GoogleSignIn _googleSignIn = GoogleSignIn(
         scopes: [
             'email',
-            'https://www.googleapis.com/auth/contacts.readonly',
         ],
     );
 

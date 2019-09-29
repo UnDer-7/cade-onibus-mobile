@@ -10,6 +10,7 @@ import '../pages/map_page.dart';
 import '../providers/user_provider.dart';
 import '../providers/bus_selected.dart';
 
+import '../services/check_status_service.dart';
 import '../services/jwt_service.dart';
 
 import '../models/bus.dart';
@@ -111,6 +112,18 @@ class _HomePageState extends State<HomePage> {
     }
 
     Future<void> _onTrackBus(BuildContext context, final BusSelected busSelected) async {
+        final hasPermission = await CheckStatusService.hasLocationPermission();
+        if (!hasPermission) {
+            CheckStatusService.showGPSRequiredDialog(context, true);
+            return;
+        }
+
+        final isGPSAvailable = await CheckStatusService.isGPSAvailable();
+        if (!isGPSAvailable) {
+            CheckStatusService.showGPSRequiredDialog(context);
+            return;
+        }
+
         final userLocation = await Location().getLocation();
 
         final response = await Navigator.push(

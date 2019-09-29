@@ -22,6 +22,15 @@ abstract class AuthResource{
             final response = await _dio.post(_emailUrl, data: json.encode(user));
             return response.data;
         } on DioError catch (err, stack) {
+            if (err.response == null) {
+                Catcher.reportCheckedError(err, stack);
+                throw ResourceException(
+                    'Operação falhou',
+                    classOrigin: 'AuthResource',
+                    methodOrigin: 'loginWithEmail',
+                    lineOrigin: '35',
+                );
+            }
             if (err.response.data == 'resource-not-found' && err.response.statusCode == 404) {
                 throw ResourceException('Usuário não encontrado');
             }
@@ -34,11 +43,6 @@ abstract class AuthResource{
                 throw ResourceException('Senha incorreta');
             }
 
-            print('Erro ao realizar request para {$_emailUrl} - Metodo: loginWithEmail | Class: AuthResource');
-            print('Response -> \t${err.response}');
-            print('Message -> \t${err.message}');
-            print('Error -> \t${err.error}');
-            print('statusCode -> \t${err.response.statusCode}');
             Catcher.reportCheckedError(err, stack);
             throw ResourceException(
                 'Operação falhou',
@@ -66,6 +70,15 @@ abstract class AuthResource{
             final response = await _dio.post(_googleUrl, data: json.encode(user));
             return response.data;
         } on DioError catch (err, stack) {
+            if (err.response == null) {
+                Catcher.reportCheckedError(err, stack);
+                throw ResourceException(
+                    'Operação falhou',
+                    classOrigin: 'AuthResource',
+                    methodOrigin: 'loginWithEmail',
+                    lineOrigin: '35',
+                );
+            }
             if (err.response.data == 'resource-not-found' && err.response.statusCode == 404) {
                 throw ResourceException('Usuário não encontrado');
             }
@@ -77,19 +90,7 @@ abstract class AuthResource{
             if (err.response.data == 'can-crate' && err.response.statusCode == 400) {
                 throw ResourceException('already-in-use');
             }
-
-            print('Erro ao realizar request para {$_googleUrl} - Metodo: loginWithGoogle | Class: AuthResource');
-            print('Response -> \t${err.response}');
-            print('Message -> \t${err.message}');
-            print('Error -> \t${err.error}');
-            print('statusCode -> \t${err.response.statusCode}');
             Catcher.reportCheckedError(err, stack);
-            throw ResourceException(
-                'Operação falhou',
-                classOrigin: 'AuthResource',
-                methodOrigin: 'loginWithEmail',
-                lineOrigin: '35',
-            );
         } catch (generic, stack) {
             print('Erro INESPERADO no loginWithGoogle');
             print('Error -> \t$generic');

@@ -5,14 +5,14 @@ import 'package:dio/dio.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../config/dio_config.dart';
-import '../utils/api_util.dart';
 import '../models/user.dart';
+import '../environments/environment.dart';
 import './resource_exception.dart';
 
 abstract class UserResource {
     static final Dio _dioAuth = DioConfig.dioFactory();
     static final Dio _dio = Dio();
-    static final String _resourceUrl = '${APIUtil.api}/users';
+    static final String _resourceUrl = '${Environment.api}/users';
 
     static Future<User> getUser(String email) async {
         print('GET request to get user \tURL: $_resourceUrl/$email');

@@ -4,11 +4,11 @@ import 'package:catcher/core/catcher.dart';
 import 'package:dio/dio.dart';
 
 import './resource_exception.dart';
-import '../utils/api_util.dart';
+import '../environments/environment.dart';
 
 abstract class AuthResource{
-    static final String _emailUrl = '${APIUtil.api}/session/email';
-    static final String _googleUrl = '${APIUtil.api}/session/google';
+    static final String _emailUrl = '${Environment.api}/session/email';
+    static final String _googleUrl = '${Environment.api}/session/google';
 
     static final Dio _dio = Dio();
 

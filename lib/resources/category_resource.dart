@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
 
 import '../config/dio_config.dart';
-import '../utils/api_util.dart';
+import '../environments/environment.dart';
 import '../models/category.dart';
 
 abstract class CategoryResource {
     static final Dio _dioAuth = DioConfig.dioFactory();
-    static final String _resourceUrl = '${APIUtil.api}/categories';
+    static final String _resourceUrl = '${Environment.api}/categories';
 
     static Future<List<Category>> addCategory(String category) {
         print('POST request to add new category\tURL: $_resourceUrl');

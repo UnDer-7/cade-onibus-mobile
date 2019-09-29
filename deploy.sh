@@ -19,3 +19,4 @@ cd "$ENV_FOLDER"
 echo "Trocando environments"
 mv environment.dart environment_prod.dart
 mv /tmp/environment.dart environment.dart
+rm -rf /tmp/environment.dart

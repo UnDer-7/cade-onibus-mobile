@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -294,6 +293,10 @@ class _MapPageState extends State<MapPage> {
         _busToTrackState.clear();
         _busToTrackState = busSelected.getAllBusSelected.map((bus) => bus).toList();
         busSelected.cleanBusSelected();
+        setState(() {
+            _markers = null;
+            _dfTransBuses.clear();
+        });
         _watchBusLocation();
     }
 

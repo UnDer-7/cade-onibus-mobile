@@ -88,7 +88,7 @@ class _MapPageState extends State<MapPage> {
                             markers: _markers,
                             onMapCreated: (_) => _watchBusLocation(),
                             initialCameraPosition: CameraPosition(
-                                zoom: 15,
+                                zoom: 14,
                                 target: widget.initialLocation,
                             ),
                         ),
@@ -282,7 +282,11 @@ class _MapPageState extends State<MapPage> {
     }
 
     Future _addMoreBusToTrack(final BuildContext context, final BusSelected busSelected) async {
-        _busToTrackState.forEach((f) => busSelected.addBusSelected = f);
+        _busToTrackState.forEach((f) {
+            if (!busSelected.getAllBusSelected.contains(f)) {
+                busSelected.addBusSelected = f;
+            }
+        });
         final res = await Navigator.push(context, MaterialPageRoute(
             builder: (BuildContext ctx) => NewBusPage(isMultiSelection: true, isForSaving: false),
         ));

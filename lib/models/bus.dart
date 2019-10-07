@@ -34,4 +34,11 @@ class Bus {
         buffer.write('}');
         return buffer.toString();
     }
+
+    @override
+    bool operator ==(other) =>
+        other is Bus && (numero == other.numero && descricao == other.descricao);
+
+    @override
+    int get hashCode => numero.hashCode^descricao.hashCode;
 }

@@ -23,4 +23,9 @@ class BusSelected with ChangeNotifier {
     }
 
     void cleanBusSelected() => _busSelected.clear();
+
+    @override
+  String toString() {
+    return 'BusSelected: {\n${_busSelected.map((item) => item.toString()).toList()}\n}';
+  }
 }

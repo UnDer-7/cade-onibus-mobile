@@ -40,6 +40,7 @@ class _MapPageState extends State<MapPage> {
     Set<Marker> _markers;
     String _linhaSelected;
 
+    double _busListHeight = 100;
     _MapPageState() {
         _locationStream = _location
             .onLocationChanged()
@@ -93,69 +94,75 @@ class _MapPageState extends State<MapPage> {
                             ),
                         ),
                         Container(
-                            height: 140,
+                            height: _busListHeight,
+                            color: Theme.of(context).primaryColor,
                             width: double.infinity,
-                            margin: EdgeInsets.symmetric(vertical: 40),
-                            child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _buses.length,
-                                itemBuilder: (BuildContext ctx, int i) =>
-                                    Column(
-                                        children: <Widget>[
-                                            Container(
-                                                margin: EdgeInsets.symmetric(horizontal: 10),
-                                                height: 40,
-                                                width: 70,
-                                                child: RaisedButton(
-                                                    onPressed: () {
-                                                        if (_linhaSelected == _buses[i]){
-                                                            _linhaSelected = null;
-                                                            return;
-                                                        }
-                                                        _linhaSelected = _buses[i];
-                                                    },
-                                                    elevation: 0,
-                                                    padding: EdgeInsets.symmetric(horizontal: 0),
-                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                                    color: getBusBadgeColor(_buses[i], context),
-                                                    child: getBadgeContent(_buses[i]),
-                                                ),
-                                            ),
-                                            if (_isLoading && _linhaSelected == _buses[i]) Card(
-                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                                                child: Padding(
-                                                    padding: const EdgeInsets.all(5),
-                                                    child: Column(
-                                                        children: <Widget>[
-                                                            Text('Carregando'),
-                                                            SizedBox(height: 10),
-                                                            CircularProgressIndicator(),
-                                                        ],
-                                                    ),
-                                                ),
-                                            ),
-                                            if (!_isLoading && _linhaSelected == _buses[i]) Card(
-                                                color: getBusBadgeColor(_buses[i], context),
-                                                child: Column(
-                                                    children: <Widget>[
-                                                        if (!_isLoading) Container(
-                                                            margin: EdgeInsets.all(10),
-                                                            child: Text(
-                                                                getCardText(_buses[i]),
-                                                                style: TextStyle(color: Colors.white),
-                                                            ),
-                                                        ),
-                                                        if (!_isLoading) RaisedButton(
-                                                            onPressed: () => _removeBusFromTracking(_buses[i]),
-                                                            elevation: 10,
-                                                            color: Colors.white,
-                                                            child: Text('Parar de rastrear'),
-                                                        ),
-                                                    ],
-                                                ),
-                                            ),
-                                        ],
-                                    ),
+                            margin: EdgeInsets.symmetric(vertical: 0),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 40),
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _buses.length,
+                                  itemBuilder: (BuildContext ctx, int i) =>
+                                      Column(
+                                          children: <Widget>[
+                                              Container(
+                                                  margin: EdgeInsets.symmetric(horizontal: 10),
+                                                  height: 40,
+                                                  width: 70,
+                                                  child: RaisedButton(
+                                                      onPressed: () {
+                                                          if (_linhaSelected == _buses[i]){
+                                                              _linhaSelected = null;
+                                                              _busListHeight = 100;
+                                                              return;
+                                                          }
+                                                          _busListHeight = 180;
+                                                          _linhaSelected = _buses[i];
+                                                      },
+                                                      elevation: 10,
+                                                      padding: EdgeInsets.symmetric(horizontal: 0),
+                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                                      color: getBusBadgeColor(_buses[i], context),
+                                                      child: getBadgeContent(_buses[i]),
+                                                  ),
+                                              ),
+                                              if (_isLoading && _linhaSelected == _buses[i]) Card(
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                                                  child: Padding(
+                                                      padding: const EdgeInsets.all(5),
+                                                      child: Column(
+                                                          children: <Widget>[
+                                                              Text('Carregando'),
+                                                              SizedBox(height: 10),
+                                                              CircularProgressIndicator(),
+                                                          ],
+                                                      ),
+                                                  ),
+                                              ),
+                                              if (!_isLoading && _linhaSelected == _buses[i]) Card(
+                                                  color: getBusBadgeColor(_buses[i], context),
+                                                  child: Column(
+                                                      children: <Widget>[
+                                                          if (!_isLoading) Container(
+                                                              margin: EdgeInsets.all(10),
+                                                              child: Text(
+                                                                  getCardText(_buses[i]),
+                                                                  style: TextStyle(color: Colors.white),
+                                                              ),
+                                                          ),
+                                                          if (!_isLoading) RaisedButton(
+                                                              onPressed: () => _removeBusFromTracking(_buses[i]),
+                                                              elevation: 10,
+                                                              color: Colors.white,
+                                                              child: Text('Parar de rastrear'),
+                                                          ),
+                                                      ],
+                                                  ),
+                                              ),
+                                          ],
+                                      ),
+                              ),
                             ),
                         ),
                         Padding(
@@ -307,9 +314,13 @@ class _MapPageState extends State<MapPage> {
     void _removeBusFromTracking(String linha) {
         _busToTrackState.removeWhere((bus) => bus.numero == linha);
         _dfTransBuses.remove(linha);
-        if (_markers == null) return;
+        if (_markers == null) {
+            _busListHeight = 100;
+            return;
+        }
         _markers.removeWhere((item) => item.markerId.value.contains(linha));
         _deletedLines.add(linha);
+        _busListHeight = 100;
     }
 
     void _watchUserLocation(LocationData data) {
@@ -327,6 +338,10 @@ class _MapPageState extends State<MapPage> {
                 _dfTransBuses[item.numero] = busFound;
                 _addBusMarker();
             } catch(err, stack) {
+                if (err != null && err.error != null && err.error.toString().contains('Failed host lookup')) {
+                    ToastUtil.showToast('Sem conexão com a internet', context, color: ToastUtil.warning);
+                    return;
+                }
                 print('Erro while attempt to track bus');
                 print('ERROR: \n$err');
                 print('StackTrace: \t$stack');

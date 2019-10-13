@@ -195,8 +195,12 @@ class _NewBusPageState extends State<NewBusPage> {
 
             setState(() => _bus);
         } on DioError catch(err, stack) {
+            if (err != null && err.error != null && err.error.toString().contains('Failed host lookup')) {
+                ToastUtil.showToast('Sem conexão com a internet', context, color: ToastUtil.warning);
+                return;
+            }
             if (err.response == null) {
-                _showToast('Algo deu errado', color: ToastUtil.error);
+                _showToast('Algo deu errado ao pesquisar no DFTrans', color: ToastUtil.error);
                 return;
             }
             if (err.response.statusCode == 400) {

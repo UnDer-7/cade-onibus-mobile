@@ -86,6 +86,17 @@ class _SingInPageState extends State<SingInPage> {
                                                     _buildEmailField(),
                                                     SizedBox(height: 15),
                                                     _buildPasswordField(),
+                                                    SizedBox(height: 10,),
+                                                    GestureDetector(
+                                                        onTap: () => print('CLICKED'),
+                                                        child: Text(
+                                                            'Esqueceu a senha?',
+                                                            textAlign: TextAlign.end,
+                                                            style: TextStyle(
+                                                                color: Theme.of(context).primaryColor,
+                                                            ),
+                                                        ),
+                                                    ),
                                                     SizedBox(height: 20),
                                                     RaisedButton(
                                                         onPressed: () => _singInWithEmail(userProvider),

@@ -62,6 +62,38 @@ abstract class AuthResource{
 
     static Future<void> recoveryPassword(final String email) async {
         print('POST request to $_recoveryUrl');
+        final map = {
+            'email': email,
+        };
+
+        try {
+            await _dio.post(_recoveryUrl, data: json.encode(map));
+        } on DioError catch (err, stack) {
+            if (err.response == null) {
+                Catcher.reportCheckedError(err, stack);
+                throw ResourceException(
+                    'Operação falhou',
+                    classOrigin: 'AuthResource',
+                    methodOrigin: 'recoveryEmail',
+                    lineOrigin: '70',
+                );
+            }
+
+            if (err.response.data == 'resource-not-found' && err.response.statusCode == 404) {
+                throw ResourceException('E-mail não encontrato');
+            }
+
+            Catcher.reportCheckedError(err, stack);
+            throw ResourceException(
+                'Operação falhou',
+                classOrigin: 'AuthResource',
+                methodOrigin: 'loginWithEmail',
+                lineOrigin: '70',
+            );
+        } catch (err, stack) {
+            Catcher.reportCheckedError(err, stack);
+            throw err;
+        }
     }
 
     static Future<String> loginWithGoogle(final String email, final String googleId) async {

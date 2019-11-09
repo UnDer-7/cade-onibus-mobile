@@ -384,7 +384,7 @@ class _SingInPageState extends State<SingInPage> {
             }
             await AuthResource.recoveryPassword(_recoveryEmail);
         } on ResourceException catch(err) {
-
+            ToastUtil.showToast(err.msg, context, color: ToastUtil.error, duration: 5);
         } finally {
             _updateLoadingState = false;
         }

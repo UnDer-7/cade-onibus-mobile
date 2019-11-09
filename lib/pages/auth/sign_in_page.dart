@@ -36,6 +36,8 @@ class SingInPage extends StatefulWidget {
 
 class _SingInPageState extends State<SingInPage> {
     final GlobalKey<FormState> _formKey = GlobalKey();
+    final GlobalKey<FormState> _recoveryFormKey = GlobalKey();
+
     final GoogleSignIn _googleSignIn = GoogleSignIn(
         scopes: [
             'email',
@@ -44,6 +46,7 @@ class _SingInPageState extends State<SingInPage> {
 
     String _password;
     String _email;
+    String _recoveryEmail;
     bool _isLoading = false;
     bool _showPassword = false;
     bool _hasEmailFormError = false;
@@ -88,7 +91,7 @@ class _SingInPageState extends State<SingInPage> {
                                                     _buildPasswordField(),
                                                     SizedBox(height: 10,),
                                                     GestureDetector(
-                                                        onTap: () => print('CLICKED'),
+                                                        onTap: _forgotPassword,
                                                         child: Text(
                                                             'Esqueceu a senha?',
                                                             textAlign: TextAlign.end,
@@ -174,7 +177,10 @@ class _SingInPageState extends State<SingInPage> {
 
     TextFormField _buildEmailField() =>
         TextFormField(
-            onSaved: (value) => _email = value,
+            onSaved: (value) {
+                _recoveryEmail = value;
+                _email = value;
+            },
             keyboardType: TextInputType.emailAddress,
             validator: _emailFormValidation,
             decoration: InputDecoration(
@@ -257,6 +263,51 @@ class _SingInPageState extends State<SingInPage> {
             ),
         );
 
+    Future<void> _forgotPassword() async {
+        _hasEmailFormError = false;
+        await showDialog(
+            context: context,
+            builder: (BuildContext ctx) =>
+                AlertDialog(
+                    title: Text('Esqueci a Senha'),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 5,
+                    content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                            Text('Digite seu endereço de e-mail abaixo e enviaremos um link para redefinir sua senha'),
+                            SizedBox(height: 15),
+                            Form(
+                                key: _recoveryFormKey,
+                                child: _buildEmailField()
+                            ),
+                        ],
+                    ),
+                    actions: <Widget>[
+                        FlatButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text(
+                                'Cancelar',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                ),
+                            ),
+                        ),
+                        FlatButton(
+                            onPressed: _recoveryPassword,
+                            child: Text(
+                                'Eviar E-mail',
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                ),
+                            ),
+                        ),
+                    ],
+                )
+        );
+    }
+
     IconData get _gePasswordIcon {
         if (_showPassword) return FontAwesomeIcons.eye;
         return FontAwesomeIcons.eyeSlash;
@@ -320,6 +371,23 @@ class _SingInPageState extends State<SingInPage> {
     bool _isKeyBoardOpen(BuildContext context) {
         if (MediaQuery.of(context).viewInsets.bottom == 0) return false;
         return true;
+    }
+
+    Future<void> _recoveryPassword() async {
+        if (!_recoveryFormKey.currentState.validate()) return;
+
+        _recoveryFormKey.currentState.save();
+        try {
+            if (!await _isInternetOn(context)) {
+                _updateLoadingState = false;
+                return;
+            }
+            await AuthResource.recoveryPassword(_recoveryEmail);
+        } on ResourceException catch(err) {
+
+        } finally {
+            _updateLoadingState = false;
+        }
     }
 
     Future<void> _singInWithEmail(final UserProviders userProvider) async {

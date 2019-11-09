@@ -9,6 +9,7 @@ import '../environments/environment.dart';
 abstract class AuthResource{
     static final String _emailUrl = '${Environment.api}/session/email';
     static final String _googleUrl = '${Environment.api}/session/google';
+    static final String _recoveryUrl = '${Environment.api}/session/recovery';
 
     static final Dio _dio = Dio();
 
@@ -57,6 +58,10 @@ abstract class AuthResource{
             Catcher.reportCheckedError(generic, stack);
             throw generic;
         }
+    }
+
+    static Future<void> recoveryPassword(final String email) async {
+        print('POST request to $_recoveryUrl');
     }
 
     static Future<String> loginWithGoogle(final String email, final String googleId) async {

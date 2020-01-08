@@ -265,7 +265,7 @@ class _SingInPageState extends State<SingInPage> {
 
     Future<void> _forgotPassword() async {
         _hasEmailFormError = false;
-        await showDialog(
+        final res = await showDialog(
             context: context,
             builder: (BuildContext ctx) =>
                 AlertDialog(
@@ -295,7 +295,7 @@ class _SingInPageState extends State<SingInPage> {
                             ),
                         ),
                         FlatButton(
-                            onPressed: _recoveryPassword,
+                            onPressed: () => _recoveryPassword(ctx),
                             child: Text(
                                 'Eviar E-mail',
                                 style: TextStyle(
@@ -306,6 +306,7 @@ class _SingInPageState extends State<SingInPage> {
                     ],
                 )
         );
+        print('EMAIL ENVIADO!');
     }
 
     IconData get _gePasswordIcon {
@@ -373,18 +374,20 @@ class _SingInPageState extends State<SingInPage> {
         return true;
     }
 
-    Future<void> _recoveryPassword() async {
+    Future<void> _recoveryPassword(final BuildContext ctx) async {
         if (!_recoveryFormKey.currentState.validate()) return;
 
         _recoveryFormKey.currentState.save();
         try {
-            if (!await _isInternetOn(context)) {
+            if (!await _isInternetOn(ctx)) {
                 _updateLoadingState = false;
                 return;
             }
             await AuthResource.recoveryPassword(_recoveryEmail);
+            print('pop');
+            Navigator.pop(ctx);
         } on ResourceException catch(err) {
-            ToastUtil.showToast(err.msg, context, color: ToastUtil.error, duration: 5);
+            ToastUtil.showToast(err.msg, ctx, color: ToastUtil.error, duration: 5);
         } finally {
             _updateLoadingState = false;
         }

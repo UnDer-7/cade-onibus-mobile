@@ -29,6 +29,10 @@
 .pub/
 /build/
 
+# Flutter
+.flutter**
+flutter_**.log
+
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle

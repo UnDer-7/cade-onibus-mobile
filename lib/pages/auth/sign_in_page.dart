@@ -263,9 +263,9 @@ class _SingInPageState extends State<SingInPage> {
             ),
         );
 
-    Future<void> _forgotPassword() async {
+    void _forgotPassword() async {
         _hasEmailFormError = false;
-        final res = await showDialog(
+        showDialog(
             context: context,
             builder: (BuildContext ctx) =>
                 AlertDialog(
@@ -297,7 +297,7 @@ class _SingInPageState extends State<SingInPage> {
                         FlatButton(
                             onPressed: () => _recoveryPassword(ctx),
                             child: Text(
-                                'Eviar E-mail',
+                                'Enviar E-mail',
                                 style: TextStyle(
                                     color: Theme.of(context).primaryColor,
                                 ),
@@ -305,8 +305,7 @@ class _SingInPageState extends State<SingInPage> {
                         ),
                     ],
                 )
-        );
-        print('EMAIL ENVIADO!');
+        ).then((_) => ToastUtil.showToast('E-email enviado', context, color: ToastUtil.success, duration: 7, position: ToastUtil.bottom));
     }
 
     IconData get _gePasswordIcon {

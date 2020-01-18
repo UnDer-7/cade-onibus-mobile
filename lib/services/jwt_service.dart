@@ -8,7 +8,7 @@ import '../utils/jwt.dart';
 import '../routes.dart';
 
 abstract class JWTService {
-    static Future<Token> saveUser(String jwt) async {
+    static Future<Token> saveToken(String jwt) async {
         try {
             final preferences = await SharedPreferences.getInstance();
             final token = JWT.decode(jwt);

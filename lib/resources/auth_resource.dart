@@ -10,6 +10,7 @@ abstract class AuthResource{
     static final String _emailUrl = '${Environment.api}/session/email';
     static final String _googleUrl = '${Environment.api}/session/google';
     static final String _recoveryUrl = '${Environment.api}/session/recovery';
+    static final String _refreshTokenUrl = '${Environment.api}/session/refresh';
 
     static final Dio _dio = Dio();
 
@@ -134,6 +135,39 @@ abstract class AuthResource{
             print('StackTrace: \t$stack');
             Catcher.reportCheckedError(generic, stack);
             throw generic;
+        }
+    }
+    
+    static Future<String> refreshToken(final String token) async {
+        print('POST Request to refresh Token\tURL: $_refreshTokenUrl');
+
+        final Map<String, String> tokenMap = {
+            'token': token,
+        };
+
+        try {
+            final response = await _dio.post(_refreshTokenUrl, data: json.encode(tokenMap));
+            return response.data;
+        } on DioError catch (err, stack) {
+            if (err.response == null) {
+                Catcher.reportCheckedError(err, stack);
+                throw ResourceException(
+                    'Operação falhou',
+                    classOrigin: 'AuthResource',
+                    methodOrigin: 'refreshToken',
+                    lineOrigin: '149',
+                );
+            }
+            Catcher.reportCheckedError(err, stack);
+            throw ResourceException(
+                'Operação falhou',
+                classOrigin: 'AuthResource',
+                methodOrigin: 'loginWithEmail',
+                lineOrigin: '70',
+            );
+        } catch (err, stack) {
+            Catcher.reportCheckedError(err, stack);
+            throw err;
         }
     }
 }

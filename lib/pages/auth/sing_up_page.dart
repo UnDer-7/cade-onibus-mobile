@@ -586,7 +586,7 @@ class _SingUpPageState extends State<SingUpPage> {
     }
 
     Future<void> _singIn(final String response, final UserProviders userProvider, {final bool isNewUser = true}) async {
-        final token = await JWTService.saveUser(response);
+        final token = await JWTService.saveToken(response);
         final user = await UserProviders.findUser(token.payload.email);
         userProvider.setCurrentUser(user);
 

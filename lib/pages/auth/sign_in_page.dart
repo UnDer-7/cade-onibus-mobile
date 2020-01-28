@@ -286,7 +286,7 @@ class _SingInPageState extends State<SingInPage> {
                     ),
                     actions: <Widget>[
                         FlatButton(
-                            onPressed: () => Navigator.pop(ctx),
+                            onPressed: () => Navigator.pop(ctx, false),
                             child: Text(
                                 'Cancelar',
                                 style: TextStyle(
@@ -305,7 +305,9 @@ class _SingInPageState extends State<SingInPage> {
                         ),
                     ],
                 )
-        ).then((_) => ToastUtil.showToast('E-email enviado', context, color: ToastUtil.success, duration: 7, position: ToastUtil.bottom));
+        ).then((res) => {
+            if (res) { ToastUtil.showToast('E-email enviado', context, color: ToastUtil.success, duration: 7, position: ToastUtil.bottom) }
+        });
     }
 
     IconData get _gePasswordIcon {
@@ -384,7 +386,7 @@ class _SingInPageState extends State<SingInPage> {
             }
             await AuthResource.recoveryPassword(_recoveryEmail);
             print('pop');
-            Navigator.pop(ctx);
+            Navigator.pop(ctx, true);
         } on ResourceException catch(err) {
             ToastUtil.showToast(err.msg, ctx, color: ToastUtil.error, duration: 5);
         } finally {

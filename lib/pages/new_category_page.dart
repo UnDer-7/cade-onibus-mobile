@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cade_onibus_mobile/models/bus.dart';
 import 'package:cade_onibus_mobile/utils/toast_util.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import '../providers/user_provider.dart';
 import '../providers/bus_selected.dart';
 import '../models/category.dart';
 import '../pages/new_bus_page.dart';
+import '../widgets/block_ui.dart';
 
 class NewCategoryPage extends StatefulWidget {
     final Category _categoryToEdit;
@@ -24,6 +27,7 @@ class NewCategoryPage extends StatefulWidget {
 class _NewCategoryPageState extends State<NewCategoryPage> {
     static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     final TextEditingController _textEditingController = TextEditingController();
+    final StreamController<bool> _isLoadingStream = StreamController<bool>.broadcast();
 
     Color _currentColor = Colors.purple;
     String _categoryName;
@@ -37,6 +41,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
         }
         super.initState();
     }
+
     @override
     WillPopScope build(BuildContext context) {
         final UserProviders userProvider = Provider.of<UserProviders>(context, listen: false);
@@ -44,79 +49,82 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
         final double _height = MediaQuery.of(context).size.height;
         return WillPopScope(
             onWillPop: () => _buildLeavePageConfirmationDialog(busSelected, context),
-            child: Scaffold(
-                bottomNavigationBar: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    child: _buildSaveButton(context, userProvider, busSelected),
-                ),
-                appBar: AppBar(
-                    actions: <Widget>[
-                        if (!widget.isNew) PopupMenuButton(
-                            onSelected: (value) => _showDeleteCategoryDialog(context, value),
-                            itemBuilder: (BuildContext ctx) => [
-                                PopupMenuItem(
-                                    value: true,
-                                    child: Row(
-                                        children: <Widget>[
-                                            Icon(
-                                                Icons.delete,
-                                                color: Colors.red,
-                                            ),
-                                            Container(
-                                                margin: EdgeInsets.only(left: 10),
-                                              child: Text(
-                                                  'Apagar Categoria',
-                                                  textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                        ],
-                                    ),
-                                ),
-                            ],
-                        ),
-                    ],
-                    centerTitle: true,
-                    title: Text(_appBarTitle),
-                ),
-                body: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: Form(
-                        key: _formKey,
-                        child: ListView(
-                            children: <Widget>[
-                                _buildNameField,
-                                SizedBox(height: 10),
-                                _buildColorPickerField,
-                                Padding(
-                                    padding: const EdgeInsets.only(top: 10),
-                                    child: Divider(
-                                        color: Theme.of(context).primaryColor,
-                                        indent: 5,
-                                        endIndent: 5,
-                                    ),
-                                ),
-                                SizedBox(height: 10),
-                                _buildBusSelectionButton(context),
-                                Padding(
-                                    padding: const EdgeInsets.only(top: 10),
-                                    child: Text(
-                                        'Ônibus selecionados',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 20
+            child: BlockUI(
+                blockUIController: _isLoadingStream,
+                child: Scaffold(
+                    bottomNavigationBar: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        child: _buildSaveButton(context, userProvider, busSelected),
+                    ),
+                    appBar: AppBar(
+                        actions: <Widget>[
+                            if (!widget.isNew) PopupMenuButton(
+                                onSelected: (value) => _showDeleteCategoryDialog(context, value),
+                                itemBuilder: (BuildContext ctx) => [
+                                    PopupMenuItem(
+                                        value: true,
+                                        child: Row(
+                                            children: <Widget>[
+                                                Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                ),
+                                                Container(
+                                                    margin: EdgeInsets.only(left: 10),
+                                                    child: Text(
+                                                        'Apagar Categoria',
+                                                        textAlign: TextAlign.center,
+                                                    ),
+                                                ),
+                                            ],
                                         ),
                                     ),
-                                ),
-                                Container(
-                                    margin: EdgeInsets.only(top: 5),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(width: 3, color: Theme.of(context).primaryColor),
-                                        borderRadius: BorderRadius.circular(10)
+                                ],
+                            ),
+                        ],
+                        centerTitle: true,
+                        title: Text(_appBarTitle),
+                    ),
+                    body: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: Form(
+                            key: _formKey,
+                            child: ListView(
+                                children: <Widget>[
+                                    _buildNameField,
+                                    SizedBox(height: 10),
+                                    _buildColorPickerField,
+                                    Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: Divider(
+                                            color: Theme.of(context).primaryColor,
+                                            indent: 5,
+                                            endIndent: 5,
+                                        ),
                                     ),
-                                    height: _height / 2.5,
-                                    child: _buildBusSelectedBox(busSelected),
-                                ),
-                            ],
+                                    SizedBox(height: 10),
+                                    _buildBusSelectionButton(context),
+                                    Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: Text(
+                                            'Ônibus selecionados',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 20
+                                            ),
+                                        ),
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.only(top: 5),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(width: 3, color: Theme.of(context).primaryColor),
+                                            borderRadius: BorderRadius.circular(10)
+                                        ),
+                                        height: _height / 2.5,
+                                        child: _buildBusSelectedBox(busSelected),
+                                    ),
+                                ],
+                            ),
                         ),
                     ),
                 ),
@@ -389,6 +397,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
         final List<Bus> buses = busSelected.getAllBusSelected;
         if (!_formKey.currentState.validate()) return Future(() {});
         _formKey.currentState.save();
+        _isLoadingStream.add(true);
 
         Category newCategory = Category(
             uuid: _isEditing ? widget._categoryToEdit.uuid : null,
@@ -398,6 +407,7 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
         );
 
         try {
+            await Future.delayed(Duration(seconds: 3));
             if (_isEditing) {
                 await provider.updateCategory(newCategory);
             } else {
@@ -414,6 +424,8 @@ class _NewCategoryPageState extends State<NewCategoryPage> {
                 print('StackTrace: \t$stack');
                 ToastUtil.showToast('Erro salvar a categoria', ctx, color: ToastUtil.error, duration: 5);
             }
+        } finally {
+            _isLoadingStream.add(false);
         }
     }
 }

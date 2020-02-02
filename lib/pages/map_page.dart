@@ -262,16 +262,21 @@ class _MapPageState extends State<MapPage> {
             ),
         };
 
-        _dfTransBuses.forEach((key, busList) => busList.forEach((bus) => setState(() => _markers.add(
-            Marker(
-                markerId: MarkerId(bus.properties.numero + bus.properties.linha),
-                position: LatLng(bus.coordinates.latitude, bus.coordinates.longitude),
-                icon: _busIcon,
-                infoWindow: InfoWindow(
-                    title: 'Linha: ${bus.properties.linha}',
-                )
-            ),
-        ))));
+        _dfTransBuses.forEach((key, busList) => busList.forEach((bus) => setState(() {
+            final currentTime = DateTime.now();
+            final lastUpdate = currentTime.difference(bus.properties.horario).inSeconds;
+            _markers.add(
+                Marker(
+                    markerId: MarkerId(bus.properties.numero + bus.properties.linha),
+                    position: LatLng(bus.coordinates.latitude, bus.coordinates.longitude),
+                    icon: _busIcon,
+                    infoWindow: InfoWindow(
+                        title: 'Linha: ${bus.properties.linha}',
+                        snippet: 'Ultima Atualização: $lastUpdate segundos atrás'
+                    )
+                ),
+            );
+        })));
     }
 
     Future<void> _createMarkerImageFromAsset(BuildContext context) async {

@@ -55,7 +55,7 @@ class Properties {
         if (minute.length == 1) minute = '0' + minute;
         if (second.length == 1) second = '0' + second;
 
-        return '$minute:$second';
+        return '$minute min:$second sec';
     }
 
     @override

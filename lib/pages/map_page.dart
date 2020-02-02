@@ -344,7 +344,7 @@ class _MapPageState extends State<MapPage> {
                 _dfTransBuses[item.numero] = busFound;
                 _addBusMarker();
             } catch(err, stack) {
-                if (err != null && err.error != null && err.error.toString().contains('Failed host lookup')) {
+                if (err != null && err?.error != null && err.error.toString().contains('Failed host lookup')) {
                     ToastUtil.showToast('Sem conexão com a internet', context, color: ToastUtil.warning);
                     return;
                 }

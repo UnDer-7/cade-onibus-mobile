@@ -86,7 +86,6 @@ class _MapPageState extends State<MapPage> {
                 body: Stack(
                     children: <Widget>[
                         GoogleMap(
-                            trafficEnabled: true,
                             markers: _markers,
                             onMapCreated: (_) => _watchBusLocation(),
                             initialCameraPosition: CameraPosition(

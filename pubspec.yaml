@@ -35,7 +35,6 @@ dependencies:
     location: ^2.3.5
 
     flare_flutter: ^1.6.2
-    keyboard_visibility: ^0.5.6
     font_awesome_flutter: ^8.5.0
     flutter_svg: ^0.14.0
     shared_preferences: ^0.5.3+4

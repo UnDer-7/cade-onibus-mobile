@@ -26,7 +26,7 @@ class BusCoordinates {
 
 class Properties {
     String numero;
-    dynamic horario;
+    DateTime horario;
     String linha;
     String operadora;
     int idOperadora;
@@ -41,10 +41,22 @@ class Properties {
 
     Properties.fromJSON(Map<String, dynamic> json) :
             numero = json['numero'],
-            horario = json['horario'],
+            horario = DateTime.fromMillisecondsSinceEpoch(json['horario']),
             linha = json['linha'],
             operadora = json['operadora'],
             idOperadora = json['id_operadora'];
+
+    String get horarioFormatado {
+        if (horario == null) return 'Não Informado';
+
+        var minute = horario.minute.toString();
+        var second = horario.second.toString();
+
+        if (minute.length == 1) minute = '0' + minute;
+        if (second.length == 1) second = '0' + second;
+
+        return '$minute:$second';
+    }
 
     @override
     String toString() {

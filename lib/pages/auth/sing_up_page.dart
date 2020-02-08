@@ -1,8 +1,10 @@
 import 'dart:async';
 
-import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
+import 'package:catcher/core/catcher.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
@@ -113,7 +115,7 @@ class _SingUpPageState extends State<SingUpPage> {
                                         child: OuDivider(),
                                     ),
                                     if (!_isKeyBoardOpen(context)) Padding(
-                                        padding: EdgeInsets.only(bottom: 15),
+                                        padding: EdgeInsets.only(bottom: 5),
                                         child: FlatButton(
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                                             onPressed: () => _createUserWithGoogle(userProvider),
@@ -133,6 +135,17 @@ class _SingUpPageState extends State<SingUpPage> {
                                             ),
                                         ),
                                     ),
+                                    if (!_isKeyBoardOpen(context)) Divider(
+                                        color: Theme.of(context).primaryColor,
+                                    ),
+                                    if (!_isKeyBoardOpen(context)) FlatButton(
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                                      onPressed: _launchPrivacyPolicy,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(bottom: 15),
+                                        child: Text('Política de Privacidade'),
+                                      ),
+                                    )
                                 ],
                             ),
                         ),
@@ -274,6 +287,20 @@ class _SingUpPageState extends State<SingUpPage> {
             _isLoading = value;
             widget._isLoadingStream.add(value);
         });
+    }
+
+    Future<void> _launchPrivacyPolicy() async {
+        const url = 'https://www.iubenda.com/privacy-policy/13540319';
+
+        try {
+            if (await canLaunch(url)) {
+                await launch(url, forceWebView: true);
+            } else {
+                ToastUtil.showToast('Nao foi possivel abrir as Política de Privacidade', context, color: ToastUtil.error);
+            }
+        } catch (e, stack) {
+            Catcher.reportCheckedError(e, stack);
+        }
     }
 
     String _emailFormValidation(String value) {

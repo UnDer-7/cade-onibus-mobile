@@ -1,8 +1,10 @@
+import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../pages/new_bus_page.dart';
 import '../pages/map_page.dart';
@@ -65,8 +67,8 @@ class _HomePageState extends State<HomePage> {
 //                        child: Icon(Icons.bug_report)
 //                    ),
                     SpeedDialChild(
-                        onTap: _toBeImplemented,
-                        label: 'Sobre o app',
+                        onTap: _launchPrivacyPolicy,
+                        label: 'Política de Privacidade',
                         child: Icon(Icons.info),
                     ),
                     SpeedDialChild(
@@ -109,6 +111,20 @@ class _HomePageState extends State<HomePage> {
                     ],
                 ),
         );
+    }
+
+    Future<void> _launchPrivacyPolicy() async {
+        const url = 'https://www.iubenda.com/privacy-policy/13540319';
+
+        try {
+            if (await canLaunch(url)) {
+                await launch(url, forceWebView: true);
+            } else {
+                ToastUtil.showToast('Nao foi possivel abrir as Política de Privacidade', context, color: ToastUtil.error);
+            }
+        } catch (e, stack) {
+            Catcher.reportCheckedError(e, stack);
+        }
     }
 
     Future<void> _onTrackBus(BuildContext context, final BusSelected busSelected) async {

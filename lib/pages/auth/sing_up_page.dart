@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -114,38 +115,44 @@ class _SingUpPageState extends State<SingUpPage> {
                                         padding: EdgeInsets.only(top: 15),
                                         child: OuDivider(),
                                     ),
-                                    if (!_isKeyBoardOpen(context)) Padding(
-                                        padding: EdgeInsets.only(bottom: 5),
-                                        child: FlatButton(
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                                            onPressed: () => _createUserWithGoogle(userProvider),
-                                            child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                    SvgPicture.asset(
-                                                        'assets/images/google_icon.svg',
-                                                        height: 30,
-                                                        width: 30,
-                                                    ),
-                                                    Padding(
-                                                        padding: EdgeInsets.only(left: 10),
-                                                        child: Text('Criar conta com Google'),
-                                                    ),
-                                                ],
-                                            ),
+                                    if (!_isKeyBoardOpen(context)) FlatButton(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                                        onPressed: () => _createUserWithGoogle(userProvider),
+                                        child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                                SvgPicture.asset(
+                                                    'assets/images/google_icon.svg',
+                                                    height: 30,
+                                                    width: 30,
+                                                ),
+                                                Padding(
+                                                    padding: EdgeInsets.only(left: 10),
+                                                    child: Text('Criar conta com Google'),
+                                                ),
+                                            ],
                                         ),
                                     ),
                                     if (!_isKeyBoardOpen(context)) Divider(
                                         color: Theme.of(context).primaryColor,
                                     ),
-                                    if (!_isKeyBoardOpen(context)) FlatButton(
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                                      onPressed: _launchPrivacyPolicy,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(bottom: 15),
-                                        child: Text('Política de Privacidade'),
-                                      ),
-                                    )
+                                    if (!_isKeyBoardOpen(context)) RichText(
+                                        text: TextSpan(
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                            ),
+                                            text: 'Ao realizar o cadastro você está de acordo com a ',
+                                            children: [
+                                                TextSpan(
+                                                    style: TextStyle(
+                                                        color: Colors.blue,
+                                                    ),
+                                                    recognizer: TapGestureRecognizer()..onTap = _launchPrivacyPolicy,
+                                                    text: 'Política de Privacidade'
+                                                ),
+                                            ],
+                                        ),
+                                    ),
                                 ],
                             ),
                         ),

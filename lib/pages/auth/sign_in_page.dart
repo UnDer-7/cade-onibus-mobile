@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catcher/core/catcher.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -8,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:dio/dio.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../resources/auth_resource.dart';
 import '../../resources/resource_exception.dart';
@@ -122,27 +124,44 @@ class _SingInPageState extends State<SingInPage> {
                                         padding: EdgeInsets.only(top: 15),
                                         child: OuDivider(),
                                     ),
-                                    if (!_isKeyBoardOpen(context)) Padding(
-                                        padding: EdgeInsets.only(bottom: 30),
-                                        child: FlatButton(
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                                            onPressed: () => singInWithGoogle(userProvider),
-                                            child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                    SvgPicture.asset(
-                                                        'assets/images/google_icon.svg',
-                                                        height: 30,
-                                                        width: 30,
-                                                    ),
-                                                    Padding(
-                                                        padding: EdgeInsets.only(left: 10),
-                                                        child: Text('Entrar com Google'),
-                                                    ),
-                                                ],
-                                            ),
+                                    if (!_isKeyBoardOpen(context)) FlatButton(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                                        onPressed: () => singInWithGoogle(userProvider),
+                                        child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                                SvgPicture.asset(
+                                                    'assets/images/google_icon.svg',
+                                                    height: 30,
+                                                    width: 30,
+                                                ),
+                                                Padding(
+                                                    padding: EdgeInsets.only(left: 10),
+                                                    child: Text('Entrar com Google'),
+                                                ),
+                                            ],
                                         ),
                                     ),
+                                    if (!_isKeyBoardOpen(context)) Divider(
+                                        color: Theme.of(context).primaryColor,
+                                    ),
+                                    if (!_isKeyBoardOpen(context)) RichText(
+                                        text: TextSpan(
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                            ),
+                                            text: 'Ao utilizar o aplicativo você está de acordo com a ',
+                                            children: [
+                                                TextSpan(
+                                                    style: TextStyle(
+                                                        color: Colors.blue,
+                                                    ),
+                                                    recognizer: TapGestureRecognizer()..onTap = _launchPrivacyPolicy,
+                                                    text: 'Política de Privacidade'
+                                                ),
+                                            ],
+                                        ),
+                                    )
                                 ],
                             ),
                         ),
@@ -492,5 +511,19 @@ class _SingInPageState extends State<SingInPage> {
             return false;
         }
         return true;
+    }
+
+    Future<void> _launchPrivacyPolicy() async {
+        const url = 'https://www.iubenda.com/privacy-policy/13540319';
+
+        try {
+            if (await canLaunch(url)) {
+                await launch(url, forceWebView: true);
+            } else {
+                ToastUtil.showToast('Nao foi possivel abrir as Política de Privacidade', context, color: ToastUtil.error);
+            }
+        } catch (e, stack) {
+            Catcher.reportCheckedError(e, stack);
+        }
     }
 }

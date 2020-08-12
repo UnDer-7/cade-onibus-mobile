@@ -9,3 +9,6 @@ Google PlayStore: https://play.google.com/store/apps/details?id=com.cade.cade_on
 
 ## About the App
 This App was made with Flutter
+
+- [Backend repo](https://github.com/UnDer-7/cade-onibus-backend)
+- [PWA repo](https://github.com/UnDer-7/cade-onibus-frontend)
